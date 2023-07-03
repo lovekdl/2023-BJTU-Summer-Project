@@ -1,3 +1,8 @@
+# 2023-BJTU-Summer-Project
+BJTU 2023软件工程实训 系外行星宜居度预测
+
+
+
 # 系外行星宜居度分析
 
 > BJTU 2023软件工程实训
@@ -46,7 +51,8 @@
 - 前端：React
   - 前端构建工具：Vite
   - 图形库：WebGPU
-
+  - 前端规范：https://zh-google-styleguide.readthedocs.io/en/latest/google-typescript-styleguide/syntax/#section-3
+  
 - 后端：Django
   - 数据库管理：PyMySQL、Django-import-export、cyptography
   - 大语言模型：MinecraftLLMSupportBackend
