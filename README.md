@@ -41,7 +41,19 @@
   - [Kaggle](www.kaggle.com/datasets/nasa/kepler-exoplanet-search-results)
   - [NASA](https://exoplanetarchive.ipac.caltech.edu/cgi-bin/TblView/nph-tblView?app=ExoTbls&config=PS)
 
-## 2. 计划
+## 2. 技术路线
+
+- 前端：React
+  - 前端构建工具：Vite
+  - 图形库：WebGPU
+
+- 后端：Django
+  - 数据库管理：PyMySQL、Django-import-export、cyptography
+  - 大语言模型：MinecraftLLMSupportBackend
+
+- 数据库：MySQL
+
+## 3. 计划
 
 - 7.3答辩PPT制作
 
@@ -65,7 +77,7 @@
 
 - etc
 
-## 3. 小组分工
+## 4. 小组分工
 
 - 项目经理：俞贤皓
 
