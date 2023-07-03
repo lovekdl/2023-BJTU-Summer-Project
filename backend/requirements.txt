@@ -1,0 +1,9 @@
+django
+django-cors-headers
+pymysql
+mysqlclient
+django-import-export
+urllib3==1.25.11
+openai==0.27.5
+cryptography
+
