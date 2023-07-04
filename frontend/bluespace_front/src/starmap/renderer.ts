@@ -1,5 +1,6 @@
 import vertexShaderRaw from "./shaders/myShader.vert.wgsl?raw"
 import fragmentShaderRaw from "./shaders/myShader.frag.wgsl?raw"
+import shaderRaw from "./shaders/myShader.wgsl?raw"
 import * as sphere from "./util/sphere"
 import { mat4 } from 'gl-matrix'
 
@@ -27,30 +28,30 @@ class BlueSpaceRenderer {
 
     private haveSetup: boolean = false
     // created when initWebGPU
-    private device: GPUDevice = new GPUDevice()
-    private context: GPUCanvasContext = new GPUCanvasContext()
+    private device?: GPUDevice = undefined
+    private context?: GPUCanvasContext = undefined
     private format: GPUTextureFormat = "rgba8unorm"
     private canvasSize: {width: number, height: number} = {width: 0, height: 0}
 
     // created when initPipeline
-    private pipeline: GPURenderPipeline = new GPURenderPipeline()
+    private pipeline?: GPURenderPipeline = undefined
 
     // created when initBuffer
-    private sphereBuffer: {vertex: GPUBuffer, index: GPUBuffer, numOfVertex: number, numOfIndex: number} = new GPUBuffer()
-    private modelMatrixBuffer: GPUBuffer = new GPUBuffer()
-    private viewMatrixBuffer: GPUBuffer = new GPUBuffer()
-    private projectionMatrixBuffer: GPUBuffer = new GPUBuffer()
+    private sphereBuffer?: {vertex: GPUBuffer, index: GPUBuffer, numOfVertex: number, numOfIndex: number} = undefined
+    private modelMatrixBuffer?: GPUBuffer = undefined
+    private viewMatrixBuffer?: GPUBuffer = undefined
+    private projectionMatrixBuffer?: GPUBuffer = undefined
 
     // created when initTexture
-    private depthTexture: GPUTexture = new GPUTexture()
-    private texture: GPUTexture = new GPUTexture()
+    private depthTexture?: GPUTexture = undefined
+    private texture?: GPUTexture = undefined
 
     // created when initSampler
-    private sampler: GPUSampler = new GPUSampler()
+    private sampler?: GPUSampler = undefined
 
     // created when initGroup
-    private transformGroup: GPUBindGroup = new GPUBindGroup()
-    private textureGroup: GPUBindGroup = new GPUBindGroup()
+    private transformGroup?: GPUBindGroup = undefined
+    private textureGroup?: GPUBindGroup = undefined
 
     // Transform Matrix Buffer Array
     private modelMatrixArray: Float32Array = new Float32Array()
@@ -69,7 +70,14 @@ class BlueSpaceRenderer {
     private PERSPECTIVE_NEAR: number = 0.1
     private PERSPECTIVE_FAR: number = 3000
 
+    private COMMON_SPEED: number = 0.01
+    private POSITION_RANGE: number = 50
+
     // ===== ===== ===== Constructor ===== ===== =====
+
+    private randomRange(L: number, R: number) {
+        return Math.random() * (R - L) + L
+    }
 
     constructor() {
         // ===== Camera =====
@@ -79,25 +87,26 @@ class BlueSpaceRenderer {
         this.numOfPlanets = 1000
         this.planets = new Array<Planet>(this.numOfPlanets)
 
-        const commonSpeed = 0.01
-        const randomRange = (L: number, R: number) => {
-            return Math.random() * (R - L) + L
-        }
-        for(const planet of this.planets) {
-            const positionRange = 50
-            planet.position.x = randomRange(-positionRange, positionRange)
-            planet.position.y = randomRange(-positionRange, positionRange)
-            planet.position.z = randomRange(-positionRange, 0) - 50
-
-            planet.rotation.x = randomRange(-3.14, 3.14)
-            planet.rotation.y = randomRange(-3.14, 3.14)
-            planet.rotation.z = randomRange(-3.14, 3.14)
-
-            planet.rotationSpeed.x = randomRange(-1.0, 1.0) * commonSpeed
-            planet.rotationSpeed.y = randomRange(-1.0, 1.0) * commonSpeed
-            planet.rotationSpeed.z = randomRange(-1.0, 1.0) * commonSpeed
-
-            planet.scale = {x: 1, y: 1, z: 1}
+        for(let i = 0; i < this.planets.length; i++) {
+            this.planets[i] = new Planet(
+                {
+                    x: this.randomRange(-this.POSITION_RANGE, this.POSITION_RANGE),
+                    y: this.randomRange(-this.POSITION_RANGE, this.POSITION_RANGE),
+                    z: this.randomRange(-this.POSITION_RANGE, 0) - 50,
+                }, {
+                    x: this.randomRange(-3.14, 3.14),
+                    y: this.randomRange(-3.14, 3.14),
+                    z: this.randomRange(-3.14, 3.14),
+                }, {
+                    x: this.randomRange(-1.0, 1.0) * this.COMMON_SPEED,
+                    y: this.randomRange(-1.0, 1.0) * this.COMMON_SPEED,
+                    z: this.randomRange(-1.0, 1.0) * this.COMMON_SPEED,
+                }, {
+                    x: 1,
+                    y: 1,
+                    z: 1,
+                }, 1, 1, 1, 1
+            )
         }
     }
 
@@ -125,8 +134,12 @@ class BlueSpaceRenderer {
         )
 
         // ===== Load View Matrix & Projection Matrix =====
-        that.device.queue.writeBuffer(that.viewMatrixBuffer, 0, this.camera.viewMatrix as Float32Array)
-        that.device.queue.writeBuffer(that.projectionMatrixBuffer, 0, this.projectionMatrix as Float32Array)
+        // that.device!.queue.writeBuffer(that.viewMatrixBuffer!, 0, this.camera.viewMatrix as Float32Array)
+        that.device!.queue.writeBuffer(that.viewMatrixBuffer!, 0, (mat4.create()) as Float32Array)
+        that.device!.queue.writeBuffer(that.projectionMatrixBuffer!, 0, this.projectionMatrix as Float32Array)
+        
+        console.log("viewMatrix: " + mat4.create())
+        console.log("projectionMatrix: " + this.projectionMatrix)
 
         // 初始化完毕
         this.haveSetup = true
@@ -147,8 +160,10 @@ class BlueSpaceRenderer {
                 that.planets[i].update()
                 that.modelMatrixArray.set((that.planets[i].modelMatrix as Float32Array), 4 * 4 * i)
             }
-            that.device.queue.writeBuffer(that.modelMatrixBuffer, 0, that.modelMatrixArray)
+            that.device!.queue.writeBuffer(that.modelMatrixBuffer!, 0, that.modelMatrixArray)
             that.draw()
+
+            console.log("draw")
 
             requestAnimationFrame(frame)
         }
@@ -176,46 +191,46 @@ class BlueSpaceRenderer {
     /**
      * 绘制函数
      */
-    draw() {
+    private draw() {
         if(!this.haveSetup) {
             throw new Error("Renderer is not installed.")
         }
         const that = this
 
         // 因为createCommandEncoder这个API没有和GPU进行交互，所以它不是异步的
-        const encoder = this.device.createCommandEncoder()
+        const encoder = this.device!.createCommandEncoder()
 
         // ===== 录制命令部分 =====
         // 下面这个API的Pass的概念类似于“图层”
         const renderPass = encoder.beginRenderPass({
             colorAttachments: [{
-                view: that.context.getCurrentTexture().createView(),
+                view: that.context!.getCurrentTexture().createView(),
                 loadOp: 'clear', // 'clear'清空原有内容，'load'保留原有内容
                 clearValue: {r:0, g:0, b:0, a:1}, // 'clear'时使用的颜色
                 storeOp: 'store', // 'store'保留结果，'discard'清除原有信息
             }],
             depthStencilAttachment: {
-                view: that.depthTexture.createView(),
+                view: that.depthTexture!.createView(),
                 depthClearValue: 1.0,
                 depthLoadOp: 'clear',
                 depthStoreOp: 'store',
             }
         })
         // 绑定Pipeline和BindGroup
-        renderPass.setPipeline(that.pipeline)
-        renderPass.setBindGroup(0, that.transformGroup)
-        renderPass.setBindGroup(1, that.textureGroup)
+        renderPass.setPipeline(that.pipeline!)
+        renderPass.setBindGroup(0, that.transformGroup!)
+        renderPass.setBindGroup(1, that.textureGroup!)
         // 绑定Vertex/IndexBuffer，并且按Index绘制
-        renderPass.setVertexBuffer(0, that.sphereBuffer.vertex)
-        renderPass.setIndexBuffer(that.sphereBuffer.index, 'uint16')
-        renderPass.drawIndexed(that.sphereBuffer.numOfIndex, that.numOfPlanets, 0, 0, 0)
+        renderPass.setVertexBuffer(0, that.sphereBuffer!.vertex)
+        renderPass.setIndexBuffer(that.sphereBuffer!.index, 'uint16')
+        renderPass.drawIndexed(that.sphereBuffer!.numOfIndex, that.numOfPlanets, 0, 0, 0)
         // 结束
         renderPass.end()
 
         const buffer = encoder.finish()
         // 将Command今天提交，这个时候上面的指令才会被真正执行
         // 因为Submit的结果将直接绘制在屏幕上，而不需要JS来接收执行结果，所以这个API也不是异步的
-        this.device.queue.submit([buffer])
+        this.device!.queue.submit([buffer])
     }
 
     /**
@@ -284,10 +299,10 @@ class BlueSpaceRenderer {
         const descriptor: GPURenderPipelineDescriptor = {
             layout: 'auto',
             vertex: {
-                module: that.device.createShaderModule({
-                    code: vertexShaderRaw
+                module: that.device!.createShaderModule({
+                    code: shaderRaw
                 }),
-                entryPoint: 'main',
+                entryPoint: 'vertex_main',
                 // 这里的buffers可以使用多个slots，表示js中需要传入的多个TypedArray
                 // 这里的attributes也可以有多个，表示每个TypedArray被划分到不同的location
                 buffers: [{
@@ -311,10 +326,10 @@ class BlueSpaceRenderer {
                 }]
             },
             fragment: {
-                module: that.device.createShaderModule({
-                    code: fragmentShaderRaw
+                module: that.device!.createShaderModule({
+                    code: shaderRaw
                 }),
-                entryPoint: 'main',
+                entryPoint: 'fragment_main',
                 targets: [{
                     format: that.format,
                 }],
@@ -329,7 +344,7 @@ class BlueSpaceRenderer {
                 format: 'depth24plus',
             }
         }
-        this.pipeline = await that.device.createRenderPipelineAsync(descriptor)
+        this.pipeline = await that.device!.createRenderPipelineAsync(descriptor)
     }
 
     /**
@@ -344,12 +359,12 @@ class BlueSpaceRenderer {
 
         // models
         this.sphereBuffer = {
-            vertex: that.device.createBuffer({
+            vertex: that.device!.createBuffer({
                 label: 'GPUBuffer stores vertex',
                 size: sphere.vertex.byteLength,
                 usage: GPUBufferUsage.VERTEX | GPUBufferUsage.COPY_DST,
             }),
-            index: that.device.createBuffer({
+            index: that.device!.createBuffer({
                 label: 'GPUBuffer stores vertex index',
                 size: sphere.index.byteLength,
                 usage: GPUBufferUsage.INDEX | GPUBufferUsage.COPY_DST,
@@ -357,22 +372,25 @@ class BlueSpaceRenderer {
             numOfVertex: sphere.vertexCount,
             numOfIndex: sphere.indexCount,
         }
-        that.device.queue.writeBuffer(that.sphereBuffer.vertex, 0, sphere.vertex)
-        that.device.queue.writeBuffer(that.sphereBuffer.index, 0, sphere.index)
+        that.device!.queue.writeBuffer(that.sphereBuffer!.vertex, 0, sphere.vertex)
+        that.device!.queue.writeBuffer(that.sphereBuffer!.index, 0, sphere.index)
 
         // MVP Matrix Buffer
-        this.modelMatrixBuffer = that.device.createBuffer({
+        this.modelMatrixBuffer = that.device!.createBuffer({
             size: 4 * 4 * 4 * that.numOfPlanets,
             usage: GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_DST,
         })
-        this.viewMatrixBuffer = that.device.createBuffer({
+        this.viewMatrixBuffer = that.device!.createBuffer({
             size: 256,
             usage: GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_DST,
         })
-        this.projectionMatrixBuffer = that.device.createBuffer({
+        this.projectionMatrixBuffer = that.device!.createBuffer({
             size: 256,
             usage: GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_DST,
         })
+
+        // Model Matrix Array
+        this.modelMatrixArray = new Float32Array(4 * 4 * that.numOfPlanets)
     }
 
     /**
@@ -382,7 +400,7 @@ class BlueSpaceRenderer {
         const that = this
 
         // ===== Depth =====
-        this.depthTexture = that.device.createTexture({
+        this.depthTexture = that.device!.createTexture({
             size: that.canvasSize,
             format: 'depth24plus',
             usage: GPUTextureUsage.RENDER_ATTACHMENT,
@@ -398,7 +416,7 @@ class BlueSpaceRenderer {
         const bitmap = await createImageBitmap(img)
         // 创建texture
         const textureSize = [bitmap.width, bitmap.height]
-        const texture = that.device.createTexture({
+        this.texture = that.device!.createTexture({
             size: textureSize,
             format: 'rgba8unorm',
             usage:
@@ -407,9 +425,9 @@ class BlueSpaceRenderer {
                 GPUTextureUsage.RENDER_ATTACHMENT,
         })
         // 写入texture
-        that.device.queue.copyExternalImageToTexture(
+        that.device!.queue.copyExternalImageToTexture(
             { source: bitmap },
-            { texture: texture },
+            { texture: that.texture! },
             textureSize,
         )
     }
@@ -419,7 +437,7 @@ class BlueSpaceRenderer {
      */
     private async initSampler() {
         // 配置sampler
-        this.sampler = this.device.createSampler({
+        this.sampler = this.device!.createSampler({
             // addressModeU: 'repeat',
             // addressModeV: 'repeat',
             magFilter: 'linear',
@@ -437,40 +455,51 @@ class BlueSpaceRenderer {
         const that = this
 
         // 绑定变换矩阵的Group
-        this.transformGroup = this.device.createBindGroup({
-            label: 'Transform Group',
-            layout: that.pipeline.getBindGroupLayout(0),
+        this.transformGroup = this.device!.createBindGroup({
+            label: 'Transform Group with MVP Matrix Buffer',
+            layout: that.pipeline!.getBindGroupLayout(0),
             entries: [{
                 binding: 0,
                 resource: {
-                    buffer: that.modelMatrixBuffer,
+                    buffer: that.modelMatrixBuffer!,
                 }
             }, {
                 binding: 1,
                 resource: {
-                    buffer: that.viewMatrixBuffer,
+                    buffer: that.viewMatrixBuffer!,
                 }
             }, {
                 binding: 2,
                 resource: {
-                    buffer: that.projectionMatrixBuffer,
+                    buffer: that.projectionMatrixBuffer!,
                 }
             }]
         })
 
         // 绑定纹理的Group
-        this.textureGroup = this.device.createBindGroup({
+        this.textureGroup = this.device!.createBindGroup({
             label: 'Texture Group with Texture and Sampler',
-            layout: that.pipeline.getBindGroupLayout(1),
+            layout: that.pipeline!.getBindGroupLayout(1),
             entries: [{
                 binding: 0,
-                resource: that.texture.createView(),
+                resource: that.texture!.createView(),
             }, {
                 binding: 1,
-                resource: that.sampler,
+                resource: that.sampler!,
             }],
         })
     }
 }
 
-export { BlueSpaceRenderer }
+
+let renderer: BlueSpaceRenderer
+try {
+    renderer = new BlueSpaceRenderer()
+    renderer.setup().then(() => {
+        renderer.run()
+    })
+} catch (error) {
+    throw new Error("Intializing renderer failed: " + error)
+}
+
+// export { BlueSpaceRenderer }

@@ -20,7 +20,7 @@ function Image({ id }: { id: number }) {
     <div>
       {id === 1 ? (
         <section>
-        <StarMap></StarMap>
+        { <StarMap></StarMap> }
         </section>
       ) : (
         <section>

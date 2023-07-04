@@ -1,45 +1,28 @@
 import { useEffect } from "react"
-import { BlueSpaceRenderer } from "./renderer"
-
 
 function StarMap() {
 
-  let renderer: BlueSpaceRenderer
-  try {
-    renderer = new BlueSpaceRenderer()
-    renderer.setup()
-  } catch (error) {
-    throw new Error("Intializing renderer failed: " + error)
-  }
+  useEffect(() => {
+    const script = document.createElement("script")
 
-  return (
-    <div>
-      <canvas></canvas>
-    </div>
-  )
-}
+    script.src = "/src/starmap/renderer.ts"
+    script.async = true
+    script.type = "module"
 
-// function StarMap() {
-
-//   useEffect(() => {
-//     const script = document.createElement("script")
-
-//     script.src = "/src/starmap/renderer.ts"
-//     script.async = true
-//     script.type = "module"
-
-//     const canvas = document.createElement("canvas")
+    const canvas = document.createElement("canvas")
+    canvas.style.width = '100%'
+    canvas.style.height = '100%'
     
-//     document.body.appendChild(script)
-//     document.body.appendChild(canvas)
+    document.getElementById("StarMap")?.appendChild(script)
+    document.getElementById("StarMap")?.appendChild(canvas)
 
-//     return () => {
-//       document.body.removeChild(script)
-//       document.body.removeChild(canvas)
-//     }
-//   }, [])
+    return () => {
+      document.getElementById("StarMap")?.removeChild(script)
+      document.getElementById("StarMap")?.removeChild(canvas)
+    }
+  }, [])
 
-//   return <div className="StarMap"></div>
-// }
+  return <div className="StarMap" id="StarMap"></div>
+}
 
 export default StarMap

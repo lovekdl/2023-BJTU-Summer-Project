@@ -53,6 +53,7 @@ class Planet {
 
     // update model matrix
     updateModelMatrix() {
+        this.internalModelMatrix = mat4.create()
         // translate
         mat4.translate(this.internalModelMatrix, this.internalModelMatrix, vec3.fromValues(this.position.x, this.position.y, this.position.z))
         // rotate
