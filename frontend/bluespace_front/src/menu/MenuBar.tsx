@@ -7,7 +7,7 @@ import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
 import MenuIcon from '@material-ui/icons/Menu';
-
+import { useNavigate } from 'react-router-dom';
 const styles = createStyles({
   root: {
     flexGrow: 1,
@@ -25,6 +25,12 @@ export interface Props extends WithStyles<typeof styles> {}
 
 function ButtonAppBar(props: Props) {
   const { classes } = props;
+  const navigate = useNavigate()
+  const handleClicked = () =>{
+    console.log("clicked")
+    navigate('/login', {replace:false})
+  }
+
   return (
     <div className='menu'>
       <AppBar position="static" color='secondary'>
@@ -35,7 +41,7 @@ function ButtonAppBar(props: Props) {
           <Typography variant="h6" color="inherit" className={classes.grow}>
             BLUE SPACE
           </Typography>
-          <Button color="inherit">Login</Button>
+          <Button color="inherit" onClick={handleClicked}>Login</Button>
         </Toolbar>
       </AppBar>
     </div>

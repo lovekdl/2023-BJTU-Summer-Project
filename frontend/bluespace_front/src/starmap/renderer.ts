@@ -163,7 +163,7 @@ class BlueSpaceRenderer {
             that.device!.queue.writeBuffer(that.modelMatrixBuffer!, 0, that.modelMatrixArray)
             that.draw()
 
-            console.log("draw")
+            // console.log("draw")
 
             requestAnimationFrame(frame)
         }

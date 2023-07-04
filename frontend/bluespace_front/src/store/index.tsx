@@ -5,6 +5,7 @@
 import LoginStore from "./login.store"
 import React from "react"
 class RootStore {
+  loginStore: LoginStore 
 	constructor() {
 		this.loginStore = new LoginStore()
 	}
