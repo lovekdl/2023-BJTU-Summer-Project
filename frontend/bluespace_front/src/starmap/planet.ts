@@ -17,6 +17,7 @@ import { mat4, vec3 } from 'gl-matrix'
 class Planet {
     // rendering property
     private internalModelMatrix: mat4 = mat4.create()
+    // planet property
 
     // constructor
     constructor(
@@ -24,6 +25,13 @@ class Planet {
         public rotation: {x: number, y: number, z: number},
         public rotationSpeed: {x: number, y: number, z: number},
         public scale: {x: number, y: number, z: number},
+        
+        // 恒星的shader与model类型
+        public starShaderType: number,
+        public starModelType: number,
+        // 行星的shader与model类型
+        public shaderType: number,
+        public modelType: number,
     ) {
 
     }
@@ -54,5 +62,12 @@ class Planet {
         mat4.rotateZ(this.internalModelMatrix, this.internalModelMatrix, this.rotation.z)
         // scale
         mat4.scale(this.internalModelMatrix, this.internalModelMatrix, vec3.fromValues(this.scale.x, this.scale.y, this.scale.z))
+    }
+
+    // create planet
+    static createPlanet(
+        
+    ): Planet {
+        
     }
 }

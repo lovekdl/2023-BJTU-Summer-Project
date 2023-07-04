@@ -30,7 +30,7 @@ class BlueSpaceRenderer {
 
     async setup() {
         await this.initWebGPU()
-        await this.initPipeline()
+        await this.initPipeline(1000)
 
         // 初始化完毕
         this.haveSetup = true
@@ -89,7 +89,7 @@ class BlueSpaceRenderer {
     // 3. 在draw时进行使用
     // 3.1 传入对应location (setVertexBuffer)
     // 3.2 在draw时指定绘制的顶点个数
-    async initPipeline() {
+    async initPipeline(numberOfPlanets: number) {
         // pipeline
         const descriptor: GPURenderPipelineDescriptor = {
             layout: 'auto',
@@ -140,50 +140,50 @@ class BlueSpaceRenderer {
             }
         }
         const pipeline = await device.createRenderPipelineAsync(descriptor)
+
+        // models
+        const sphereBuffer = {
+            vertex: device.createBuffer({
+                label: 'GPUBuffer stores vertex',
+                size: sphere.vertex.byteLength,
+                usage: GPUBufferUsage.VERTEX | GPUBufferUsage.COPY_DST,
+            }),
+            index: device.createBuffer({
+                label: 'GPUBuffer stores vertex index',
+                size: sphere.index.byteLength,
+                usage: GPUBufferUsage.INDEX | GPUBufferUsage.COPY_DST,
+            }),
+            vertexCount: sphere.vertexCount,
+            indexCount: sphere.indexCount,
+        }
+        device.queue.writeBuffer(sphereBuffer.vertex, 0, sphere.vertex)
+        device.queue.writeBuffer(sphereBuffer.index, 0, sphere.index)
+
+        // MVP Matrix Buffer
+        const modelMatrixBuffer = device.createBuffer({
+            size: 4 * 4 * 4 * numberOfPlanets,
+            usage: GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_DST,
+        })
+        const viewMatrix = device.createBuffer({
+            size: 256,
+            usage: GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_DST,
+        })
+        const projectionMatrix = device.createBuffer({
+            size: 256,
+            usage: GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_DST,
+        })
+
+        // ===== Depth =====
+        const depthTexture = device.createTexture({
+            size,
+            format: 'depth24plus',
+            usage: GPUTextureUsage.RENDER_ATTACHMENT,
+        })
     }
 }
 
 async function initPipeline(device: GPUDevice, format: GPUTextureFormat, size: {width: number, height: number}) {
-    
-    const sphereBuffer = {
-        vertex: device.createBuffer({
-            label: 'GPUBuffer stores vertex',
-            size: sphere.vertex.byteLength,
-            usage: GPUBufferUsage.VERTEX | GPUBufferUsage.COPY_DST,
-        }),
-        index: device.createBuffer({
-            label: 'GPUBuffer stores vertex index',
-            size: sphere.index.byteLength,
-            usage: GPUBufferUsage.INDEX | GPUBufferUsage.COPY_DST,
-        }),
-        vertexCount: sphere.vertexCount,
-        indexCount: sphere.indexCount,
-    }
-    device.queue.writeBuffer(sphereBuffer.vertex, 0, sphere.vertex)
-    device.queue.writeBuffer(sphereBuffer.index, 0, sphere.index)
 
-    // ===== color =====
-    const color = new Float32Array([
-        1, 1, 1, 1,
-    ])
-    const colorBuffer = device.createBuffer({
-        size: color.byteLength,
-        usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST, // UNIFORM只读且大小最大64KB; STORAGE可修改且WebGPU最大支持2GB
-    })
-    device.queue.writeBuffer(colorBuffer, 0, color)
-
-    // ===== MVP =====
-    const mvpMatrixBuffer = device.createBuffer({
-        size: 4 * 4 * 4 * OBJECT_NUM,
-        usage: GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_DST,
-    })
-
-    // ===== Depth =====
-    const depthTexture = device.createTexture({
-        size,
-        format: 'depth24plus',
-        usage: GPUTextureUsage.RENDER_ATTACHMENT,
-    })
 
     // ===== Texture =====
     // 小知识： 在浏览器中，webp包含了jpeg/png/gif等格式的优点，所以在开发中，应该优先使用webp格式
