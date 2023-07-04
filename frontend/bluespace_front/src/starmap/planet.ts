@@ -17,7 +17,6 @@ import { mat4, vec3 } from 'gl-matrix'
 class Planet {
     // rendering property
     private internalModelMatrix: mat4 = mat4.create()
-    // planet property
 
     // constructor
     constructor(
@@ -65,9 +64,11 @@ class Planet {
     }
 
     // create planet
-    static createPlanet(
+    // static createPlanet(
         
-    ): Planet {
+    // ): Planet {
         
-    }
+    // }
 }
+
+export { Planet }
