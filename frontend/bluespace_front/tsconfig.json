@@ -18,7 +18,10 @@
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "noFallthroughCasesInSwitch": true
+    "noFallthroughCasesInSwitch": true,
+
+    /* WebGPU */
+    "types": ["vite/client", "@webgpu/types", "@types/dom-webcodecs"]
   },
   "include": ["src"],
   "references": [{ "path": "./tsconfig.node.json" }]

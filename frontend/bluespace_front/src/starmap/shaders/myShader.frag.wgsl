@@ -10,5 +10,6 @@ fn main(
     @location(1) fragNormal: vec3<f32>,
     @location(2) fragUV: vec2<f32>,
 ) -> @location(0) vec4<f32> {
-    return /*fragPosition * */ color * textureSample(myTexture, mySampler, fragUV);
+    // return /*fragPosition * */ color * textureSample(myTexture, mySampler, fragUV);
+    return color;
 }

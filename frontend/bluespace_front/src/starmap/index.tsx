@@ -1,3 +1,3 @@
-import StarMap from "./starmap.canvas";
+import StarMap from "./canvas";
 
 export {StarMap};

@@ -91,75 +91,60 @@ class BlueSpaceRenderer {
     // 3.2 在draw时指定绘制的顶点个数
     async initPipeline() {
         // pipeline
+        const descriptor: GPURenderPipelineDescriptor = {
+            layout: 'auto',
+            vertex: {
+                module: device.createShaderModule({
+                    code: vertexShaderRaw
+                }),
+                entryPoint: 'main',
+                // 这里的buffers可以使用多个slots，表示js中需要传入的多个TypedArray
+                // 这里的attributes也可以有多个，表示每个TypedArray被划分到不同的location
+                buffers: [{
+                    arrayStride: 8 * 4, // 因为每个顶点有3个数字，所以步长为3
+                    attributes: [{
+                        // position
+                        shaderLocation: 0,
+                        offset: 0,
+                        format: 'float32x3',
+                    }, {
+                        // normal
+                        shaderLocation: 1,
+                        offset: 3 * 4,
+                        format: 'float32x3',
+                    }, {
+                        // uv
+                        shaderLocation: 2,
+                        offset: 6 * 4,
+                        format: 'float32x2',
+                    }],
+                }]
+            },
+            fragment: {
+                module: device.createShaderModule({
+                    code: fragmentShaderRaw
+                }),
+                entryPoint: 'main',
+                targets: [{
+                    format,
+                }],
+            },
+            primitive: {
+                topology: 'triangle-list',
+                // cullMode: 'back', // 因为正方体是封闭的，所以通过这个封闭的图形，来从几何上剔除内部
+            },
+            depthStencil: {
+                depthWriteEnabled: true,
+                depthCompare: 'less',
+                format: 'depth24plus',
+            }
+        }
+        const pipeline = await device.createRenderPipelineAsync(descriptor)
     }
 }
 
 async function initPipeline(device: GPUDevice, format: GPUTextureFormat, size: {width: number, height: number}) {
-    // ===== Pipeline =====
-    const descriptor: GPURenderPipelineDescriptor = {
-        layout: 'auto',
-        vertex: {
-            module: device.createShaderModule({
-                code: vertexShaderRaw
-            }),
-            entryPoint: 'main',
-            // 这里的buffers可以使用多个slots，表示js中需要传入的多个TypedArray
-            // 这里的attributes也可以有多个，表示每个TypedArray被划分到不同的location
-            buffers: [{
-                arrayStride: 8 * 4, // 因为每个顶点有3个数字，所以步长为3
-                attributes: [{
-                    // position
-                    shaderLocation: 0,
-                    offset: 0,
-                    format: 'float32x3',
-                }, {
-                    // normal
-                    shaderLocation: 1,
-                    offset: 3 * 4,
-                    format: 'float32x3',
-                }, {
-                    // uv
-                    shaderLocation: 2,
-                    offset: 6 * 4,
-                    format: 'float32x2',
-                }],
-            }]
-        },
-        fragment: {
-            module: device.createShaderModule({
-                code: fragmentShaderRaw
-            }),
-            entryPoint: 'main',
-            targets: [{
-                format,
-            }],
-        },
-        primitive: {
-            topology: 'triangle-list',
-            // cullMode: 'back', // 因为正方体是封闭的，所以通过这个封闭的图形，来从几何上剔除内部
-        },
-        depthStencil: {
-            depthWriteEnabled: true,
-            depthCompare: 'less',
-            format: 'depth24plus',
-        }
-    }
-
-    const pipeline = await device.createRenderPipelineAsync(descriptor)
     
-    // ===== vertex =====
-    // const vertex = new Float32Array([
-    //     // xyz, uv, normal
-    //     0, 0.5, 0,
-    //     -0.5, -0.5, 0,
-    //     0.5, -0.5, 0,
-    // ])
-    // const vertexBuffer = device.createBuffer({
-    //     size: vertex.byteLength,
-    //     usage: GPUBufferUsage.VERTEX | GPUBufferUsage.COPY_DST, // COPY_DST表示这个Buffer可以被writeBuffer写入
-    // })
-    // device.queue.writeBuffer(vertexBuffer, 0, vertex)
-
     const sphereBuffer = {
         vertex: device.createBuffer({
             label: 'GPUBuffer stores vertex',

@@ -341,6 +341,7 @@ function getMVPMatrix(position: any, rotation: any, scale: any, aspect: number) 
 async function run() {
     // ===== Initialize =====
     const {device, format, context, size} = await initWebGPU()
+
     const pipelineObject = await initPipeline(device, format, size)
 
     // ===== Arguments =====
@@ -436,20 +437,3 @@ console.log(1)
 
 run()
 
-// // 检查浏览器是否支持WebGPU
-// if(!navigator.gpu) {
-//     throw new Error('not support webgpu')
-// }
-
-// const gpu = navigator.gpu
-// document.body.innerHTML = '<h1>Hello WebGPU</h1>'
-
-// // WebGPU的大部分API都是异步API
-// async function initWebGPU() {
-//     const adapter = await navigator.gpu.requestAdapter()
-//     if(!adapter) {
-//         throw new Error('No adapter found.')
-//     }
-//     const device = await adapter.requestDevice()
-//     return adapter
-// }

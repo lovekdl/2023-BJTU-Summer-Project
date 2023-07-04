@@ -1,5 +1,3 @@
-//!include testShader.wgsl
-
 @group(0) @binding(1) var<storage> mvp: array<mat4x4<f32>>;
 
 struct VertexOutput {
@@ -19,6 +17,6 @@ fn main(
     var out: VertexOutput;
     out.position = mvp[index] * position;
     out.fragPosition = (position + 2 * vec4(1.0)) / 3;
-    out.fragUV = aFunc(uv);
+    out.fragUV = uv;
     return out;
 }
