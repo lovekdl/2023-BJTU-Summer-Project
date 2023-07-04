@@ -10,7 +10,10 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@material-ui/core": "^4.12.4",
+    "@material-ui/icons": "^4.11.3",
     "framer-motion": "^10.12.18",
+    "material-ui": "^0.20.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-redux": "^7.2.8",

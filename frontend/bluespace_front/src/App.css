@@ -40,6 +40,10 @@
 .read-the-docs {
   color: #888;
 }
+
+
+
+
 body {
   --black: #000000;
   --ash-black: #222;
@@ -60,7 +64,8 @@ body {
   margin: 0;
   padding: 0;
   background-color: var(--background);
-  color: var(--accent);
+  color: var(--black);
+  
 }
 
 * {
@@ -204,21 +209,19 @@ section > div {
   overflow: hidden;
 }
 
-img {
-  position: absolute;
+
+.menu {
+  position: fixed;
   top: 0;
   left: 0;
-  right: 0;
-  bottom: 0;
-  width: 100%;
-  height: 100%;
-}
-
-.progress {
-  position: fixed;
-  left: 0;
-  right: 0;
-  height: 5px;
+  right:0;
+  height:5vh;
   background: var(--accent);
-  bottom: 100px;
+  
+  /* transform: translateX(-100%);
+  will-change: transform; */
+}
+.menu2 {
+  padding-top: 100px;
+  height:100vh;
 }
