@@ -27,6 +27,7 @@ class BlueSpaceRenderer {
     // ===== ===== ===== Renderer Properties ===== ===== =====
 
     private haveSetup: boolean = false
+    private haveRun:   boolean = false
     // created when initWebGPU
     private device?: GPUDevice = undefined
     private context?: GPUCanvasContext = undefined
@@ -73,11 +74,7 @@ class BlueSpaceRenderer {
     private COMMON_SPEED: number = 0.01
     private POSITION_RANGE: number = 50
 
-    // ===== ===== ===== Constructor ===== ===== =====
-
-    private randomRange(L: number, R: number) {
-        return Math.random() * (R - L) + L
-    }
+    // ===== ===== ===== Public Methods ===== ===== =====
 
     constructor() {
         // ===== Camera =====
@@ -169,6 +166,99 @@ class BlueSpaceRenderer {
         }
         requestAnimationFrame(frame)
 
+        this.haveRun = true;
+    }
+
+    
+
+    // ===== ===== ===== Private Methods ===== ===== =====
+
+    /**
+     * 随机一个[L, R]的实数
+     */
+    private randomRange(L: number, R: number) {
+        return Math.random() * (R - L) + L
+    }
+
+    /**
+     * 随机一个二维符合正态分布的坐标
+     */
+    private randomNormalDist(mean: number, variance: number): {x: number, y: number} {
+        let u1 = 1 - Math.random(); // (0, 1]
+        let u2 = 1 - Math.random();
+        u1 = Math.sqrt(-2.0 * Math.log(u1))
+        u2 = 2.0 * Math.PI * u2
+        let z1 = u1 * Math.cos(u2); // random normal (0, 1)
+        let z2 = u1 * Math.sin(u2);
+        return {
+            x: z1 * variance + mean,
+            y: z2 * variance + mean,
+        }
+    }
+
+
+    /**
+     * 根据angle, u, a, b生成一个等角螺线上的一个随机点（无正态分布)
+     */
+    private equaiangularSpiral(angle: number, u: number, a: number, b: number): {x: number, y: number} {
+        const f = a * Math.pow(Math.E, b * u)
+        return {
+            x: d * Math.cos(u + angle),
+            y: d * Math.sin(u + angle),
+        }
+    }
+
+    /**
+     * 在银河系4条旋臂的基础上，随机出n个位置
+     */
+    private randomGalaxyStarPositions(num: number): Array<{x:number, y:number, z:number}> {
+        const L = -2.0 * Math.PI
+        const R = 2.0 * Math.PI
+        const deltaSpiral = Math.floor(num / 4)
+        const deltaStar = Math.floor((R - L) / deltaSpiral)
+
+        let positions = new Array(num)
+        let idx = 0;
+        for(let i = 0; i <= 3; i++) { // 枚举每条旋臂
+            let t = L
+            const angle = i * Math.PI / 2.0
+            for(let j = 0; j < delta; j++) { // 枚举旋臂上的每个位置
+                
+                const origin = equaiangularSpiral(angle, t, 0.75 * 100, 0.4)
+                const delta = {
+                    x: randomNormalDist().x,
+                    y: randomNormalDist().x,
+                    z: randomNormalDist().x,
+                }
+
+                positions[idx] = {
+                    x: origin.x + delta.x,
+                    y: 0        + delta.y,
+                    z: origin.y + delta.z,
+                }
+
+                // update
+                idx++
+                t += deltaStar
+            }
+        }
+
+        for(; idx < num; idx++) {
+            const origin = equaiangularSpiral(0, 0, 0.75 * 100, 0.4)
+            const delta = {
+                x: randomNormalDist().x,
+                y: randomNormalDist().x,
+                z: randomNormalDist().x,
+            }
+
+            positions[idx] = {
+                x: origin.x + delta.x,
+                y: 0        + delta.y,
+                z: origin.y + delta.z,
+            }
+        }
+        
+        return positions
     }
 
     // ===== 关于renderPass的效率问题 =====
