@@ -166,8 +166,9 @@ class BlueSpaceRenderer {
             that.device!.queue.writeBuffer(that.modelMatrixBuffer!, 0, that.modelMatrixArray)
             that.draw()
             
-            that.phi += Math.PI / 300
+            that.camera.phi += Math.PI / 3600
             that.camera.rotateInSpherical()
+            that.device!.queue.writeBuffer(that.viewMatrixBuffer!, 0, (that.camera.viewMatrix) as Float32Array)
 
             // console.log("draw")
 
@@ -264,6 +265,18 @@ class BlueSpaceRenderer {
                 z: origin.y + delta.z,
             }
         }
+
+        // let sum = {x: 0, y: 0, z: 0}
+        // for(let i = 0; i < num; i++) {
+        //     sum.x += positions[i].x
+        //     sum.y += positions[i].y
+        //     sum.z += positions[i].z
+        //     // console.log(i + ": " + positions[i].x + ", " + positions[i].y + ", " + positions[i].z)
+        // }
+        // sum.x /= num
+        // sum.y /= num
+        // sum.z /= num
+        // console.log("sum: " + sum.x + ", " + sum.y + ", " + sum.z)
         
         return positions
     }
