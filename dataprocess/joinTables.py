@@ -1,3 +1,4 @@
+# 将添加标签后的宜居星球数据与非宜居星球数据放入一个表格
 import pandas as pd
 df1 = pd.read_excel("../dataset/Habitable_exoplanet_withlabel.xlsx")
 df2 = pd.read_excel("../dataset/Unhabitable_exoplanet_withlabel.xlsx")
