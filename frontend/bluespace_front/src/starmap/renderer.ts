@@ -2,7 +2,7 @@ import vertexShaderRaw from "./shaders/myShader.vert.wgsl?raw"
 import fragmentShaderRaw from "./shaders/myShader.frag.wgsl?raw"
 import shaderRaw from "./shaders/myShader.wgsl?raw"
 import * as sphere from "./util/sphere"
-import { mat4 } from 'gl-matrix'
+import { mat4, vec3 } from 'gl-matrix'
 
 import { Camera } from './camera'
 import { Planet } from './planet'
@@ -69,7 +69,7 @@ class BlueSpaceRenderer {
 
     private PERSPECTIVE_FOVY: number = Math.PI / 2
     private PERSPECTIVE_NEAR: number = 0.1
-    private PERSPECTIVE_FAR: number = 3000
+    private PERSPECTIVE_FAR: number = 10000
 
     private COMMON_SPEED: number = 0.01
     private POSITION_RANGE: number = 50
@@ -81,16 +81,19 @@ class BlueSpaceRenderer {
         this.camera = new Camera()
 
         // ===== Load Planets =====
-        this.numOfPlanets = 1000
+        this.numOfPlanets = 10000
         this.planets = new Array<Planet>(this.numOfPlanets)
+
+        const positions = this.randomGalaxyStarPositions(this.numOfPlanets)
 
         for(let i = 0; i < this.planets.length; i++) {
             this.planets[i] = new Planet(
-                {
-                    x: this.randomRange(-this.POSITION_RANGE, this.POSITION_RANGE),
-                    y: this.randomRange(-this.POSITION_RANGE, this.POSITION_RANGE),
-                    z: this.randomRange(-this.POSITION_RANGE, 0) - 50,
-                }, {
+                // {
+                //     x: this.randomRange(-this.POSITION_RANGE, this.POSITION_RANGE),
+                //     y: this.randomRange(-this.POSITION_RANGE, this.POSITION_RANGE),
+                //     z: this.randomRange(-this.POSITION_RANGE, 0) - 50,
+                // }, {
+                positions[i], {
                     x: this.randomRange(-3.14, 3.14),
                     y: this.randomRange(-3.14, 3.14),
                     z: this.randomRange(-3.14, 3.14),
@@ -131,11 +134,14 @@ class BlueSpaceRenderer {
         )
 
         // ===== Load View Matrix & Projection Matrix =====
-        // that.device!.queue.writeBuffer(that.viewMatrixBuffer!, 0, this.camera.viewMatrix as Float32Array)
-        that.device!.queue.writeBuffer(that.viewMatrixBuffer!, 0, (mat4.create()) as Float32Array)
+        // this.camera.position = vec3.fromValues(0, 1000, 0)
+        // this.camera.gaze = vec3.fromValues(0, -1, 0)
+        // this.camera.up = vec3.fromValues(0, 0, -1)
+        this.camera.rotateInSpherical()
+        that.device!.queue.writeBuffer(that.viewMatrixBuffer!, 0, (this.camera.viewMatrix) as Float32Array)
         that.device!.queue.writeBuffer(that.projectionMatrixBuffer!, 0, this.projectionMatrix as Float32Array)
         
-        console.log("viewMatrix: " + mat4.create())
+        console.log("viewMatrix: " + this.camera.viewMatrix)
         console.log("projectionMatrix: " + this.projectionMatrix)
 
         // 初始化完毕
@@ -159,6 +165,9 @@ class BlueSpaceRenderer {
             }
             that.device!.queue.writeBuffer(that.modelMatrixBuffer!, 0, that.modelMatrixArray)
             that.draw()
+            
+            that.phi += Math.PI / 300
+            that.camera.rotateInSpherical()
 
             // console.log("draw")
 
@@ -203,8 +212,8 @@ class BlueSpaceRenderer {
     private equaiangularSpiral(angle: number, u: number, a: number, b: number): {x: number, y: number} {
         const f = a * Math.pow(Math.E, b * u)
         return {
-            x: d * Math.cos(u + angle),
-            y: d * Math.sin(u + angle),
+            x: f * Math.cos(u + angle),
+            y: f * Math.sin(u + angle),
         }
     }
 
@@ -212,23 +221,25 @@ class BlueSpaceRenderer {
      * 在银河系4条旋臂的基础上，随机出n个位置
      */
     private randomGalaxyStarPositions(num: number): Array<{x:number, y:number, z:number}> {
-        const L = -2.0 * Math.PI
+        const L = -1.5 * Math.PI
         const R = 2.0 * Math.PI
         const deltaSpiral = Math.floor(num / 4)
-        const deltaStar = Math.floor((R - L) / deltaSpiral)
+        const deltaStar = (R - L) / deltaSpiral
+        const NORMAL_DIST_VARIANCE = 20
+        const SPIRAL_SIZE = 100
 
         let positions = new Array(num)
         let idx = 0;
         for(let i = 0; i <= 3; i++) { // 枚举每条旋臂
             let t = L
             const angle = i * Math.PI / 2.0
-            for(let j = 0; j < delta; j++) { // 枚举旋臂上的每个位置
+            for(let j = 0; j < deltaSpiral; j++, idx++, t += deltaStar) { // 枚举旋臂上的每个位置
                 
-                const origin = equaiangularSpiral(angle, t, 0.75 * 100, 0.4)
+                const origin = this.equaiangularSpiral(angle, t, SPIRAL_SIZE, 0.4)
                 const delta = {
-                    x: randomNormalDist().x,
-                    y: randomNormalDist().x,
-                    z: randomNormalDist().x,
+                    x: this.randomNormalDist(0, NORMAL_DIST_VARIANCE).x,
+                    y: this.randomNormalDist(0, NORMAL_DIST_VARIANCE).x,
+                    z: this.randomNormalDist(0, NORMAL_DIST_VARIANCE).x,
                 }
 
                 positions[idx] = {
@@ -236,19 +247,15 @@ class BlueSpaceRenderer {
                     y: 0        + delta.y,
                     z: origin.y + delta.z,
                 }
-
-                // update
-                idx++
-                t += deltaStar
             }
         }
 
         for(; idx < num; idx++) {
-            const origin = equaiangularSpiral(0, 0, 0.75 * 100, 0.4)
+            const origin = this.equaiangularSpiral(0, 0, SPIRAL_SIZE, 0.4)
             const delta = {
-                x: randomNormalDist().x,
-                y: randomNormalDist().x,
-                z: randomNormalDist().x,
+                x: this.randomNormalDist(0, NORMAL_DIST_VARIANCE).x,
+                y: this.randomNormalDist(0, NORMAL_DIST_VARIANCE).x,
+                z: this.randomNormalDist(0, NORMAL_DIST_VARIANCE).x,
             }
 
             positions[idx] = {

@@ -15,6 +15,10 @@ class Camera {
     private internalUp: vec3 = vec3.fromValues(0, 1, 0)
     private internalViewMatrix: mat4
 
+    theta: number = 0
+    phi: number = 0
+    r: number = 1000
+
     // constructor
     constructor() {
         this.internalViewMatrix = this.getViewMatrix()
@@ -55,6 +59,28 @@ class Camera {
         this.internalViewMatrix = viewMatrix
     }
 
+    // 在球坐标系上旋转
+    // 此函数会根据输入的参数，自动设置position, gaze, up，并修改View Matrix
+    rotateInSpherical(theta?: number, phi?: number, radius?: number) {
+        if(!theta || !phi || !radius) {
+            theta = this.theta
+            phi = this.phi
+            radius = this.radius
+        }
+        const x = Math.sin(theta) * Math.cos(phi)
+        const y = Math.cos(theta)
+        const z = Math.sin(theta) * Math.sin(phi)
+        const v = Math.sqrt(x * x + z * z)
+
+        this.position = vec3.fromValues(r * x, r * y, r * z)
+        this.gaze = vec3.fromValues(-x, -y, -z)
+        if(Math.abs(theta - Math.PI/2) <= 1e-5) {
+            this.up = vec3.fromValues(0, 1, 0)
+        } else {
+            this.up = vec3.fromValues(-x*y/v, v, -z*y/v)
+        }
+    }
+
     // 通过Camera的position, gaze, up得到viewMatrix
     private getViewMatrix(): mat4 {
         let viewMatrix: mat4 = mat4.create()
@@ -67,7 +93,7 @@ class Camera {
             this.position[0], this.position[1], this.position[2], 1
         )
         let gxt: vec3 = vec3.create()
-        vec3.multiply(gxt, this.gaze, this.up)
+        vec3.cross(gxt, this.gaze, this.up)
         const Rview: mat4 = mat4.fromValues(
             gxt[0], gxt[1], gxt[2], 0,
             this.up[0], this.up[1], this.up[2], 0,
@@ -77,6 +103,7 @@ class Camera {
         mat4.multiply(viewMatrix, Rview, Tview)
         return viewMatrix
     }
+
 }
 
 export { Camera }
