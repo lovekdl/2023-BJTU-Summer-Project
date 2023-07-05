@@ -78,3 +78,5 @@ class Camera {
         return viewMatrix
     }
 }
+
+export { Camera }

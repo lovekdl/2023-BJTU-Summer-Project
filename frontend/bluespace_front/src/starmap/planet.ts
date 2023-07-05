@@ -17,7 +17,6 @@ import { mat4, vec3 } from 'gl-matrix'
 class Planet {
     // rendering property
     private internalModelMatrix: mat4 = mat4.create()
-    // planet property
 
     // constructor
     constructor(
@@ -54,6 +53,7 @@ class Planet {
 
     // update model matrix
     updateModelMatrix() {
+        this.internalModelMatrix = mat4.create()
         // translate
         mat4.translate(this.internalModelMatrix, this.internalModelMatrix, vec3.fromValues(this.position.x, this.position.y, this.position.z))
         // rotate
@@ -65,9 +65,11 @@ class Planet {
     }
 
     // create planet
-    static createPlanet(
+    // static createPlanet(
         
-    ): Planet {
+    // ): Planet {
         
-    }
+    // }
 }
+
+export { Planet }

@@ -7,10 +7,6 @@ import { LoginForm } from "./authority";
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import { MainComponent } from "./main/index";
 
-
-
-
-
 export default function App() {
   return (
     <Router>
