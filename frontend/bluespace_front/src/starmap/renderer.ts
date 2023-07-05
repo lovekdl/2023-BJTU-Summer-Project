@@ -65,6 +65,10 @@ class BlueSpaceRenderer {
 
     private projectionMatrix: mat4 = mat4.create()
 
+    // ===== ===== ===== Mode ===== ===== =====
+    
+    // private renderingMode: string
+
     // ===== ===== ===== Constants ===== ===== =====
 
     // 透视矩阵相关
@@ -97,11 +101,6 @@ class BlueSpaceRenderer {
 
         for(let i = 0; i < this.planets.length; i++) {
             this.planets[i] = new Planet(
-                // {
-                //     x: this.randomRange(-this.POSITION_RANGE, this.POSITION_RANGE),
-                //     y: this.randomRange(-this.POSITION_RANGE, this.POSITION_RANGE),
-                //     z: this.randomRange(-this.POSITION_RANGE, 0) - 50,
-                // }, {
                 positions[i], {
                     x: this.randomRange(-3.14, 3.14),
                     y: this.randomRange(-3.14, 3.14),
