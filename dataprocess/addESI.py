@@ -13,7 +13,7 @@ def esi(s, r):
     esi = 1 - math.sqrt(0.5 * (p1 + p2))
     return esi
 
-# 定义一个新的函数，捕获ZeroDivisionError异常，并为ESI列赋-1值
+# 定义一个新的函数，捕获ZeroDivisionError异常，并为错误的ESI列赋-1值
 def esi_safe(x):
     try:
         return esi(x["pl_insol"], x['pl_rade'] * 6371)
