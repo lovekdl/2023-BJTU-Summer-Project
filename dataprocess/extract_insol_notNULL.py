@@ -1,4 +1,4 @@
-# 导入pandas库
+# 选取pl_insol列非空的行
 import pandas as pd
 
 # 读取xlsx表格文件
