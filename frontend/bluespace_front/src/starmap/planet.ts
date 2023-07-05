@@ -18,6 +18,27 @@ class Planet {
     // rendering property
     private internalModelMatrix: mat4 = mat4.create()
 
+    // ===== ===== ===== Constants ===== ===== =====
+
+    /**
+     * Star Shader Types
+     * 
+     * 恒星共有7种，分别为OBAFGKM
+     */
+    static readonly STAR_SHADER_TYPE_MIN: number = 1
+    static readonly STAR_SHADER_TYPE_MAX: number = 7
+    static readonly STAR_SHADER_TYPE_O: number = 1
+    static readonly STAR_SHADER_TYPE_B: number = 2
+    static readonly STAR_SHADER_TYPE_A: number = 3
+    static readonly STAR_SHADER_TYPE_F: number = 4
+    static readonly STAR_SHADER_TYPE_G: number = 5
+    static readonly STAR_SHADER_TYPE_K: number = 6
+    static readonly STAR_SHADER_TYPE_M: number = 7
+
+    static readonly STAR_SCALE: Array<number> = [
+        0.0, 6.0, 4.0, 2.0, 1.75, 1.5, 1.25, 1.0
+    ]
+
     // constructor
     constructor(
         public position: {x: number, y: number, z: number},
@@ -64,12 +85,25 @@ class Planet {
         mat4.scale(this.internalModelMatrix, this.internalModelMatrix, vec3.fromValues(this.scale.x, this.scale.y, this.scale.z))
     }
 
-    // create planet
-    // static createPlanet(
-        
-    // ): Planet {
-        
-    // }
+    // create a planet
+    static createPlanet(
+        position: {x: number, y: number, z: number},
+        rotation: {x: number, y: number, z: number},
+        rotationSpeed: {x: number, y: number, z: number},
+        starShaderType: number
+    ): Planet {
+        const t = starShaderType
+        return new Planet(
+            position,
+            rotation,
+            rotationSpeed,
+            {x: this.STAR_SCALE[t], y: this.STAR_SCALE[t], z: this.STAR_SCALE[t]},
+            Math.max(this.STAR_SHADER_TYPE_MIN, Math.min(this.STAR_SHADER_TYPE_MAX, t)),
+            1,
+            1,
+            1
+        )
+    }
 }
 
 export { Planet }

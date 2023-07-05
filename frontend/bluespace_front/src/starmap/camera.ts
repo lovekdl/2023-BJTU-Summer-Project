@@ -15,12 +15,8 @@ class Camera {
     private internalUp: vec3 = vec3.fromValues(0, 1, 0)
     private internalViewMatrix: mat4
 
-    theta: number = Math.PI / 10 * 4
-    phi: number = 0
-    radius: number = 1000
-
     // constructor
-    constructor() {
+    constructor(public theta: number, public phi: number, public radius: number) {
         this.internalViewMatrix = this.lookAtOrigin()
     }
 
@@ -88,9 +84,9 @@ class Camera {
             this.up = vec3.fromValues(-x*y/v, v, -z*y/v)
         }
 
-        console.log("position: " + this.position)
-        console.log("gaze: " + this.gaze)
-        console.log("up: " + this.up)
+        // console.log("position: " + this.position)
+        // console.log("gaze: " + this.gaze)
+        // console.log("up: " + this.up)
     }
 
     // 通过Camera的position, gaze, up得到viewMatrix

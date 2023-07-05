@@ -1,6 +1,4 @@
-import vertexShaderRaw from "./shaders/myShader.vert.wgsl?raw"
-import fragmentShaderRaw from "./shaders/myShader.frag.wgsl?raw"
-import shaderRaw from "./shaders/myShader.wgsl?raw"
+import shaderRaw from "./shader.wgsl?raw"
 import * as sphere from "./util/sphere"
 import { mat4, vec3 } from 'gl-matrix'
 
@@ -37,11 +35,15 @@ class BlueSpaceRenderer {
     // created when initPipeline
     private pipeline?: GPURenderPipeline = undefined
 
-    // created when initBuffer
+    // created when initBuffer (Buffer & Array)
     private sphereBuffer?: {vertex: GPUBuffer, index: GPUBuffer, numOfVertex: number, numOfIndex: number} = undefined
     private modelMatrixBuffer?: GPUBuffer = undefined
     private viewMatrixBuffer?: GPUBuffer = undefined
     private projectionMatrixBuffer?: GPUBuffer = undefined
+    private starShaderTypeBuffer?: GPUBuffer = undefined
+
+    private modelMatrixArray: Float32Array = new Float32Array()
+    private starShaderTypeArray: Float32Array = new Float32Array()
 
     // created when initTexture
     private depthTexture?: GPUTexture = undefined
@@ -54,8 +56,6 @@ class BlueSpaceRenderer {
     private transformGroup?: GPUBindGroup = undefined
     private textureGroup?: GPUBindGroup = undefined
 
-    // Transform Matrix Buffer Array
-    private modelMatrixArray: Float32Array = new Float32Array()
 
     // ===== ===== ===== Data Properties ===== ===== =====
 
@@ -71,51 +71,58 @@ class BlueSpaceRenderer {
 
     // ===== ===== ===== Constants ===== ===== =====
 
+    // 摄像机(View矩阵)相关
+    private readonly CAMERA_THETA: number = Math.PI / 9 * 2
+    private readonly CAMERA_PHI: number = 0
+    private readonly CAMERA_RADIUS: number = 1000
+
     // 透视矩阵相关
-    private PERSPECTIVE_FOVY: number = Math.PI / 2
-    private PERSPECTIVE_NEAR: number = 0.1
-    private PERSPECTIVE_FAR: number = 10000
+    private readonly PERSPECTIVE_FOVY: number = Math.PI / 2
+    private readonly PERSPECTIVE_NEAR: number = 0.1
+    private readonly PERSPECTIVE_FAR: number = 10000
 
     // 星球生成相关
-    private COMMON_SPEED: number = 0.01
-    private POSITION_RANGE: number = 50
+    private readonly COMMON_SPEED: number = 0.01
+    private readonly POSITION_RANGE: number = 50
 
     // 旋臂分布相关
-    private NORMAL_DIST_VARIANCE = 20
-    private SPIRAL_SIZE = 100
+    private readonly NORMAL_DIST_VARIANCE = 70
+    private readonly SPIRAL_SIZE = 100
+    private readonly SPIRAL_L = -0.3 * Math.PI
+    private readonly SPIRAL_R = 2.5 * Math.PI
 
     // Update相关
-    private ROTATION_SPEED = Math.PI / 3600
+    private readonly ROTATION_SPEED = Math.PI / 3600
 
     // ===== ===== ===== Public Methods ===== ===== =====
 
     constructor() {
         // ===== Camera =====
-        this.camera = new Camera()
+        this.camera = new Camera(this.CAMERA_THETA, this.CAMERA_PHI, this.CAMERA_RADIUS)
 
         // ===== Load Planets =====
-        this.numOfPlanets = 10000
+        this.numOfPlanets = 20000
         this.planets = new Array<Planet>(this.numOfPlanets)
 
-        const positions = this.randomGalaxyStarPositions(this.numOfPlanets)
 
-        for(let i = 0; i < this.planets.length; i++) {
-            this.planets[i] = new Planet(
-                positions[i], {
-                    x: this.randomRange(-3.14, 3.14),
-                    y: this.randomRange(-3.14, 3.14),
-                    z: this.randomRange(-3.14, 3.14),
-                }, {
-                    x: this.randomRange(-1.0, 1.0) * this.COMMON_SPEED,
-                    y: this.randomRange(-1.0, 1.0) * this.COMMON_SPEED,
-                    z: this.randomRange(-1.0, 1.0) * this.COMMON_SPEED,
-                }, {
-                    x: 1,
-                    y: 1,
-                    z: 1,
-                }, 1, 1, 1, 1
-            )
-        }
+        this.planets = this.randomGalaxyStar(this.numOfPlanets)
+
+        // const positions = this.randomGalaxyStar(this.numOfPlanets)
+        // for(let i = 0; i < this.planets.length; i++) {
+        //     this.planets[i] = Planet.createPlanet(
+        //         positions[i], {
+        //             x: this.randomRange(-3.14, 3.14),
+        //             y: this.randomRange(-3.14, 3.14),
+        //             z: this.randomRange(-3.14, 3.14),
+        //         }, {
+        //             x: this.randomRange(-1.0, 1.0) * this.COMMON_SPEED,
+        //             y: this.randomRange(-1.0, 1.0) * this.COMMON_SPEED,
+        //             z: this.randomRange(-1.0, 1.0) * this.COMMON_SPEED,
+        //         },
+        //         Planet.STAR_SHADER_TYPE_G
+        //     )
+        //     // console.log(this.planets[i].starShaderType)
+        // }
     }
 
     /**
@@ -151,6 +158,17 @@ class BlueSpaceRenderer {
         
         console.log("viewMatrix: " + this.camera.viewMatrix)
         console.log("projectionMatrix: " + this.projectionMatrix)
+        
+        // ===== Load Planets to GPU =====
+        for(let i = 0; i < that.planets.length; i++) {
+            that.planets[i].update()
+            that.modelMatrixArray.set(that.planets[i].modelMatrix as Float32Array, 4 * 4 * i)
+            that.starShaderTypeArray.set(Float32Array.from([that.planets[i].starShaderType]), i)
+        }
+        that.device!.queue.writeBuffer(that.modelMatrixBuffer!, 0, that.modelMatrixArray)
+        that.device!.queue.writeBuffer(that.starShaderTypeBuffer!, 0, that.starShaderTypeArray)
+
+        console.log(that.starShaderTypeArray)
 
         // 初始化完毕
         this.haveSetup = true
@@ -167,18 +185,17 @@ class BlueSpaceRenderer {
 
         // ===== Animation & Rendering =====
         function frame() {
-            for(let i = 0; i < that.planets.length; i++) {
-                that.planets[i].update()
-                that.modelMatrixArray.set((that.planets[i].modelMatrix as Float32Array), 4 * 4 * i)
-            }
-            that.device!.queue.writeBuffer(that.modelMatrixBuffer!, 0, that.modelMatrixArray)
-            that.draw()
+            // for(let i = 0; i < that.planets.length; i++) {
+            //     that.planets[i].update()
+            //     that.modelMatrixArray.set((that.planets[i].modelMatrix as Float32Array), 4 * 4 * i)
+            // }
+            // that.device!.queue.writeBuffer(that.modelMatrixBuffer!, 0, that.modelMatrixArray)
             
             that.camera.phi += that.ROTATION_SPEED
             that.camera.rotateInSpherical()
             that.device!.queue.writeBuffer(that.viewMatrixBuffer!, 0, (that.camera.viewMatrix) as Float32Array)
 
-            // console.log("draw")
+            that.draw()
 
             requestAnimationFrame(frame)
         }
@@ -229,13 +246,13 @@ class BlueSpaceRenderer {
     /**
      * 在银河系4条旋臂的基础上，随机出n个位置
      */
-    private randomGalaxyStarPositions(num: number): Array<{x:number, y:number, z:number}> {
-        const L = -1.5 * Math.PI
-        const R = 2.0 * Math.PI
+    private randomGalaxyStar(num: number): Array<Planet> {
+        const L = this.SPIRAL_L
+        const R = this.SPIRAL_R
         const deltaSpiral = Math.floor(num / 4)
         const deltaStar = (R - L) / deltaSpiral
 
-        let positions = new Array(num)
+        let planets = new Array(num)
         let idx = 0;
         for(let i = 0; i <= 3; i++) { // 枚举每条旋臂
             let t = L
@@ -249,27 +266,38 @@ class BlueSpaceRenderer {
                     z: this.randomNormalDist(0, this.NORMAL_DIST_VARIANCE).x,
                 }
 
-                positions[idx] = {
+                let position = {
                     x: origin.x + delta.x,
                     y: 0        + delta.y,
                     z: origin.y + delta.z,
                 }
+
+                let type = this.randomRange(0, 1)
+
+                planets[idx] = Planet.createPlanet(
+                    position, {
+                        x: this.randomRange(-3.14, 3.14),
+                        y: this.randomRange(-3.14, 3.14),
+                        z: this.randomRange(-3.14, 3.14),
+                    }, {
+                        x: this.randomRange(-1.0, 1.0) * this.COMMON_SPEED,
+                        y: this.randomRange(-1.0, 1.0) * this.COMMON_SPEED,
+                        z: this.randomRange(-1.0, 1.0) * this.COMMON_SPEED,
+                    },
+                    (type <= 0.002) ? (Planet.STAR_SHADER_TYPE_O) :
+                    (type <= 0.004) ? (Planet.STAR_SHADER_TYPE_B) :
+                    (type <= 0.012) ? (Planet.STAR_SHADER_TYPE_A) :
+                    (type <= 0.060) ? (Planet.STAR_SHADER_TYPE_F) :
+                    (type <= 0.143) ? (Planet.STAR_SHADER_TYPE_G) :
+                    (type <= 0.242) ? (Planet.STAR_SHADER_TYPE_K) :
+                    (Planet.STAR_SHADER_TYPE_M)
+                )
+                
+
             }
         }
 
-        // let sum = {x: 0, y: 0, z: 0}
-        // for(let i = 0; i < num; i++) {
-        //     sum.x += positions[i].x
-        //     sum.y += positions[i].y
-        //     sum.z += positions[i].z
-        //     // console.log(i + ": " + positions[i].x + ", " + positions[i].y + ", " + positions[i].z)
-        // }
-        // sum.x /= num
-        // sum.y /= num
-        // sum.z /= num
-        // console.log("sum: " + sum.x + ", " + sum.y + ", " + sum.z)
-        
-        return positions
+        return planets
     }
 
     // ===== 关于renderPass的效率问题 =====
@@ -449,16 +477,19 @@ class BlueSpaceRenderer {
     }
 
     /**
-     * 初始化Buffer
+     * 初始化Buffer&Array
+     * 
+     * UniformBuffer适用于只读的小数据
+     * StorageBuffer适用于大数据，且在Shader中可以被修改
      * 
      * Buffer目前我知道的有两种用法：
      * 第一种是用于表示Vertex/Index，在RenderPass中设置
      * 第二种是用于表示一些全局变量，绑定在BindGroup中
      */
     private async initBuffer() {
-        const that: BlueSpaceRenderer = this
+        const that = this
 
-        // models
+        // ===== Models =====
         this.sphereBuffer = {
             vertex: that.device!.createBuffer({
                 label: 'GPUBuffer stores vertex',
@@ -476,7 +507,7 @@ class BlueSpaceRenderer {
         that.device!.queue.writeBuffer(that.sphereBuffer!.vertex, 0, sphere.vertex)
         that.device!.queue.writeBuffer(that.sphereBuffer!.index, 0, sphere.index)
 
-        // MVP Matrix Buffer
+        // ===== MVP Matrix Buffer =====
         this.modelMatrixBuffer = that.device!.createBuffer({
             size: 4 * 4 * 4 * that.numOfPlanets,
             usage: GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_DST,
@@ -490,8 +521,15 @@ class BlueSpaceRenderer {
             usage: GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_DST,
         })
 
-        // Model Matrix Array
+        // ===== Model Matrix Array =====
         this.modelMatrixArray = new Float32Array(4 * 4 * that.numOfPlanets)
+
+        // ===== Star Shader Type =====
+        this.starShaderTypeBuffer = that.device!.createBuffer({
+            size: 4 * that.numOfPlanets,
+            usage: GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_DST,
+        })
+        this.starShaderTypeArray = new Float32Array(that.numOfPlanets)
     }
 
     /**
@@ -557,7 +595,7 @@ class BlueSpaceRenderer {
 
         // 绑定变换矩阵的Group
         this.transformGroup = this.device!.createBindGroup({
-            label: 'Transform Group with MVP Matrix Buffer',
+            label: 'MVP Matrix Buffer & Other Buffer',
             layout: that.pipeline!.getBindGroupLayout(0),
             entries: [{
                 binding: 0,
@@ -573,6 +611,11 @@ class BlueSpaceRenderer {
                 binding: 2,
                 resource: {
                     buffer: that.projectionMatrixBuffer!,
+                }
+            }, {
+                binding: 3,
+                resource: {
+                    buffer: that.starShaderTypeBuffer!,
                 }
             }]
         })
