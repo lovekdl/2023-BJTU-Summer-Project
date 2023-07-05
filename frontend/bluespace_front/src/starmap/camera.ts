@@ -15,13 +15,13 @@ class Camera {
     private internalUp: vec3 = vec3.fromValues(0, 1, 0)
     private internalViewMatrix: mat4
 
-    theta: number = 0
+    theta: number = Math.PI / 10 * 4
     phi: number = 0
-    r: number = 1000
+    radius: number = 1000
 
     // constructor
     constructor() {
-        this.internalViewMatrix = this.getViewMatrix()
+        this.internalViewMatrix = this.lookAtOrigin()
     }
 
     // position
@@ -30,7 +30,7 @@ class Camera {
     }
     set position(position: vec3) {
         this.internalPosition = position
-        this.internalViewMatrix = this.getViewMatrix()
+        this.internalViewMatrix = this.lookAtOrigin()
     }
 
     // gaze
@@ -39,7 +39,7 @@ class Camera {
     }
     set gaze(gaze: vec3) {
         this.internalGaze = gaze
-        this.internalViewMatrix = this.getViewMatrix()
+        this.internalViewMatrix = this.lookAtOrigin()
     }
 
     // up
@@ -48,7 +48,7 @@ class Camera {
     }
     set up(up: vec3) {
         this.internalUp = up
-        this.internalViewMatrix = this.getViewMatrix()
+        this.internalViewMatrix = this.lookAtOrigin()
     }
 
     // view matrix
@@ -72,13 +72,25 @@ class Camera {
         const z = Math.sin(theta) * Math.sin(phi)
         const v = Math.sqrt(x * x + z * z)
 
+        // console.log("theta: " + theta + "; phi: " + phi + "; radius: " + radius)
+        // console.log("x: " + x)
+        // console.log("y: " + y)
+        // console.log("z: " + z)
+        // console.log("v: " + v)
+
         this.position = vec3.fromValues(radius * x, radius * y, radius * z)
         this.gaze = vec3.fromValues(-x, -y, -z)
         if(Math.abs(theta - Math.PI/2) <= 1e-5) {
             this.up = vec3.fromValues(0, 1, 0)
+        } else if(Math.abs(v) <= 1e-5) {
+            this.up = vec3.fromValues(-Math.cos(phi), 0, -Math.sin(phi))
         } else {
             this.up = vec3.fromValues(-x*y/v, v, -z*y/v)
         }
+
+        console.log("position: " + this.position)
+        console.log("gaze: " + this.gaze)
+        console.log("up: " + this.up)
     }
 
     // 通过Camera的position, gaze, up得到viewMatrix
@@ -102,6 +114,40 @@ class Camera {
         )
         mat4.multiply(viewMatrix, Rview, Tview)
         return viewMatrix
+    }
+
+    // 通过Camera的position, gaze, up得到viewMatrix 【版本2】
+    private lookAtOrigin(): mat4 {
+        const that = this
+
+        let F = vec3.create()
+        {
+            vec3.subtract(F, that.position, vec3.create())
+            vec3.normalize(F, F)
+        }
+
+        let R = vec3.create()
+        {
+            vec3.cross(R, vec3.fromValues(0, 1, 0), F)
+            vec3.normalize(R, R)
+        }
+
+        let U = vec3.create()
+        {
+            vec3.cross(U, F, R)
+            vec3.normalize(U, U)
+        }
+
+        let t = vec3.create()
+        t[0] = vec3.dot(this.position, R)
+        t[1] = vec3.dot(this.position, U)
+        t[2] = vec3.dot(this.position, F)
+        return mat4.fromValues(
+            R[0], U[0], F[0], 0,
+            R[1], U[1], F[1], 0,
+            R[2], U[2], F[2], 0,
+            -t[0], -t[1], -t[2], 1
+        )
     }
 
 }
