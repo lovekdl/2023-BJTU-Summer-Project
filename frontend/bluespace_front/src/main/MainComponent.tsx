@@ -16,11 +16,11 @@ function MainComponent({ id }: { id: number }) {
       <div className="placeholder"></div>
       <div className="good">
         {id === 1 ? (
-          <section>
+          <section className="innerSection">
           <StarMap></StarMap> 
           </section>
         ) : (
-          <section>
+          <section className="innerSection">
             {'page: ' + id}
             
           </section>

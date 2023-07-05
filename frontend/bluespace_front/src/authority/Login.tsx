@@ -3,18 +3,25 @@ import "./authority.style.css"
 import logo from '../assets/logo.png'
 import { useStore } from '../store';
 import { useNavigate } from 'react-router-dom';
-
+import Scrolls from "./scroll";
 import { motion } from "framer-motion";
 import { observer } from 'mobx-react-lite';
 import qq from '../assets/QQ.png'
 import wechat from '../assets/WeChat.png'
+import Stars from './stars';
+
+
 function LoginForm  ()  {
 
   const handleOnClicked = () => {
     console.log('okokok')
   }
   return (
+    
     <div className="content">
+      <Stars></Stars>
+      
+      {/* <Scrolls></Scrolls> */}
       <div className="login-wrapper">
         <div className="left-img">
           <div className="glass">
@@ -27,7 +34,8 @@ function LoginForm  ()  {
         </div>
         <div className="right-login-form">
           <div className="form-wrapper">
-              
+            
+          
             <h1>Log in</h1>
             
             <div className="input-items">
@@ -63,7 +71,7 @@ function LoginForm  ()  {
             <div className="other-login">
               <div className="divider">
                 <span className="line"></span>
-                <span className="divider-text">or</span>
+                <span className="divider-text">About us</span>
                 <span className="line"></span>
               </div>
               <div className="other-login-wrapper">
@@ -74,8 +82,11 @@ function LoginForm  ()  {
                   <img src={wechat} alt="WeChat"/>
                 </div>
               </div>
+                
             </div>
+            
           </div>
+          
         </div>
       </div>
     </div>
