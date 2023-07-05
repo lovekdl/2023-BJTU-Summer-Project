@@ -199,7 +199,9 @@ section > div {
   right:0;
   height:5vh;
   background: var(--accent);
+  
   z-index: 100;
+  color:var(--white);
   /* transform: translateX(-100%);
   will-change: transform; */
 }

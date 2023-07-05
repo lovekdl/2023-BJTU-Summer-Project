@@ -8,6 +8,7 @@ import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
 import MenuIcon from '@material-ui/icons/Menu';
 import { useNavigate } from 'react-router-dom';
+import "./menu.css"
 const styles = createStyles({
   root: {
     flexGrow: 1,
@@ -33,7 +34,7 @@ function ButtonAppBar(props: Props) {
 
   return (
     <div className='menu'>
-      <AppBar position="static" color='secondary'>
+      <AppBar color='inherit' position='static'>
         <Toolbar>
           <IconButton className={classes.menuButton} color="inherit" aria-label="Menu">
             <MenuIcon />
