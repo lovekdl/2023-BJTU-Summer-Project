@@ -12,29 +12,33 @@ function MainComponent({ id }: { id: number }) {
   const [isInView, setIsInView] = useState(false);
 
   return (
-    <div className="good">
-      {id === 1 ? (
-        <section>
-        <StarMap></StarMap>
-        </section>
-      ) : (
-        <section>
-          {'page: ' + id}
-          <motion.div
-            initial={false}
-            animate={
-              isLoaded && isInView
-                ? { WebkitMaskImage: visibleMask, maskImage: visibleMask }
-                : { WebkitMaskImage: hiddenMask, maskImage: hiddenMask }
-            }
-            transition = {{ duration: 1, delay: 1 }}
-            viewport = {{ once: true }}
-            onViewportEnter = {() => setIsInView(true)}
-          >
-            <img src = {`/${id}.jpg`} alt = "" onLoad = {() => setIsLoaded(true)} />
-          </motion.div>
-        </section>
-      )}
+    <div>
+      <div className="placeholder"></div>
+      <div className="good">
+        {id === 1 ? (
+          <section>
+          <StarMap></StarMap>
+          </section>
+        ) : (
+          <section>
+            {'page: ' + id}
+            <motion.div
+              initial={false}
+              animate={
+                isLoaded && isInView
+                  ? { WebkitMaskImage: visibleMask, maskImage: visibleMask }
+                  : { WebkitMaskImage: hiddenMask, maskImage: hiddenMask }
+              }
+              transition = {{ duration: 1, delay: 1 }}
+              viewport = {{ once: true }}
+              onViewportEnter = {() => setIsInView(true)}
+            >
+              <img src = {`/${id}.jpg`} alt = "" onLoad = {() => setIsLoaded(true)} />
+            </motion.div>
+          </section>
+        )}
+      </div>
+      <div className="placeholder"></div>
     </div>
   );
 }

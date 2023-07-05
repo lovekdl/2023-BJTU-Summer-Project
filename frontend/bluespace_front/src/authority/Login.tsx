@@ -15,7 +15,6 @@ function LoginForm  ()  {
             <div className="left-img">
                 <div className="glass">
                     <div className="tips">
-                        
                         <h1>BLUE SPACE</h1>
                         <span>explore the universe.</span>
                         <span>try to find your planet.</span>
@@ -24,7 +23,9 @@ function LoginForm  ()  {
             </div>
             <div className="right-login-form">
                 <div className="form-wrapper">
+                    
                     <h1>Log in</h1>
+                    
                     <div className="input-items">
                         <span className="input-tips">
                             Email Address
@@ -51,7 +52,7 @@ function LoginForm  ()  {
                         </div>
                         <div className="other-login-wrapper">
                             <div className="other-login-item">
-                                <img src={qq}alt="QQ"/>
+                                <img src={qq} alt="QQ"/>
                             </div>
                             <div className="other-login-item">
                                 <img src={wechat} alt="WeChat"/>

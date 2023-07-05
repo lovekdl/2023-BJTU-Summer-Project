@@ -1,5 +1,5 @@
 import { useEffect } from "react"
-
+import "./starmap.style.css"
 function StarMap() {
 
   useEffect(() => {
@@ -10,8 +10,9 @@ function StarMap() {
     script.type = "module"
 
     const canvas = document.createElement("canvas")
-    canvas.style.width = '100%'
-    canvas.style.height = '100%'
+    canvas.style.width = '100vw'
+    canvas.style.height = '100vh'
+    
     
     document.getElementById("StarMap")?.appendChild(script)
     document.getElementById("StarMap")?.appendChild(canvas)
@@ -22,7 +23,7 @@ function StarMap() {
     }
   }, [])
 
-  return <div className="StarMap" id="StarMap"></div>
+  return <div className="StarMap"><div id="StarMap"></div></div>
 }
 
 export default StarMap
