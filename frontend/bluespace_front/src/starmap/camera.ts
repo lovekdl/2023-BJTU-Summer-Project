@@ -72,7 +72,7 @@ class Camera {
         const z = Math.sin(theta) * Math.sin(phi)
         const v = Math.sqrt(x * x + z * z)
 
-        this.position = vec3.fromValues(r * x, r * y, r * z)
+        this.position = vec3.fromValues(radius * x, radius * y, radius * z)
         this.gaze = vec3.fromValues(-x, -y, -z)
         if(Math.abs(theta - Math.PI/2) <= 1e-5) {
             this.up = vec3.fromValues(0, 1, 0)
