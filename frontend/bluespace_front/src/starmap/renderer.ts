@@ -134,10 +134,10 @@ class BlueSpaceRenderer {
         )
 
         // ===== Load View Matrix & Projection Matrix =====
-        // that.device!.queue.writeBuffer(that.viewMatrixBuffer!, 0, this.camera.viewMatrix as Float32Array)
-        this.camera.position = vec3.fromValues(0, 1000, 0)
-        this.camera.gaze = vec3.fromValues(0, -1, 0)
-        this.camera.up = vec3.fromValues(0, 0, -1)
+        // this.camera.position = vec3.fromValues(0, 1000, 0)
+        // this.camera.gaze = vec3.fromValues(0, -1, 0)
+        // this.camera.up = vec3.fromValues(0, 0, -1)
+        this.camera.rotateInSpherical()
         that.device!.queue.writeBuffer(that.viewMatrixBuffer!, 0, (this.camera.viewMatrix) as Float32Array)
         that.device!.queue.writeBuffer(that.projectionMatrixBuffer!, 0, this.projectionMatrix as Float32Array)
         
@@ -165,6 +165,9 @@ class BlueSpaceRenderer {
             }
             that.device!.queue.writeBuffer(that.modelMatrixBuffer!, 0, that.modelMatrixArray)
             that.draw()
+            
+            that.phi += Math.PI / 300
+            that.camera.rotateInSpherical()
 
             // console.log("draw")
 
