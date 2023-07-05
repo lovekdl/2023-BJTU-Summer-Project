@@ -1,9 +1,4 @@
-* {
-  padding: 0;
-  margin: 0;
-  font-family: "Aguazyuan", Courier, monospace;
-  
-}
+
 
 .content {
   width: 100vw;
@@ -58,14 +53,17 @@
   -webkit-backdrop-filter: blur(10px);
   border-radius: 15px;
   border: 1px solid rgba(255, 255, 255, 0.48);
+  color:black
 }
 .content .login-wrapper .left-img .glass .tips h1 {
   margin: 15px 0;
+  color:black
 }
 .content .login-wrapper .left-img .glass .tips span {
   margin: 5px 0;
   display: block;
   font-weight: 100;
+  color:black
 }
 .content .login-wrapper .right-login-form {
   flex: 1;
@@ -168,9 +166,8 @@
 }
 .content .login-wrapper .right-login-form .form-wrapper .other-login .divider .divider-text {
   vertical-align: middle;
-  margin: 0 20px;
+  margin: 0 20px; 
   display: inline-block;
-  width: 50px;
   color: rgb(162, 172, 185);
   white-space: normal;
 }
@@ -207,16 +204,85 @@
   box-shadow: 1px 10px 32px 1px rgba(186, 175, 221, 0.37);
 }
 
-@media (max-width: 1024px) {
-  .login-wrapper {
-    padding: 20px;
-  }
-  .login-wrapper .left-img {
-    display: none;
-  }
-  .login-wrapper .right-login-form {
-    padding: 20px;
-  }
-}/*# sourceMappingURL=style.css.map */
+  @media (max-width: 1024px) {
+    .login-wrapper {
+      padding: 20px;
+    }
+    .login-wrapper .left-img {
+      display: none;
+    }
+    .login-wrapper .right-login-form {
+      padding: 20px;
+    }
+  }/*# sourceMappingURL=style.css.map */
 
 
+
+
+
+
+.canvasqwq {
+  image-rendering: -moz-crisp-edges;
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: pixelated;
+  image-rendering: optimize-contrast;
+}
+
+.progress {
+  position: fixed;
+  left: 0;
+  right: 0;
+  height: 5px;
+  background: var(--accent);
+  bottom: 100px;
+}
+
+.parallax {
+  overflow: hidden;
+  letter-spacing: -2px;
+  line-height: 0.8;
+  margin: 0;
+  white-space: nowrap;
+  display: flex;
+  flex-wrap: nowrap;
+}
+
+.parallax .scroller {
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 64px;
+  display: flex;
+  white-space: nowrap;
+  display: flex;
+  flex-wrap: nowrap;
+}
+
+.parallax span {
+  display: block;
+  margin-right: 30px;
+}
+.downSection{
+  margin-top: 20.5%;
+  font-size: 130%;
+  
+  color: black;
+}
+.registerButton{
+  width: 10%;
+  height: 40px;
+  background-color: rgb(128, 106, 196);
+  border: 0;
+  border-radius: 10px;
+  color: #fff;
+  font-size: 25px;
+  margin: 20px 0;
+  cursor: pointer;
+  display: flex;
+  align-items: center; /* 垂直居中 */
+  justify-content: center; /* 水平居中，可根据需要调整 */
+  text-align: center;
+  user-select: none;
+  position: fixed;
+  bottom: 0;
+  right: 0;
+}

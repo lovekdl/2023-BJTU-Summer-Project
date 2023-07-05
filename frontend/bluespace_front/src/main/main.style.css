@@ -74,12 +74,8 @@ body {
 }
 
 * {
-  font-family: sofia-pro, sans-serif;
-  font-weight: 400;
-  font-style: normal;
-  -webkit-font-smoothing: antialiased;
+  font-family: '"Plaster", sans-serif';
 }
-
 h1,
 h2,
 h3 {
@@ -173,7 +169,9 @@ html {
 
 
 
-section {
+
+
+.innerSection{
   height: 100vh;
   display: flex;
   justify-content: center;
@@ -183,7 +181,7 @@ section {
   perspective: 500px;
 }
 
-section > div {
+.section  div {
   width: 300px;
   aspect-ratio: 2/3;
   position: relative;
