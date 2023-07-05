@@ -67,7 +67,7 @@ class Camera {
             this.position[0], this.position[1], this.position[2], 1
         )
         let gxt: vec3 = vec3.create()
-        vec3.multiply(gxt, this.gaze, this.up)
+        vec3.cross(gxt, this.gaze, this.up)
         const Rview: mat4 = mat4.fromValues(
             gxt[0], gxt[1], gxt[2], 0,
             this.up[0], this.up[1], this.up[2], 0,
