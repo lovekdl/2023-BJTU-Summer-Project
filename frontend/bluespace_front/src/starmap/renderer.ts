@@ -67,12 +67,21 @@ class BlueSpaceRenderer {
 
     // ===== ===== ===== Constants ===== ===== =====
 
+    // 透视矩阵相关
     private PERSPECTIVE_FOVY: number = Math.PI / 2
     private PERSPECTIVE_NEAR: number = 0.1
     private PERSPECTIVE_FAR: number = 10000
 
+    // 星球生成相关
     private COMMON_SPEED: number = 0.01
     private POSITION_RANGE: number = 50
+
+    // 旋臂分布相关
+    private NORMAL_DIST_VARIANCE = 20
+    private SPIRAL_SIZE = 100
+
+    // Update相关
+    private ROTATION_SPEED = Math.PI / 3600
 
     // ===== ===== ===== Public Methods ===== ===== =====
 
@@ -166,7 +175,7 @@ class BlueSpaceRenderer {
             that.device!.queue.writeBuffer(that.modelMatrixBuffer!, 0, that.modelMatrixArray)
             that.draw()
             
-            that.camera.phi += Math.PI / 3600
+            that.camera.phi += that.ROTATION_SPEED
             that.camera.rotateInSpherical()
             that.device!.queue.writeBuffer(that.viewMatrixBuffer!, 0, (that.camera.viewMatrix) as Float32Array)
 
@@ -226,21 +235,19 @@ class BlueSpaceRenderer {
         const R = 2.0 * Math.PI
         const deltaSpiral = Math.floor(num / 4)
         const deltaStar = (R - L) / deltaSpiral
-        const NORMAL_DIST_VARIANCE = 20
-        const SPIRAL_SIZE = 100
 
         let positions = new Array(num)
         let idx = 0;
         for(let i = 0; i <= 3; i++) { // 枚举每条旋臂
             let t = L
             const angle = i * Math.PI / 2.0
-            for(let j = 0; j < deltaSpiral; j++, idx++, t += deltaStar) { // 枚举旋臂上的每个位置
+            for(let j = 0; j < deltaSpiral || (i == 3 && idx < num); j++, idx++, t += deltaStar) { // 枚举旋臂上的每个位置
                 
-                const origin = this.equaiangularSpiral(angle, t, SPIRAL_SIZE, 0.4)
+                const origin = this.equaiangularSpiral(angle, t, this.SPIRAL_SIZE, 0.4)
                 const delta = {
-                    x: this.randomNormalDist(0, NORMAL_DIST_VARIANCE).x,
-                    y: this.randomNormalDist(0, NORMAL_DIST_VARIANCE).x,
-                    z: this.randomNormalDist(0, NORMAL_DIST_VARIANCE).x,
+                    x: this.randomNormalDist(0, this.NORMAL_DIST_VARIANCE).x,
+                    y: this.randomNormalDist(0, this.NORMAL_DIST_VARIANCE).x,
+                    z: this.randomNormalDist(0, this.NORMAL_DIST_VARIANCE).x,
                 }
 
                 positions[idx] = {
@@ -248,21 +255,6 @@ class BlueSpaceRenderer {
                     y: 0        + delta.y,
                     z: origin.y + delta.z,
                 }
-            }
-        }
-
-        for(; idx < num; idx++) {
-            const origin = this.equaiangularSpiral(0, 0, SPIRAL_SIZE, 0.4)
-            const delta = {
-                x: this.randomNormalDist(0, NORMAL_DIST_VARIANCE).x,
-                y: this.randomNormalDist(0, NORMAL_DIST_VARIANCE).x,
-                z: this.randomNormalDist(0, NORMAL_DIST_VARIANCE).x,
-            }
-
-            positions[idx] = {
-                x: origin.x + delta.x,
-                y: 0        + delta.y,
-                z: origin.y + delta.z,
             }
         }
 
