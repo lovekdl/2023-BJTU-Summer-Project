@@ -2,7 +2,6 @@
 
 import { useState,useEffect } from "react";
 import { useAnimate, stagger,motion } from "framer-motion";
-import Chartconstructor from "./dataanalysis/Chartconstructor";
 import { ButtonAppBar} from "./menu/index";
 import { LoginForm } from "./authority";
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
@@ -26,9 +25,14 @@ export default function App() {
            
           </div>} 
         />
-
-      <Route path = "/login" element={<LoginForm />} />
-      <Route path= "/DataCharts" element={<Chartconstructor/>} />
+        <Route path="/prediction" element={
+          <ButtonAppBar></ButtonAppBar>
+        }></Route>
+        <Route path = "/login" element={<LoginForm />} />
+        <Route path = "/profile" element={<div>
+          <ButtonAppBar></ButtonAppBar>
+          
+        </div>} />
       </Routes>
 
       

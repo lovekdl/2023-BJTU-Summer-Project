@@ -32,7 +32,7 @@ function ButtonAppBar(props: Props) {
     console.log("clicked")
     navigate('/login', {replace:false})
   }
-
+  
   return (
     
     <div className='menu'>
