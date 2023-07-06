@@ -28,7 +28,7 @@ export default function App() {
         />
 
       <Route path = "/login" element={<LoginForm />} />
-      <Route path= "/" element={<Chartconstructor/>} />
+      <Route path= "/DataCharts" element={<Chartconstructor/>} />
       </Routes>
 
       

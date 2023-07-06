@@ -10,7 +10,7 @@ export default class Chartconstructor extends PureComponent {
 
         let option = {
             title: {
-                text: "ECharts 入门示例",
+                text: "星球数据",
             },
             tooltip: {},
             legend: {
