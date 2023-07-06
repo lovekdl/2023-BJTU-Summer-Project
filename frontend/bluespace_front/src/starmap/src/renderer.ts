@@ -1,13 +1,14 @@
-import planetShader from "./planet.wgsl?raw"
-import composite1Shader from "./composite1.wgsl?raw"
-import composite2Shader from "./composite2.wgsl?raw"
-import finalShader from "./final.wgsl?raw"
-import * as sphere from "./util/sphere"
-import * as rectangle from "./util/rectangle"
-import { mat4, vec4, vec3, vec2 } from 'gl-matrix'
+import planetShader from "../shaders/planet.wgsl?raw"
+import composite1Shader from "../shaders/composite1.wgsl?raw"
+import composite2Shader from "../shaders/composite2.wgsl?raw"
+import finalShader from "../shaders/final.wgsl?raw"
+import * as sphere from "../util/sphere"
+import * as rectangle from "../util/rectangle"
+import { mat4, vec4, vec3 } from 'gl-matrix'
 
 import { Camera } from './camera'
 import { Planet } from './planet'
+import { StarGenerator } from "./starGenerator"
 
 /**
  * 蓝色空间渲染器
@@ -76,7 +77,7 @@ class BlueSpaceRenderer {
 
     // ===== ===== ===== Data Properties ===== ===== =====
 
-    private camera: Camera
+    public camera: Camera
     private numOfPlanets: number
     private planets: Array<Planet>
 
@@ -89,23 +90,14 @@ class BlueSpaceRenderer {
     // ===== ===== ===== Constants ===== ===== =====
 
     // 摄像机(View矩阵)相关
-    private readonly CAMERA_THETA: number = Math.PI / 9 * 3
+    private readonly CAMERA_THETA: number = Math.PI / 9 * 2
     private readonly CAMERA_PHI: number = 0
-    private readonly CAMERA_RADIUS: number = 1000
+    private readonly CAMERA_RADIUS: number = 1300
 
     // 透视矩阵相关
     private readonly PERSPECTIVE_FOVY: number = Math.PI / 2
     private readonly PERSPECTIVE_NEAR: number = 0.1
     private readonly PERSPECTIVE_FAR: number = 10000
-
-    // 星球生成相关
-    private readonly COMMON_SPEED: number = 0.01
-
-    // 旋臂分布相关
-    private readonly NORMAL_DIST_VARIANCE = 70
-    private readonly SPIRAL_SIZE = 100
-    private readonly SPIRAL_L = 0.5 * Math.PI
-    private readonly SPIRAL_R = 2.5 * Math.PI
 
     // Post-process相关
     private readonly INTERMEDIATE_TEXTURE_NUM = 3
@@ -119,27 +111,7 @@ class BlueSpaceRenderer {
 
         // ===== Load Planets =====
         this.numOfPlanets = 20000
-        this.planets = new Array<Planet>(this.numOfPlanets)
-
-
-        this.planets = this.randomGalaxyStar(this.numOfPlanets)
-
-        // const positions = this.randomGalaxyStar(this.numOfPlanets)
-        // for(let i = 0; i < this.planets.length; i++) {
-        //     this.planets[i] = Planet.createPlanet(
-        //         positions[i], {
-        //             x: this.randomRange(-3.14, 3.14),
-        //             y: this.randomRange(-3.14, 3.14),
-        //             z: this.randomRange(-3.14, 3.14),
-        //         }, {
-        //             x: this.randomRange(-1.0, 1.0) * this.COMMON_SPEED,
-        //             y: this.randomRange(-1.0, 1.0) * this.COMMON_SPEED,
-        //             z: this.randomRange(-1.0, 1.0) * this.COMMON_SPEED,
-        //         },
-        //         Planet.STAR_SHADER_TYPE_G
-        //     )
-        //     // console.log(this.planets[i].starShaderType)
-        // }
+        this.planets = StarGenerator.randomGalaxyStar(this.numOfPlanets)
     }
 
     /**
@@ -148,7 +120,7 @@ class BlueSpaceRenderer {
     async setup() {
         const that = this
 
-        this.camera.rotateInSpherical()
+        this.camera.update()
 
         await this.initWebGPU()
         await this.initPipeline()
@@ -172,8 +144,6 @@ class BlueSpaceRenderer {
         // this.camera.position = vec3.fromValues(0, 1000, 0)
         // this.camera.gaze = vec3.fromValues(0, -1, 0)
         // this.camera.up = vec3.fromValues(0, 0, -1)
-        this.camera.rotateInSpherical()
-        this.camera.lookAt()
         that.device!.queue.writeBuffer(that.viewMatrixBuffer!, 0, (this.camera.viewMatrix) as Float32Array)
         that.device!.queue.writeBuffer(that.projectionMatrixBuffer!, 0, this.projectionMatrix as Float32Array)
         
@@ -181,7 +151,6 @@ class BlueSpaceRenderer {
         console.log("projectionMatrix: " + this.projectionMatrix)
         
         // ===== Load Planets to GPU =====
-        console.log("len: " + that.planets.length)
         for(let i = 0; i < that.planets.length; i++) {
             that.planets[i].update()
             that.modelMatrixArray.set(that.planets[i].modelMatrix as Float32Array, 4 * 4 * i)
@@ -190,7 +159,7 @@ class BlueSpaceRenderer {
         that.device!.queue.writeBuffer(that.modelMatrixBuffer!, 0, that.modelMatrixArray)
         that.device!.queue.writeBuffer(that.starShaderTypeBuffer!, 0, that.starShaderTypeArray)
 
-        console.log(that.starShaderTypeArray)
+        // console.log(that.starShaderTypeArray)
 
         // 初始化完毕
         this.haveSetup = true
@@ -214,9 +183,7 @@ class BlueSpaceRenderer {
             // that.device!.queue.writeBuffer(that.modelMatrixBuffer!, 0, that.modelMatrixArray)
             
             // that.camera.phi += that.ROTATION_SPEED
-            that.cameraTargetMoveUpdate()
-            that.camera.rotateInSpherical()
-            that.camera.lookAt()
+            that.camera.update(true)
             that.device!.queue.writeBuffer(that.viewMatrixBuffer!, 0, (that.camera.viewMatrix) as Float32Array)
             that.device!.queue.writeBuffer(that.cameraPositionBuffer!, 0, that.camera.position as Float32Array)
 
@@ -227,88 +194,6 @@ class BlueSpaceRenderer {
         requestAnimationFrame(frame)
 
         this.haveRun = true;
-    }
-
-    /**
-     * 水平旋转接口
-     */
-    private readonly CAMERA_HORIZONTAL_ROTATE_SPEED = Math.PI / 1440
-    rotateHorizontal(delta: number) {
-        if(!this.haveRun) {
-            throw new Error("Renderer hasn't run")
-        }
-        this.camera.phi += delta * this.CAMERA_HORIZONTAL_ROTATE_SPEED
-        // this.camera.phi = Math.max(0, Math.min(this.PI2, this.camera.phi))
-        // console.log("camera.phi: " + this.camera.phi)
-    }
-
-    /**
-     * 竖直旋转接口
-     */
-    private readonly CAMERA_VERTICAL_ROTATE_SPEED = Math.PI / 1440
-    rotateVertical(delta: number) {
-        if(!this.haveRun) {
-            throw new Error("Renderer hasn't run")
-        }
-        this.camera.theta += delta * this.CAMERA_VERTICAL_ROTATE_SPEED
-        this.camera.theta = Math.max(0.01, Math.min(Math.PI, this.camera.theta))
-        // console.log("camera.theta: " + this.camera.theta)
-    }
-
-    /**
-     * Zoom接口
-     */
-    private readonly CAMERA_ZOOM_SPEED = 100
-    private readonly CAMERA_RADIUS_MIN = 100
-    private readonly CAMERA_RADIUS_MAX = 3000
-    zoom(delta: number) {
-        if(!this.haveRun) {
-            throw new Error("Renderer hasn't run")
-        }
-        this.camera.radius += delta * this.CAMERA_ZOOM_SPEED
-        this.camera.radius = Math.max(this.CAMERA_RADIUS_MIN, Math.min(this.CAMERA_RADIUS_MAX, this.camera.radius))
-        // console.log("camera.radius: " + this.camera.radius)
-    }
-
-    /**
-     * 移动摄像机中心接口
-     */
-    private readonly CAMERA_MOVE_SPEED = 1
-    public buttonPressed = {
-        W: false,
-        S: false,
-        A: false,
-        D: false,
-        Space: false,
-        ControlLeft: false,
-    }
-    private cameraTargetMoveUpdate() {
-        let direct: vec2 = vec2.fromValues(this.camera.gaze[0], this.camera.gaze[2])
-        vec2.normalize(direct, direct)
-        direct[0] *= this.CAMERA_MOVE_SPEED
-        direct[1] *= this.CAMERA_MOVE_SPEED
-        if(this.buttonPressed.W) {
-            this.camera.target[0] += direct[0] 
-            this.camera.target[2] += direct[1] 
-        }
-        if(this.buttonPressed.S) {
-            this.camera.target[0] -= direct[0] 
-            this.camera.target[2] -= direct[1] 
-        }
-        if(this.buttonPressed.A) {
-            this.camera.target[0] += direct[1]
-            this.camera.target[2] -= direct[0]
-        }
-        if(this.buttonPressed.D) {
-            this.camera.target[0] -= direct[1]
-            this.camera.target[2] += direct[0]
-        }
-        if(this.buttonPressed.Space) {
-            this.camera.target[1] += this.CAMERA_MOVE_SPEED
-        }
-        if(this.buttonPressed.ControlLeft) {
-            this.camera.target[1] -= this.CAMERA_MOVE_SPEED
-        }
     }
 
     /**
@@ -368,107 +253,6 @@ class BlueSpaceRenderer {
 
     // ===== ===== ===== Private Methods ===== ===== =====
 
-    /**
-     * 随机一个[L, R]的实数
-     */
-    private randomRange(L: number, R: number) {
-        return Math.random() * (R - L) + L
-    }
-
-    /**
-     * 随机一个二维符合正态分布的坐标
-     */
-    private randomNormalDist(mean: number, variance: number): {x: number, y: number} {
-        let u1 = 1 - Math.random(); // (0, 1]
-        let u2 = 1 - Math.random();
-        u1 = Math.sqrt(-2.0 * Math.log(u1))
-        u2 = 2.0 * Math.PI * u2
-        let z1 = u1 * Math.cos(u2); // random normal (0, 1)
-        let z2 = u1 * Math.sin(u2);
-        return {
-            x: z1 * variance + mean,
-            y: z2 * variance + mean,
-        }
-    }
-
-
-    /**
-     * 根据angle, u, a, b生成一个等角螺线上的一个随机点（无正态分布)
-     */
-    private equaiangularSpiral(angle: number, u: number, a: number, b: number): {x: number, y: number} {
-        const f = a * Math.pow(Math.E, b * u)
-        return {
-            x: f * Math.cos(u + angle),
-            y: f * Math.sin(u + angle),
-        }
-    }
-
-    /**
-     * 在银河系4条旋臂的基础上，随机出n个位置
-     */
-    private randomGalaxyStar(num: number): Array<Planet> {
-        const L = this.SPIRAL_L
-        const R = this.SPIRAL_R
-        const deltaSpiral = Math.floor(num / 4)
-        const deltaStar = (R - L) / deltaSpiral
-
-        let planets = new Array(num)
-        let idx = 0;
-        
-        planets[0] = Planet.createPlanet(
-            {x:0, y:0, z:0},
-            {x:0, y:0, z:0},
-            {x:0, y:0, z:0},
-            Planet.STAR_SHADER_TYPE_BLACKHOLE,
-        )
-        idx++
-
-        for(let i = 0; i <= 3; i++) { // 枚举每条旋臂
-            let t = L
-            const angle = i * Math.PI / 2.0
-            for(let j = 0; (i != 3 && j < deltaSpiral) || (i == 3 && idx < num); j++, idx++, t += deltaStar) { // 枚举旋臂上的每个位置
-                
-                const origin = this.equaiangularSpiral(angle, t, this.SPIRAL_SIZE, 0.4)
-                const delta = {
-                    x: this.randomNormalDist(0, this.NORMAL_DIST_VARIANCE).x,
-                    y: this.randomNormalDist(0, this.NORMAL_DIST_VARIANCE).x,
-                    z: this.randomNormalDist(0, this.NORMAL_DIST_VARIANCE).x,
-                }
-
-                let position = {
-                    x: origin.x + delta.x,
-                    y: 0        + delta.y,
-                    z: origin.y + delta.z,
-                }
-
-                let type = this.randomRange(0, 1)
-
-                planets[idx] = Planet.createPlanet(
-                    position, {
-                        x: this.randomRange(-3.14, 3.14),
-                        y: this.randomRange(-3.14, 3.14),
-                        z: this.randomRange(-3.14, 3.14),
-                    }, {
-                        x: this.randomRange(-1.0, 1.0) * this.COMMON_SPEED,
-                        y: this.randomRange(-1.0, 1.0) * this.COMMON_SPEED,
-                        z: this.randomRange(-1.0, 1.0) * this.COMMON_SPEED,
-                    },
-                    (type <= 0.002) ? (Planet.STAR_SHADER_TYPE_O) :
-                    (type <= 0.004) ? (Planet.STAR_SHADER_TYPE_B) :
-                    (type <= 0.012) ? (Planet.STAR_SHADER_TYPE_A) :
-                    (type <= 0.060) ? (Planet.STAR_SHADER_TYPE_F) :
-                    (type <= 0.143) ? (Planet.STAR_SHADER_TYPE_G) :
-                    (type <= 0.242) ? (Planet.STAR_SHADER_TYPE_K) :
-                    (Planet.STAR_SHADER_TYPE_M)
-                )
-                
-
-            }
-        }
-
-        return planets
-    }
-
     // ===== 关于renderPass的效率问题 =====
     // 1. setPipeline的效率消耗是最大的，因为它涉及到切换shaders、深度测试、图形组装、颜色混合等相关配置
     // 2. setVertexBuffer的效率消耗是第二大的，因为这个API会根据管线配置来切换数据，shader内部也要生成对应的一些局部变量
@@ -486,6 +270,7 @@ class BlueSpaceRenderer {
     // “尽量减少CPU和GPU的数据交换次数”
 
     // ===== ===== ===== Draw ===== ===== =====
+
     /**
      * 绘制函数
      */
@@ -559,6 +344,8 @@ class BlueSpaceRenderer {
         // 因为Submit的结果将直接绘制在屏幕上，而不需要JS来接收执行结果，所以这个API也不是异步的
         this.device!.queue.submit([buffer])
     }
+
+    // ===== ===== ===== Initialize Many Things ===== ===== =====
 
     /**
      * 初始化WebGPU
@@ -936,7 +723,7 @@ class BlueSpaceRenderer {
      * @param shader 着色器
      * @param bindGroupEntries BindGroup的内容
      * @param colorAttachment 管线的ColorAttachment
-     * @returns 
+     * @returns 一个建立好的简单管线
      */
     private async createSimplePipeline(label: string, shader: string, bindGroupEntries: Iterable<GPUBindGroupEntry>, colorAttachment?: GPUTextureView) {
         const that = this
@@ -1014,96 +801,4 @@ class BlueSpaceRenderer {
     }
 }
 
-
-let renderer: BlueSpaceRenderer
-try {
-    renderer = new BlueSpaceRenderer()
-    renderer.setup().then(() => {
-        renderer.run()
-    })
-} catch (error) {
-    throw new Error("Intializing renderer failed: " + error)
-}
-
-const starmapElement = document.getElementById("StarMap")
-let isMouseMiddleDown: boolean = false
-let last = {x: 0, y: 0}
-starmapElement!.addEventListener("mousedown", (e) => {
-    if(e.which === 1) {
-        const cx = e.offsetX / renderer.canvasSize.width
-        const cy = (e.offsetY - 64) / (renderer.canvasSize.height - 64)
-        const planetId = renderer.selectPlanet(cx, cy)
-        console.log(e.offsetX, e.offsetY, cx, cy, planetId)
-    } else if(e.which === 2) {
-        isMouseMiddleDown = true
-        last.x = e.clientX
-        last.y = e.clientY
-    }
-})
-starmapElement!.addEventListener("mousemove", (e) => {
-    if(isMouseMiddleDown && e.which === 2) {
-        // console.log("middle drag delta: " + (e.clientX - last.x) + ", " + (e.clientY - last.y))
-        renderer.rotateHorizontal(e.clientX - last.x)
-        renderer.rotateVertical(-(e.clientY - last.y))
-        last.x = e.clientX
-        last.y = e.clientY
-    }
-})
-starmapElement!.addEventListener("mouseup", (e) => {
-    if(e.which === 2) {
-        isMouseMiddleDown = false
-    }
-})
-starmapElement!.addEventListener("mousewheel", (e) => {
-    if((e as WheelEvent).deltaY > 0) {
-        renderer.zoom(1)
-    } else if((e as WheelEvent).deltaY < 0) {
-        renderer.zoom(-1)
-    }
-})
-document.addEventListener("keydown", e => {
-    if(e.code === "KeyW") {
-        renderer.buttonPressed.W = true
-    }
-	if(e.code === "KeyS") {
-        renderer.buttonPressed.S = true
-    }
-	if(e.code === "KeyA") {
-        renderer.buttonPressed.A = true
-    }
-	if(e.code === "KeyD") {
-        renderer.buttonPressed.D = true
-    }
-	if(e.code === "Space") {
-        // renderer.buttonPressed.Space = true
-    }
-	if(e.code === "ControlLeft") {
-        // renderer.buttonPressed.ControlLeft = true
-    }
-})
-document.addEventListener("keyup", e => {
-    if(e.code === "KeyW") {
-        renderer.buttonPressed.W = false
-    }
-	if(e.code === "KeyS") {
-        renderer.buttonPressed.S = false
-    }
-	if(e.code === "KeyA") {
-        renderer.buttonPressed.A = false
-    }
-	if(e.code === "KeyD") {
-        renderer.buttonPressed.D = false
-    }
-	if(e.code === "Space") {
-        renderer.buttonPressed.Space = false
-    }
-	if(e.code === "ControlLeft") {
-        renderer.buttonPressed.ControlLeft = false
-    }
-})
-
-window.oncontextmenu = function () {
-    return false;     // cancel default menu
-}
-
-// export { BlueSpaceRenderer }
+export { BlueSpaceRenderer }

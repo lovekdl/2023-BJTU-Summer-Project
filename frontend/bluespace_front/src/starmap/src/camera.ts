@@ -1,4 +1,4 @@
-import { mat4, vec3 } from 'gl-matrix'
+import { mat4, vec3, vec2 } from 'gl-matrix'
 
 /**
  * 摄像机类
@@ -29,9 +29,93 @@ class Camera {
         this.internalViewMatrix = viewMatrix
     }
 
+    /**
+     * 每帧Update
+     */
+    update(updateCameraMove?: boolean) {
+        if(updateCameraMove) {
+            this.updateCameraMove()
+        }
+        this.rotateInSpherical()
+        this.lookAt()
+    }
+
+    /**
+     * 水平旋转接口
+     */
+    private readonly CAMERA_HORIZONTAL_ROTATE_SPEED = Math.PI / 1440
+    rotateHorizontal(delta: number) {
+        this.phi += delta * this.CAMERA_HORIZONTAL_ROTATE_SPEED
+    }
+
+    /**
+     * 竖直旋转接口
+     */
+    private readonly CAMERA_VERTICAL_ROTATE_SPEED = Math.PI / 1440
+    rotateVertical(delta: number) {
+        this.theta += delta * this.CAMERA_VERTICAL_ROTATE_SPEED
+        this.theta = Math.max(0.01, Math.min(Math.PI, this.theta))
+    }
+
+    /**
+     * Zoom接口
+     */
+    private readonly CAMERA_ZOOM_SPEED = 200
+    private readonly CAMERA_RADIUS_MIN = 100
+    private readonly CAMERA_RADIUS_MAX = 2300
+    zoom(delta: number) {
+        this.radius += delta * this.CAMERA_ZOOM_SPEED
+        this.radius = Math.max(this.CAMERA_RADIUS_MIN, Math.min(this.CAMERA_RADIUS_MAX, this.radius))
+    }
+
+    /**
+     * 移动摄像机中心接口
+     */
+    buttonPressed = {
+        W: false,
+        S: false,
+        A: false,
+        D: false,
+        Space: false,
+        ControlLeft: false,
+    }
+    private readonly CAMERA_MOVE_SPEED = 1
+    private readonly CAMERA_MOVE_Y_MIN = -100
+    private readonly CAMERA_MOVE_Y_MAX = 100
+    private updateCameraMove() {
+        let direct: vec2 = vec2.fromValues(this.gaze[0], this.gaze[2])
+        vec2.normalize(direct, direct)
+        direct[0] *= this.CAMERA_MOVE_SPEED
+        direct[1] *= this.CAMERA_MOVE_SPEED
+        if(this.buttonPressed.W) {
+            this.target[0] += direct[0] 
+            this.target[2] += direct[1] 
+        }
+        if(this.buttonPressed.S) {
+            this.target[0] -= direct[0] 
+            this.target[2] -= direct[1] 
+        }
+        if(this.buttonPressed.A) {
+            this.target[0] += direct[1]
+            this.target[2] -= direct[0]
+        }
+        if(this.buttonPressed.D) {
+            this.target[0] -= direct[1]
+            this.target[2] += direct[0]
+        }
+        if(this.buttonPressed.Space) {
+            this.target[1] += this.CAMERA_MOVE_SPEED
+            this.target[1] = Math.max(this.CAMERA_MOVE_Y_MIN, Math.min(this.CAMERA_MOVE_Y_MAX, this.target[1]))
+        }
+        if(this.buttonPressed.ControlLeft) {
+            this.target[1] -= this.CAMERA_MOVE_SPEED
+            this.target[1] = Math.max(this.CAMERA_MOVE_Y_MIN, Math.min(this.CAMERA_MOVE_Y_MAX, this.target[1]))
+        }
+    }
+
     // 在球坐标系上旋转
     // 此函数会根据输入的参数，自动设置position, gaze, up，并修改View Matrix
-    rotateInSpherical(theta?: number, phi?: number, radius?: number) {
+    private rotateInSpherical(theta?: number, phi?: number, radius?: number) {
         if(!theta || !phi || !radius) {
             theta = this.theta
             phi = this.phi
@@ -65,7 +149,7 @@ class Camera {
     }
 
     // 通过Camera的position, gaze, up得到viewMatrix 【版本2】
-    lookAt(target?: vec3) {
+    private lookAt(target?: vec3) {
         const that = this
 
         if(!target) {
@@ -102,7 +186,6 @@ class Camera {
             -t[0], -t[1], -t[2], 1
         )
     }
-
 }
 
 export { Camera }
