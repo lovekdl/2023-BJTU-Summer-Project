@@ -197,7 +197,9 @@ html {
   right:0;
   height:5vh;
   background: var(--accent);
-  
+  display: flex;
+  align-items: center;
+  justify-content: center;
   z-index: 100;
   color:var(--white);
   /* transform: translateX(-100%);

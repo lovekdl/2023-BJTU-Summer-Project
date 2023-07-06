@@ -16,6 +16,7 @@
     "@react-three/fiber": "^8.13.4",
     "@types/three": "^0.152.1",
     "axios": "^1.4.0",
+    "echarts": "^5.4.2",
     "framer-motion": "^10.12.18",
     "framer-motion-3d": "^10.12.18",
     "material-ui": "^0.20.2",

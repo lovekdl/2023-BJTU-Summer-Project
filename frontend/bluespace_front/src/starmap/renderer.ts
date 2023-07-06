@@ -141,8 +141,8 @@ class BlueSpaceRenderer {
         that.device!.queue.writeBuffer(that.viewMatrixBuffer!, 0, (this.camera.viewMatrix) as Float32Array)
         that.device!.queue.writeBuffer(that.projectionMatrixBuffer!, 0, this.projectionMatrix as Float32Array)
         
-        console.log("viewMatrix: " + this.camera.viewMatrix)
-        console.log("projectionMatrix: " + this.projectionMatrix)
+        // console.log("viewMatrix: " + this.camera.viewMatrix)
+        // console.log("projectionMatrix: " + this.projectionMatrix)
 
         // 初始化完毕
         this.haveSetup = true
