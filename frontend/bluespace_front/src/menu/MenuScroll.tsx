@@ -1,7 +1,7 @@
 import "./menu.css";
 import { useState, useEffect } from "react";
 import { useAnimate, stagger, motion } from "framer-motion";
-
+import { useNavigate } from 'react-router-dom';
 const staggerMenuItems = stagger(0.1, { startDelay: 0.15 });
 
 function useMenuAnimation(isOpen: boolean) {
@@ -9,7 +9,7 @@ function useMenuAnimation(isOpen: boolean) {
 
   useEffect(() => {
     animate(".arrow", { rotate: isOpen ? 180 : 0 }, { duration: 0.2 });
-
+    
     animate(
       "ul",
       {
@@ -42,8 +42,14 @@ function useMenuAnimation(isOpen: boolean) {
 export default function MenuScroll() {
   const [isOpen, setIsOpen] = useState(false);
   const scope = useMenuAnimation(isOpen);
-  const handleOnClicked = ()=> {
-    console.log('aa')
+  const navigate = useNavigate()
+  const handleOnClicked = (x:number)=> {
+    if(x == 1) {
+      navigate("/",{replace : false})
+    }
+    if(x == 2) {
+      navigate("/prediction",{replace : false})
+    }
   }
   return (
     <nav className="menuScroll" ref={scope}>
@@ -61,18 +67,17 @@ export default function MenuScroll() {
       </motion.button>
       <div className = 'subMenu'>
       <ul
-        
         style={{
           pointerEvents: isOpen ? "auto" : "none",
           clipPath: "inset(10% 50% 90% 50% round 10px)"
         }}
         className="ul1"
       >
-        <li className="li1">Item 1 </li>
-        <li className="li1">Item 2 </li>
-        <li className="li1">Item 3 </li>
-        <li className="li1">Item 4 </li>
-        <li className="li1">Item 5 </li>
+        <li className="li1" onClick={() => handleOnClicked(1)}>Star Map</li>
+        <li className="li1" onClick={() => handleOnClicked(2)}>Prediction</li>
+        <li className="li1" onClick={() => handleOnClicked(3)}>Prediction</li>
+        <li className="li1" onClick={() => handleOnClicked(4)}>Prediction</li>
+        <li className="li1" onClick={() => handleOnClicked(5)}>Prediction</li>
       </ul>{" "}
       </div>
     </nav>

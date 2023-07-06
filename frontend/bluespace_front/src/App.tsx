@@ -25,9 +25,14 @@ export default function App() {
            
           </div>} 
         />
-
-      <Route path = "/login" element={<LoginForm />} />
+        <Route path="/prediction" element={
+          <ButtonAppBar></ButtonAppBar>
+        }></Route>
+        <Route path = "/login" element={<LoginForm />} />
+        <Route path = "/profile" element={<div>
+          <ButtonAppBar></ButtonAppBar>
           
+        </div>} />
       </Routes>
 
       

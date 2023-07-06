@@ -23,6 +23,7 @@
   display: block;
   transform-origin: -20px 50%;
   margin-top: 5px;
+  cursor: pointer;
 }
 
 .ul1,
