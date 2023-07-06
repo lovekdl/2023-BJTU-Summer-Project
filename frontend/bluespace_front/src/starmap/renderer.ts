@@ -131,6 +131,8 @@ class BlueSpaceRenderer {
     async setup() {
         const that = this
 
+        this.camera.rotateInSpherical()
+
         await this.initWebGPU()
         await this.initPipeline()
         await this.initBuffer()
@@ -204,6 +206,42 @@ class BlueSpaceRenderer {
         this.haveRun = true;
     }
 
+    /**
+     * 水平旋转接口
+     */
+    private readonly CAMERA_HORIZONTAL_ROTATE_SPEED = Math.PI / 1440
+    rotateHorizontal(delta: number) {
+        if(!this.haveRun) {
+            throw new Error("Renderer hasn't run")
+        }
+        this.camera.phi += delta * this.CAMERA_HORIZONTAL_ROTATE_SPEED
+        console.log("camera.phi: " + this.camera.phi)
+    }
+
+    /**
+     * 竖直旋转接口
+     */
+    private readonly CAMERA_VERTICAL_ROTATE_SPEED = Math.PI / 1440
+    rotateVertical(delta: number) {
+        if(!this.haveRun) {
+            throw new Error("Renderer hasn't run")
+        }
+        this.camera.theta += delta * this.CAMERA_VERTICAL_ROTATE_SPEED
+        this.camera.theta = Math.max(0, Math.min(Math.PI, this.camera.theta))
+        console.log("camera.theta: " + this.camera.theta)
+    }
+
+    /**
+     * Zoom接口
+     */
+    private readonly CAMERA_ZOOM_SPEED = 1
+    zoom(delta: number) {
+        if(!this.haveRun) {
+            throw new Error("Renderer hasn't run")
+        }
+        this.camera.radius += delta * this.CAMERA_ZOOM_SPEED
+        console.log("camera.radius: " + this.camera.radius)
+    }
     
 
     // ===== ===== ===== Private Methods ===== ===== =====
@@ -409,7 +447,7 @@ class BlueSpaceRenderer {
     }
 
     // 想在管线中传入数据，需要有以下这几步
-    // 1. 定义数据
+    // 1. 定义数据ffset client
     // 1.1 定义TypedArray
     // 1.2 定义Buffer (size, usage)
     // 1.3 写入Buffer (device.queue.writeBuffer)
@@ -644,6 +682,42 @@ try {
     })
 } catch (error) {
     throw new Error("Intializing renderer failed: " + error)
+}
+
+const starmapElement = document.getElementById("StarMap")
+let isMouseDown: boolean = false
+let last = {x: 0, y: 0}
+starmapElement.addEventListener("mousedown", (e) => {
+    console.log("click in: "+e.clientX+","+e.clientY)
+    last.x = e.clientX
+    last.y = e.clientY
+
+    isMouseDown = true
+})
+starmapElement.addEventListener("mousemove", (e) => {
+    if(isMouseDown && e.which === 1) {
+        // console.log("drag delta: " + (e.clientX - last.x) + ", " + (e.clientY - last.y))
+        last.x = e.clientX
+        last.y = e.clientY
+    } else if(isMouseDown && e.which === 2) {
+        console.log("middle drag delta: " + (e.clientX - last.x) + ", " + (e.clientY - last.y))
+        renderer.rotateHorizontal(e.clientX - last.x)
+        renderer.rotateVertical(-(e.clientY - last.y))
+        last.x = e.clientX
+        last.y = e.clientY
+    } else if(isMouseDown && e.which === 3) {
+        console.log("right drag delta: " + (e.clientX - last.x) + ", " + (e.clientY - last.y))
+        renderer.zoom(-(e.clientY - last.y))
+        last.x = e.clientX
+        last.y = e.clientY
+    }
+})
+starmapElement.addEventListener("mouseup", (e) => {
+    isMouseDown = false
+})
+
+window.oncontextmenu = function () {
+    return false;     // cancel default menu
 }
 
 // export { BlueSpaceRenderer }
