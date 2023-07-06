@@ -194,7 +194,7 @@ class BlueSpaceRenderer {
             // }
             // that.device!.queue.writeBuffer(that.modelMatrixBuffer!, 0, that.modelMatrixArray)
             
-            that.camera.phi += that.ROTATION_SPEED
+            // that.camera.phi += that.ROTATION_SPEED
             that.camera.rotateInSpherical()
             that.device!.queue.writeBuffer(that.viewMatrixBuffer!, 0, (that.camera.viewMatrix) as Float32Array)
 
@@ -250,8 +250,8 @@ class BlueSpaceRenderer {
      * 鼠标点击位置 (cx, cy), cx cy in [0, 1]
      * 鼠标相对位置 (tx, ty), tx ty in [-0.5, 0.5]
      */
-    private readonly SELECT_PLANET_HIT_DISTANCE = 10
-    selectPlanet(cx: number, cy: number): mnId {
+    private readonly SELECT_PLANET_HIT_DISTANCE = 20
+    selectPlanet(cx: number, cy: number): number {
         const tx = cx - 0.5
         const ty = cy - 0.5
 
@@ -264,15 +264,26 @@ class BlueSpaceRenderer {
         vec4.transformMat4(BA4, BA4, inverseViewMatrix)
         const BA: vec3 = vec3.fromValues(BA4[0], BA4[1], BA4[2])
         const A: vec3 = this.camera.position
+        
+        const identity: mat4 = mat4.create()
+        mat4.mul(identity, inverseViewMatrix, this.camera.viewMatrix)
+        console.log(this.camera.viewMatrix)
+        console.log(inverseViewMatrix)
+        console.log(identity)
+
+        console.log(this.planets[0].position)
 
         let mnDis = -1
         let mnId = -1
-        for(let i = 0; i < this.numOfPlanets; i++) {
+        for(let i = 0; i < this.numOfPlanets && i < 10; i++) {
             const CA: vec3 = vec3.create()
             vec3.sub(CA, vec3.fromValues(this.planets[i].position.x, this.planets[i].position.y, this.planets[i].position.z), A)
+
+            console.log("BA: " + BA + ";\nCA: " + CA)
             
             vec3.cross(CA, BA, CA)
             const d = vec3.len(CA) / vec3.len(BA)
+
 
             if(d <= this.SELECT_PLANET_HIT_DISTANCE && (mnId == -1 || d <= mnDis)) {
                 mnId = i
