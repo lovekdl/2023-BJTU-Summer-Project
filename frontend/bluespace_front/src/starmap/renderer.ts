@@ -1,6 +1,7 @@
 import shaderRaw from "./shader.wgsl?raw"
+import postprocessRaw from "./postprocess.wgsl?raw"
 import * as sphere from "./util/sphere"
-import { mat4, vec3 } from 'gl-matrix'
+import { mat4, vec3, vec4 } from 'gl-matrix'
 
 import { Camera } from './camera'
 import { Planet } from './planet'
@@ -215,7 +216,7 @@ class BlueSpaceRenderer {
             throw new Error("Renderer hasn't run")
         }
         this.camera.phi += delta * this.CAMERA_HORIZONTAL_ROTATE_SPEED
-        console.log("camera.phi: " + this.camera.phi)
+        // console.log("camera.phi: " + this.camera.phi)
     }
 
     /**
@@ -228,19 +229,60 @@ class BlueSpaceRenderer {
         }
         this.camera.theta += delta * this.CAMERA_VERTICAL_ROTATE_SPEED
         this.camera.theta = Math.max(0, Math.min(Math.PI, this.camera.theta))
-        console.log("camera.theta: " + this.camera.theta)
+        // console.log("camera.theta: " + this.camera.theta)
     }
 
     /**
      * Zoom接口
      */
-    private readonly CAMERA_ZOOM_SPEED = 1
+    private readonly CAMERA_ZOOM_SPEED = 50
     zoom(delta: number) {
         if(!this.haveRun) {
             throw new Error("Renderer hasn't run")
         }
         this.camera.radius += delta * this.CAMERA_ZOOM_SPEED
-        console.log("camera.radius: " + this.camera.radius)
+        // console.log("camera.radius: " + this.camera.radius)
+    }
+
+    /**
+     * 判断鼠标点击到哪个行星系
+     *
+     * 鼠标点击位置 (cx, cy), cx cy in [0, 1]
+     * 鼠标相对位置 (tx, ty), tx ty in [-0.5, 0.5]
+     */
+    private readonly SELECT_PLANET_HIT_DISTANCE = 10
+    selectPlanet(cx: number, cy: number): mnId {
+        const tx = cx - 0.5
+        const ty = cy - 0.5
+
+        const nearHeight = 2 * this.PERSPECTIVE_NEAR * Math.tan(this.PERSPECTIVE_FOVY * 0.5)
+        const nearWidth = this.canvasSize.width / this.canvasSize.height * nearHeight
+        
+        const BA4: vec4 = vec4.fromValues(tx * nearWidth, ty * nearHeight, this.PERSPECTIVE_NEAR, 0.0)
+        const inverseViewMatrix: mat4 = mat4.create()
+        mat4.invert(inverseViewMatrix, this.camera.viewMatrix)
+        vec4.transformMat4(BA4, BA4, inverseViewMatrix)
+        const BA: vec3 = vec3.fromValues(BA4[0], BA4[1], BA4[2])
+        const A: vec3 = this.camera.position
+
+        let mnDis = -1
+        let mnId = -1
+        for(let i = 0; i < this.numOfPlanets; i++) {
+            const CA: vec3 = vec3.create()
+            vec3.sub(CA, vec3.fromValues(this.planets[i].position.x, this.planets[i].position.y, this.planets[i].position.z), A)
+            
+            vec3.cross(CA, BA, CA)
+            const d = vec3.len(CA) / vec3.len(BA)
+
+            if(d <= this.SELECT_PLANET_HIT_DISTANCE && (mnId == -1 || d <= mnDis)) {
+                mnId = i
+                mnDis = d
+            }
+        }
+
+        console.log(mnId + ": " + mnDis)
+
+        return mnId
     }
     
 
@@ -369,9 +411,11 @@ class BlueSpaceRenderer {
 
         // ===== 录制命令部分 =====
         // 下面这个API的Pass的概念类似于“图层”
+
         const renderPass = encoder.beginRenderPass({
             colorAttachments: [{
                 view: that.context!.getCurrentTexture().createView(),
+                // view: intermediateTexture.createView(),
                 loadOp: 'clear', // 'clear'清空原有内容，'load'保留原有内容
                 clearValue: {r:0, g:0, b:0, a:1}, // 'clear'时使用的颜色
                 storeOp: 'store', // 'store'保留结果，'discard'清除原有信息
@@ -514,6 +558,66 @@ class BlueSpaceRenderer {
         this.pipeline = await that.device!.createRenderPipelineAsync(descriptor)
     }
 
+
+    private async initPostprocess() {
+        const that = this
+
+        // ===== Post-process Pipeline =====
+        const descriptor: GPURenderPipelineDescriptor = {
+            layout: 'auto',
+            vertex: {
+                module: that.device!.createShaderModule({
+                    code: postprocessRaw
+                }),
+                entryPoint: 'vertex_main',
+                // 这里的buffers可以使用多个slots，表示js中需要传入的多个TypedArray
+                // 这里的attributes也可以有多个，表示每个TypedArray被划分到不同的location
+                buffers: [{
+                    arrayStride: 8 * 4, // 因为每个顶点有3个数字，所以步长为3
+                    attributes: [{
+                        // position
+                        shaderLocation: 0,
+                        offset: 0,
+                        format: 'float32x3',
+                    }, {
+                        // normal
+                        shaderLocation: 1,
+                        offset: 3 * 4,
+                        format: 'float32x3',
+                    }, {
+                        // uv
+                        shaderLocation: 2,
+                        offset: 6 * 4,
+                        format: 'float32x2',
+                    }],
+                }]
+            },
+            fragment: {
+                module: that.device!.createShaderModule({
+                    code: postprocessRaw
+                }),
+                entryPoint: 'fragment_main',
+                targets: [{
+                    format: that.format,
+                }],
+            },
+            primitive: {
+                topology: 'triangle-list',
+                // cullMode: 'back', // 因为正方体是封闭的，所以通过这个封闭的图形，来从几何上剔除内部
+            }
+        }
+        this.postprocessPipeline = await that.device!.createRenderPipelineAsync(descriptor)
+
+
+        // ===== Post-process Buffer =====
+        
+        // ===== Post-process Texture =====
+        
+        // ===== Post-process Group =====
+
+        
+    }
+
     /**
      * 初始化Buffer&Array
      * 
@@ -581,6 +685,15 @@ class BlueSpaceRenderer {
             size: that.canvasSize,
             format: 'depth24plus',
             usage: GPUTextureUsage.RENDER_ATTACHMENT,
+        })
+        
+        // ===== Intermediate Texture =====
+        const intermediateTexture = this.device!.createTexture({
+            size: that.canvasSize,
+            format: 'rgba8unorm',
+            usage:
+                GPUTextureUsage.TEXTURE_BINDING |
+                GPUTextureUsage.RENDER_ATTACHMENT,
         })
 
         // ===== Texture =====
@@ -685,35 +798,40 @@ try {
 }
 
 const starmapElement = document.getElementById("StarMap")
-let isMouseDown: boolean = false
+let isMouseMiddleDown: boolean = false
 let last = {x: 0, y: 0}
 starmapElement.addEventListener("mousedown", (e) => {
-    console.log("click in: "+e.clientX+","+e.clientY)
-    last.x = e.clientX
-    last.y = e.clientY
-
-    isMouseDown = true
+    if(e.which === 1) {
+        const cx = e.offsetX / renderer.canvasSize.width
+        const cy = (e.offsetY - 64) / (renderer.canvasSize.height - 64)
+        const planetId = renderer.selectPlanet(cx, cy)
+        console.log(e.offsetX, e.offsetY, cx, cy, planetId)
+    } else if(e.which === 2) {
+        isMouseMiddleDown = true
+        last.x = e.clientX
+        last.y = e.clientY
+    }
 })
 starmapElement.addEventListener("mousemove", (e) => {
-    if(isMouseDown && e.which === 1) {
-        // console.log("drag delta: " + (e.clientX - last.x) + ", " + (e.clientY - last.y))
-        last.x = e.clientX
-        last.y = e.clientY
-    } else if(isMouseDown && e.which === 2) {
-        console.log("middle drag delta: " + (e.clientX - last.x) + ", " + (e.clientY - last.y))
+    if(isMouseMiddleDown && e.which === 2) {
+        // console.log("middle drag delta: " + (e.clientX - last.x) + ", " + (e.clientY - last.y))
         renderer.rotateHorizontal(e.clientX - last.x)
         renderer.rotateVertical(-(e.clientY - last.y))
-        last.x = e.clientX
-        last.y = e.clientY
-    } else if(isMouseDown && e.which === 3) {
-        console.log("right drag delta: " + (e.clientX - last.x) + ", " + (e.clientY - last.y))
-        renderer.zoom(-(e.clientY - last.y))
         last.x = e.clientX
         last.y = e.clientY
     }
 })
 starmapElement.addEventListener("mouseup", (e) => {
-    isMouseDown = false
+    if(e.which === 2) {
+        isMouseMiddleDown = false
+    }
+})
+starmapElement.addEventListener("mousewheel", (e) => {
+    if(e.deltaY > 0) {
+        renderer.zoom(1)
+    } else if(e.deltaY < 0) {
+        renderer.zoom(-1)
+    }
 })
 
 window.oncontextmenu = function () {
