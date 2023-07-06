@@ -1,5 +1,7 @@
 import shaderRaw from "./shader.wgsl?raw"
-import postprocessRaw from "./postprocess.wgsl?raw"
+import composite1Shader from "./composite1.wgsl?raw"
+import composite2Shader from "./composite2.wgsl?raw"
+import finalShader from "./final.wgsl?raw"
 import * as sphere from "./util/sphere"
 import * as rectangle from "./util/rectangle"
 import { mat4, vec3, vec4 } from 'gl-matrix'
@@ -61,10 +63,12 @@ class BlueSpaceRenderer {
     private textureGroup?: GPUBindGroup = undefined
 
     // ===== Post-process =====
-    private postprocessPipeline?: GPURenderPipeline = undefined
-    private postprocessBuffer?: {vertex: GPUBuffer, index: GPUBuffer, numOfVertex: number, numOfIndex: number} = undefined
-    private postprocessTexture?: GPUTexture = undefined
-    private postprocessGroup?: GPUBindGroup = undefined
+    private postprocess?: Array<{
+        pipeline: GPURenderPipeline,
+        buffer: {vertex: GPUBuffer, index: GPUBuffer, numOfVertex: number, numOfIndex: number},
+        texture: GPUTexture,
+        group: GPUBindGroup,
+    }> = undefined
 
     // ===== ===== ===== Data Properties ===== ===== =====
 
@@ -80,8 +84,12 @@ class BlueSpaceRenderer {
 
     // ===== ===== ===== Constants ===== ===== =====
 
+    // 数学计算相关
+    private readonly PI: number = Math.PI
+    private readonly PI2: number = 2 * Math.PI
+
     // 摄像机(View矩阵)相关
-    private readonly CAMERA_THETA: number = Math.PI / 9 * 2
+    private readonly CAMERA_THETA: number = Math.PI / 9 * 3
     private readonly CAMERA_PHI: number = 0
     private readonly CAMERA_RADIUS: number = 1000
 
@@ -102,6 +110,9 @@ class BlueSpaceRenderer {
 
     // Update相关
     private readonly ROTATION_SPEED = Math.PI / 3600
+
+    // Post-process图层数量
+    private readonly POSTPROCESS_NUM = 3
 
     // ===== ===== ===== Public Methods ===== ===== =====
 
@@ -225,6 +236,7 @@ class BlueSpaceRenderer {
             throw new Error("Renderer hasn't run")
         }
         this.camera.phi += delta * this.CAMERA_HORIZONTAL_ROTATE_SPEED
+        // this.camera.phi = Math.max(0, Math.min(this.PI2, this.camera.phi))
         // console.log("camera.phi: " + this.camera.phi)
     }
 
@@ -237,7 +249,7 @@ class BlueSpaceRenderer {
             throw new Error("Renderer hasn't run")
         }
         this.camera.theta += delta * this.CAMERA_VERTICAL_ROTATE_SPEED
-        this.camera.theta = Math.max(0, Math.min(Math.PI, this.camera.theta))
+        this.camera.theta = Math.max(0.01, Math.min(Math.PI, this.camera.theta))
         // console.log("camera.theta: " + this.camera.theta)
     }
 
@@ -245,11 +257,14 @@ class BlueSpaceRenderer {
      * Zoom接口
      */
     private readonly CAMERA_ZOOM_SPEED = 50
+    private readonly CAMERA_RADIUS_MIN = 100
+    private readonly CAMERA_RADIUS_MAX = 3000
     zoom(delta: number) {
         if(!this.haveRun) {
             throw new Error("Renderer hasn't run")
         }
         this.camera.radius += delta * this.CAMERA_ZOOM_SPEED
+        this.camera.radius = Math.max(this.CAMERA_RADIUS_MIN, Math.min(this.CAMERA_RADIUS_MAX, this.camera.radius))
         // console.log("camera.radius: " + this.camera.radius)
     }
 
@@ -440,7 +455,7 @@ class BlueSpaceRenderer {
             const renderPass = encoder.beginRenderPass({
                 colorAttachments: [{
                     // view: that.context!.getCurrentTexture().createView(),
-                    view: that.postprocessTexture!.createView(),
+                    view: that.postprocess![0].texture!.createView(),
                     loadOp: 'clear', // 'clear'清空原有内容，'load'保留原有内容
                     clearValue: {r:0, g:0, b:0, a:1}, // 'clear'时使用的颜色
                     storeOp: 'store', // 'store'保留结果，'discard'清除原有信息
@@ -464,22 +479,34 @@ class BlueSpaceRenderer {
             renderPass.end()
         }
 
-        {
-            const postprocessPass = encoder.beginRenderPass({
-                colorAttachments: [{
-                    view: that.context!.getCurrentTexture().createView(),
-                    loadOp: 'clear', // 'clear'清空原有内容，'load'保留原有内容
-                    clearValue: {r:0, g:0, b:0, a:1}, // 'clear'时使用的颜色
-                    storeOp: 'store', // 'store'保留结果，'discard'清除原有信息
-                }],
-            })
+        for(let i = 0; i < this.POSTPROCESS_NUM; i++) {
+            let postprocessPass: GPURenderPassEncoder
+            if(i != this.POSTPROCESS_NUM - 1) {
+                postprocessPass = encoder.beginRenderPass({
+                    colorAttachments: [{
+                        view: that.postprocess![i + 1].texture!.createView(),
+                        loadOp: 'clear', // 'clear'清空原有内容，'load'保留原有内容
+                        clearValue: {r:0, g:0, b:0, a:1}, // 'clear'时使用的颜色
+                        storeOp: 'store', // 'store'保留结果，'discard'清除原有信息
+                    }],
+                })
+            } else {
+                postprocessPass = encoder.beginRenderPass({
+                    colorAttachments: [{
+                        view: that.context!.getCurrentTexture().createView(),
+                        loadOp: 'clear', // 'clear'清空原有内容，'load'保留原有内容
+                        clearValue: {r:0, g:0, b:0, a:1}, // 'clear'时使用的颜色
+                        storeOp: 'store', // 'store'保留结果，'discard'清除原有信息
+                    }],
+                })
+            }
             // 绑定Pipeline和BindGroup
-            postprocessPass.setPipeline(that.postprocessPipeline!)
-            postprocessPass.setBindGroup(0, that.postprocessGroup!)
+            postprocessPass.setPipeline(that.postprocess![i].pipeline)
+            postprocessPass.setBindGroup(0, that.postprocess![i].group)
             // 绑定Vertex/IndexBuffer，并且按Index绘制
-            postprocessPass.setVertexBuffer(0, that.postprocessBuffer!.vertex)
-            postprocessPass.setIndexBuffer(that.postprocessBuffer!.index, 'uint16')
-            postprocessPass.drawIndexed(that.postprocessBuffer!.numOfIndex, 1, 0, 0, 0)
+            postprocessPass.setVertexBuffer(0, that.postprocess![i].buffer.vertex)
+            postprocessPass.setIndexBuffer(that.postprocess![i].buffer.index, 'uint16')
+            postprocessPass.drawIndexed(that.postprocess![i].buffer.numOfIndex, 1, 0, 0, 0)
             // 结束
             postprocessPass.end()
         }
@@ -784,89 +811,107 @@ class BlueSpaceRenderer {
     private async initPostprocess() {
         const that = this
 
-        // ===== Post-process Pipeline =====
-        const descriptor: GPURenderPipelineDescriptor = {
-            layout: 'auto',
-            vertex: {
-                module: that.device!.createShaderModule({
-                    code: postprocessRaw
-                }),
-                entryPoint: 'vertex_main',
-                buffers: [{
-                    arrayStride: 5 * 4,
-                    attributes: [{
-                        // position
-                        shaderLocation: 0,
-                        offset: 0,
-                        format: 'float32x3',
-                    }, {
-                        // uv
-                        shaderLocation: 1,
-                        offset: 3 * 4,
-                        format: 'float32x2',
+        this.postprocess = new Array(this.POSTPROCESS_NUM)
+
+        const postprocessShaders = [
+            composite1Shader,
+            composite2Shader,
+            finalShader,
+        ]
+
+        for(let i = 0; i <= 2; i++) {
+            // ===== Post-process Pipeline =====
+            const descriptor: GPURenderPipelineDescriptor = {
+                layout: 'auto',
+                vertex: {
+                    module: that.device!.createShaderModule({
+                        code: postprocessShaders[i]
+                    }),
+                    entryPoint: 'vertex_main',
+                    buffers: [{
+                        arrayStride: 5 * 4,
+                        attributes: [{
+                            // position
+                            shaderLocation: 0,
+                            offset: 0,
+                            format: 'float32x3',
+                        }, {
+                            // uv
+                            shaderLocation: 1,
+                            offset: 3 * 4,
+                            format: 'float32x2',
+                        }],
+                    }]
+                },
+                fragment: {
+                    module: that.device!.createShaderModule({
+                        code: postprocessShaders[i]
+                    }),
+                    entryPoint: 'fragment_main',
+                    targets: [{
+                        format: that.format,
                     }],
-                }]
-            },
-            fragment: {
-                module: that.device!.createShaderModule({
-                    code: postprocessRaw
+                },
+                primitive: {
+                    topology: 'triangle-list',
+                }
+            }
+            const pipeline = await that.device!.createRenderPipelineAsync(descriptor)
+
+            // ===== Post-process Buffer =====
+            const buffer = {
+                vertex: that.device!.createBuffer({
+                    label: 'GPUBuffer stores vertex',
+                    size: rectangle.vertex.byteLength,
+                    usage: GPUBufferUsage.VERTEX | GPUBufferUsage.COPY_DST,
                 }),
-                entryPoint: 'fragment_main',
-                targets: [{
-                    format: that.format,
+                index: that.device!.createBuffer({
+                    label: 'GPUBuffer stores index',
+                    size: rectangle.index.byteLength,
+                    usage: GPUBufferUsage.INDEX | GPUBufferUsage.COPY_DST,
+                }),
+                numOfVertex: rectangle.vertexCount,
+                numOfIndex: rectangle.indexCount,
+            }
+            this.device!.queue.writeBuffer(buffer.vertex, 0, rectangle.vertex)
+            this.device!.queue.writeBuffer(buffer.index, 0, rectangle.index)
+
+            // ===== Intermediate Texture =====
+            // intermediate texture
+            const texture = this.device!.createTexture({
+                size: that.canvasSize,
+                format: 'bgra8unorm',
+                usage:
+                    GPUTextureUsage.TEXTURE_BINDING |
+                    GPUTextureUsage.RENDER_ATTACHMENT,
+            })
+            
+            // ===== Post-process Group =====
+            const group = this.device!.createBindGroup({
+                label: 'Postprocess Group with intermediate texture and sampler',
+                layout: pipeline.getBindGroupLayout(0),
+                entries: [{
+                    binding: 0,
+                    resource: texture.createView(),
+                }, {
+                    binding: 1,
+                    resource: that.sampler!,
+                }, {
+                    binding: 2,
+                    resource: {
+                        buffer: that.environmentBuffer!,
+                    }
                 }],
-            },
-            primitive: {
-                topology: 'triangle-list',
+            })
+
+            this.postprocess[i] = {
+                pipeline,
+                buffer,
+                texture,
+                group,
             }
         }
-        this.postprocessPipeline = await that.device!.createRenderPipelineAsync(descriptor)
 
-        // ===== Post-process Buffer =====
-        this.postprocessBuffer = {
-            vertex: that.device!.createBuffer({
-                label: 'GPUBuffer stores vertex',
-                size: rectangle.vertex.byteLength,
-                usage: GPUBufferUsage.VERTEX | GPUBufferUsage.COPY_DST,
-            }),
-            index: that.device!.createBuffer({
-                label: 'GPUBuffer stores index',
-                size: rectangle.index.byteLength,
-                usage: GPUBufferUsage.INDEX | GPUBufferUsage.COPY_DST,
-            }),
-            numOfVertex: rectangle.vertexCount,
-            numOfIndex: rectangle.indexCount,
-        }
-        this.device!.queue.writeBuffer(that.postprocessBuffer!.vertex, 0, rectangle.vertex)
-        this.device!.queue.writeBuffer(that.postprocessBuffer!.index, 0, rectangle.index)
-
-        // ===== Intermediate Texture =====
-        // intermediate texture
-        this.postprocessTexture = this.device!.createTexture({
-            size: that.canvasSize,
-            format: 'bgra8unorm',
-            usage:
-                GPUTextureUsage.TEXTURE_BINDING |
-                GPUTextureUsage.RENDER_ATTACHMENT,
-        })
-        
-        // ===== Post-process Group =====
-        this.postprocessGroup = this.device!.createBindGroup({
-            label: 'Postprocess Group with intermediate texture and sampler',
-            layout: that.postprocessPipeline!.getBindGroupLayout(0),
-            entries: [{
-                binding: 0,
-                resource: that.postprocessTexture!.createView(),
-            }, {
-                binding: 1,
-                resource: that.sampler!,
-            }, {
-                binding: 2,
-                resource: {
-                    buffer: that.environmentBuffer!,
-                }
-            }],
-        })
     }
 }
 

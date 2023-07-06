@@ -76,10 +76,10 @@ fn STAR_F() -> vec4<f32> {
     return vec4(1.0, 0.89, 0.71, 1.0);
 }
 fn STAR_G() -> vec4<f32> {
-    return vec4(1.0, 1.0, 0.0, 1.0);
+    return vec4(1.0, 0.9, 0.0, 1.0);
 }
 fn STAR_K() -> vec4<f32> {
-    return vec4(1.0, 0.9, 0.0, 1.0);
+    return vec4(0.9, 0.8, 0.0, 1.0);
     // return vec4(1.0, 0.64, 0.0, 1.0);
 }
 fn STAR_M() -> vec4<f32> {
