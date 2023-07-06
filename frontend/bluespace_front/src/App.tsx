@@ -27,6 +27,7 @@ export default function App() {
         />
 
       <Route path = "/login" element={<LoginForm />} />
+      <Route path = "/dataanalysis" element={}/>
       </Routes>
 
       
