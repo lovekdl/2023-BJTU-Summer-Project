@@ -8,8 +8,6 @@ import { mat4, vec4, vec3, vec2 } from 'gl-matrix'
 
 import { Camera } from './camera'
 import { Planet } from './planet'
-import { render } from "react-dom"
-import derivative from "antd/es/theme/themes/default"
 
 /**
  * 蓝色空间渲染器
@@ -52,6 +50,7 @@ class BlueSpaceRenderer {
     private starShaderTypeArray: Float32Array = new Float32Array()
 
     private environmentBuffer?: GPUBuffer = undefined
+    private cameraPositionBuffer?: GPUBuffer = undefined
 
     // created when initTexture
     private depthTexture?: GPUTexture = undefined
@@ -89,10 +88,6 @@ class BlueSpaceRenderer {
 
     // ===== ===== ===== Constants ===== ===== =====
 
-    // 数学计算相关
-    private readonly PI: number = Math.PI
-    private readonly PI2: number = 2 * Math.PI
-
     // 摄像机(View矩阵)相关
     private readonly CAMERA_THETA: number = Math.PI / 9 * 3
     private readonly CAMERA_PHI: number = 0
@@ -105,16 +100,12 @@ class BlueSpaceRenderer {
 
     // 星球生成相关
     private readonly COMMON_SPEED: number = 0.01
-    private readonly POSITION_RANGE: number = 50
 
     // 旋臂分布相关
     private readonly NORMAL_DIST_VARIANCE = 70
     private readonly SPIRAL_SIZE = 100
-    private readonly SPIRAL_L = -0.3 * Math.PI
+    private readonly SPIRAL_L = 0.5 * Math.PI
     private readonly SPIRAL_R = 2.5 * Math.PI
-
-    // Update相关
-    private readonly ROTATION_SPEED = Math.PI / 3600
 
     // Post-process相关
     private readonly INTERMEDIATE_TEXTURE_NUM = 3
@@ -227,6 +218,7 @@ class BlueSpaceRenderer {
             that.camera.rotateInSpherical()
             that.camera.lookAt()
             that.device!.queue.writeBuffer(that.viewMatrixBuffer!, 0, (that.camera.viewMatrix) as Float32Array)
+            that.device!.queue.writeBuffer(that.cameraPositionBuffer!, 0, that.camera.position as Float32Array)
 
             that.draw()
 
@@ -288,7 +280,7 @@ class BlueSpaceRenderer {
         A: false,
         D: false,
         Space: false,
-        AltLeft: false,
+        ControlLeft: false,
     }
     private cameraTargetMoveUpdate() {
         let direct: vec2 = vec2.fromValues(this.camera.gaze[0], this.camera.gaze[2])
@@ -314,7 +306,7 @@ class BlueSpaceRenderer {
         if(this.buttonPressed.Space) {
             this.camera.target[1] += this.CAMERA_MOVE_SPEED
         }
-        if(this.buttonPressed.AltLeft) {
+        if(this.buttonPressed.ControlLeft) {
             this.camera.target[1] -= this.CAMERA_MOVE_SPEED
         }
     }
@@ -746,6 +738,13 @@ class BlueSpaceRenderer {
         this.device!.queue.writeBuffer(that.environmentBuffer!, 0,
             Float32Array.from([that.canvasSize.width, that.canvasSize.height])
         )
+        
+        // ===== Camera Position Buffer =====
+        this.cameraPositionBuffer = that.device!.createBuffer({
+            size: 3 * 4,
+            usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
+        })
+        this.device!.queue.writeBuffer(that.cameraPositionBuffer!, 0, that.camera.position as Float32Array)
     }
 
     /**
@@ -848,9 +847,10 @@ class BlueSpaceRenderer {
                 resource: that.sampler!,
             }, {
                 binding: 2,
-                resource: {
-                    buffer: that.environmentBuffer!,
-                }
+                resource: { buffer: that.environmentBuffer! }
+            }, {
+                binding: 3,
+                resource: { buffer: that.cameraPositionBuffer! }
             }],
         })
     }
@@ -1075,10 +1075,10 @@ document.addEventListener("keydown", e => {
         renderer.buttonPressed.D = true
     }
 	if(e.code === "Space") {
-        renderer.buttonPressed.Space = true
+        // renderer.buttonPressed.Space = true
     }
-	if(e.code === "AltLeft") {
-        renderer.buttonPressed.AltLeft = true
+	if(e.code === "ControlLeft") {
+        // renderer.buttonPressed.ControlLeft = true
     }
 })
 document.addEventListener("keyup", e => {
@@ -1097,8 +1097,8 @@ document.addEventListener("keyup", e => {
 	if(e.code === "Space") {
         renderer.buttonPressed.Space = false
     }
-	if(e.code === "AltLeft") {
-        renderer.buttonPressed.AltLeft = false
+	if(e.code === "ControlLeft") {
+        renderer.buttonPressed.ControlLeft = false
     }
 })
 
