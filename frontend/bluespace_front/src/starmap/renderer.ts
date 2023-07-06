@@ -245,6 +245,11 @@ class BlueSpaceRenderer {
     }
 
     /**
+     * 返回canvasSize
+     */
+    // TODO
+
+    /**
      * 判断鼠标点击到哪个行星系
      *
      * 鼠标点击位置 (cx, cy), cx cy in [0, 1]
@@ -267,19 +272,16 @@ class BlueSpaceRenderer {
         
         const identity: mat4 = mat4.create()
         mat4.mul(identity, inverseViewMatrix, this.camera.viewMatrix)
-        console.log(this.camera.viewMatrix)
-        console.log(inverseViewMatrix)
-        console.log(identity)
 
         console.log(this.planets[0].position)
 
         let mnDis = -1
         let mnId = -1
-        for(let i = 0; i < this.numOfPlanets && i < 10; i++) {
+        for(let i = 0; i < this.numOfPlanets; i++) {
             const CA: vec3 = vec3.create()
             vec3.sub(CA, vec3.fromValues(this.planets[i].position.x, this.planets[i].position.y, this.planets[i].position.z), A)
 
-            console.log("BA: " + BA + ";\nCA: " + CA)
+            // console.log("BA: " + BA + ";\nCA: " + CA)
             
             vec3.cross(CA, BA, CA)
             const d = vec3.len(CA) / vec3.len(BA)
@@ -811,7 +813,7 @@ try {
 const starmapElement = document.getElementById("StarMap")
 let isMouseMiddleDown: boolean = false
 let last = {x: 0, y: 0}
-starmapElement.addEventListener("mousedown", (e) => {
+starmapElement!.addEventListener("mousedown", (e) => {
     if(e.which === 1) {
         const cx = e.offsetX / renderer.canvasSize.width
         const cy = (e.offsetY - 64) / (renderer.canvasSize.height - 64)
@@ -823,7 +825,7 @@ starmapElement.addEventListener("mousedown", (e) => {
         last.y = e.clientY
     }
 })
-starmapElement.addEventListener("mousemove", (e) => {
+starmapElement!.addEventListener("mousemove", (e) => {
     if(isMouseMiddleDown && e.which === 2) {
         // console.log("middle drag delta: " + (e.clientX - last.x) + ", " + (e.clientY - last.y))
         renderer.rotateHorizontal(e.clientX - last.x)
@@ -832,15 +834,15 @@ starmapElement.addEventListener("mousemove", (e) => {
         last.y = e.clientY
     }
 })
-starmapElement.addEventListener("mouseup", (e) => {
+starmapElement!.addEventListener("mouseup", (e) => {
     if(e.which === 2) {
         isMouseMiddleDown = false
     }
 })
-starmapElement.addEventListener("mousewheel", (e) => {
-    if(e.deltaY > 0) {
+starmapElement!.addEventListener("mousewheel", (e) => {
+    if((e as WheelEvent).deltaY > 0) {
         renderer.zoom(1)
-    } else if(e.deltaY < 0) {
+    } else if((e as WheelEvent).deltaY < 0) {
         renderer.zoom(-1)
     }
 })
