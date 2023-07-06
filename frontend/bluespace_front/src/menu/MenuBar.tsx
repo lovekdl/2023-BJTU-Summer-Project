@@ -34,12 +34,12 @@ function ButtonAppBar(props: Props) {
   }
 
   return (
+    
     <div className='menu'>
+      
       <AppBar color='inherit' position='static'>
         <Toolbar className = 'TollBar'>
-          <IconButton  color="inherit" aria-label="Menu">
-            <MenuIcon />
-          </IconButton>
+        
           
           <MenuScroll></MenuScroll>
 

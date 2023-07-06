@@ -68,7 +68,7 @@ export default function MenuScroll() {
         }}
         className="ul1"
       >
-        <li className="li1">Item 1</li>
+        <li className="li1">Item 1 </li>
         <li className="li1">Item 2 </li>
         <li className="li1">Item 3 </li>
         <li className="li1">Item 4 </li>

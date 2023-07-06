@@ -20,10 +20,11 @@ export default function App() {
         <Route path = "/" element={
           <div>
             <ButtonAppBar ></ButtonAppBar>
-            {[1, 2].map((image) => (
-              <MainComponent id={image} />
-            ))}
-          </div>} 
+            
+              <MainComponent></MainComponent>
+            
+          </div>
+          }
         />
 
       <Route path = "/login" element={<LoginForm />} />
