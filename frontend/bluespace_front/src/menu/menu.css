@@ -26,6 +26,10 @@
   cursor: pointer;
 }
 
+.MenuAvatar {
+  cursor:pointer;
+}
+
 .ul1,
 .li1 {
   list-style: none;
