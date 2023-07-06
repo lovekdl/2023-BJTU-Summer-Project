@@ -19,3 +19,23 @@
 | 6    | K    | 淡橙色 | 0.7 ~ 0.96 R  | 12.1%     |
 | 7    | M    | 橙红色 | <= 0.7 R      | 76.45%    |
 
+## 3. About Shader
+
+### 3.1 Shader Pass
+
+* Planet -> `texture[0]`
+* `texture[0]` -> Composite1 -> `texture[1]`
+* `texture[1]` -> Composite2 -> `texture[2]`
+* `texture[0]` + `texture[2]` -> Final -> `context.texture`
+
+### 3.2 Uniform Variables
+
+#### 3.2.1 EnvironmentArray
+
+* f32
+* 0: Canvas Width
+* 1: Canvas Height
+* 2: Camera Position X
+* 3: Camera Position Y
+* 4: Camera Position Z
+* 5: 

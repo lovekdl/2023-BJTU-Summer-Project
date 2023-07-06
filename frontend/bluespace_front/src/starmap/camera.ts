@@ -10,41 +10,15 @@ import { mat4, vec3 } from 'gl-matrix'
  */
 class Camera {
     // 属性
-    private internalPosition: vec3 = vec3.fromValues(0, 0, 0)
-    private internalGaze: vec3 = vec3.fromValues(0, 0, -1)
-    private internalUp: vec3 = vec3.fromValues(0, 1, 0)
-    private internalViewMatrix: mat4
+    public position: vec3 = vec3.fromValues(0, 0, 0)
+    public gaze: vec3 = vec3.fromValues(0, 0, -1)
+    public up: vec3 = vec3.fromValues(0, 1, 0)
+    public target: vec3 = vec3.fromValues(0, 0, 0)
+    private internalViewMatrix: mat4 = mat4.create()
 
     // constructor
     constructor(public theta: number, public phi: number, public radius: number) {
-        this.internalViewMatrix = this.lookAtOrigin()
-    }
-
-    // position
-    get position(): vec3 {
-        return this.internalPosition
-    }
-    set position(position: vec3) {
-        this.internalPosition = position
-        this.internalViewMatrix = this.lookAtOrigin()
-    }
-
-    // gaze
-    get gaze(): vec3 {
-        return this.internalGaze
-    }
-    set gaze(gaze: vec3) {
-        this.internalGaze = gaze
-        this.internalViewMatrix = this.lookAtOrigin()
-    }
-
-    // up
-    get up(): vec3 {
-        return this.internalUp
-    }
-    set up(up: vec3) {
-        this.internalUp = up
-        this.internalViewMatrix = this.lookAtOrigin()
+        this.lookAt()
     }
 
     // view matrix
@@ -75,6 +49,7 @@ class Camera {
         // console.log("v: " + v)
 
         this.position = vec3.fromValues(radius * x, radius * y, radius * z)
+        vec3.add(this.position, this.position, this.target)
         this.gaze = vec3.fromValues(-x, -y, -z)
         if(Math.abs(theta - Math.PI/2) <= 1e-5) {
             this.up = vec3.fromValues(0, 1, 0)
@@ -89,36 +64,17 @@ class Camera {
         // console.log("up: " + this.up)
     }
 
-    // 通过Camera的position, gaze, up得到viewMatrix
-    // private getViewMatrix(): mat4 {
-    //     let viewMatrix: mat4 = mat4.create()
-    //     // opengl 这玩意是先列再行
-    //     // 所以实际上，下面这个矩阵按习惯读是Tview的转置
-    //     const Tview: mat4 = mat4.fromValues(
-    //         1, 0, 0, 0,
-    //         0, 1, 0, 0,
-    //         0, 0, 1, 0, 
-    //         this.position[0], this.position[1], this.position[2], 1
-    //     )
-    //     let gxt: vec3 = vec3.create()
-    //     vec3.cross(gxt, this.gaze, this.up)
-    //     const Rview: mat4 = mat4.fromValues(
-    //         gxt[0], gxt[1], gxt[2], 0,
-    //         this.up[0], this.up[1], this.up[2], 0,
-    //         -this.gaze[0], -this.gaze[1], -this.gaze[2], 0,
-    //         0, 0, 0, 1,
-    //     )
-    //     mat4.multiply(viewMatrix, Rview, Tview)
-    //     return viewMatrix
-    // }
-
     // 通过Camera的position, gaze, up得到viewMatrix 【版本2】
-    private lookAtOrigin(): mat4 {
+    lookAt(target?: vec3) {
         const that = this
+
+        if(!target) {
+            target = this.target
+        }
 
         let F = vec3.create()
         {
-            vec3.subtract(F, that.position, vec3.create())
+            vec3.subtract(F, that.position, this.target)
             vec3.normalize(F, F)
         }
 
@@ -138,7 +94,8 @@ class Camera {
         t[0] = vec3.dot(this.position, R)
         t[1] = vec3.dot(this.position, U)
         t[2] = vec3.dot(this.position, F)
-        return mat4.fromValues(
+
+        this.viewMatrix = mat4.fromValues(
             R[0], U[0], F[0], 0,
             R[1], U[1], F[1], 0,
             R[2], U[2], F[2], 0,

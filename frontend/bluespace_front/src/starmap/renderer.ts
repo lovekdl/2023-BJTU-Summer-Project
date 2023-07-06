@@ -1,13 +1,15 @@
-import shaderRaw from "./shader.wgsl?raw"
+import planetShader from "./planet.wgsl?raw"
 import composite1Shader from "./composite1.wgsl?raw"
 import composite2Shader from "./composite2.wgsl?raw"
 import finalShader from "./final.wgsl?raw"
 import * as sphere from "./util/sphere"
 import * as rectangle from "./util/rectangle"
-import { mat4, vec3, vec4 } from 'gl-matrix'
+import { mat4, vec4, vec3, vec2 } from 'gl-matrix'
 
 import { Camera } from './camera'
 import { Planet } from './planet'
+import { render } from "react-dom"
+import derivative from "antd/es/theme/themes/default"
 
 /**
  * 蓝色空间渲染器
@@ -63,11 +65,14 @@ class BlueSpaceRenderer {
     private textureGroup?: GPUBindGroup = undefined
 
     // ===== Post-process =====
+    private intermediateTextures?: Array<GPUTexture> = undefined
+
     private postprocess?: Array<{
+        label: string,
         pipeline: GPURenderPipeline,
         buffer: {vertex: GPUBuffer, index: GPUBuffer, numOfVertex: number, numOfIndex: number},
-        texture: GPUTexture,
         group: GPUBindGroup,
+        colorAttachment?: GPUTextureView,
     }> = undefined
 
     // ===== ===== ===== Data Properties ===== ===== =====
@@ -111,7 +116,8 @@ class BlueSpaceRenderer {
     // Update相关
     private readonly ROTATION_SPEED = Math.PI / 3600
 
-    // Post-process图层数量
+    // Post-process相关
+    private readonly INTERMEDIATE_TEXTURE_NUM = 3
     private readonly POSTPROCESS_NUM = 3
 
     // ===== ===== ===== Public Methods ===== ===== =====
@@ -176,6 +182,7 @@ class BlueSpaceRenderer {
         // this.camera.gaze = vec3.fromValues(0, -1, 0)
         // this.camera.up = vec3.fromValues(0, 0, -1)
         this.camera.rotateInSpherical()
+        this.camera.lookAt()
         that.device!.queue.writeBuffer(that.viewMatrixBuffer!, 0, (this.camera.viewMatrix) as Float32Array)
         that.device!.queue.writeBuffer(that.projectionMatrixBuffer!, 0, this.projectionMatrix as Float32Array)
         
@@ -183,6 +190,7 @@ class BlueSpaceRenderer {
         console.log("projectionMatrix: " + this.projectionMatrix)
         
         // ===== Load Planets to GPU =====
+        console.log("len: " + that.planets.length)
         for(let i = 0; i < that.planets.length; i++) {
             that.planets[i].update()
             that.modelMatrixArray.set(that.planets[i].modelMatrix as Float32Array, 4 * 4 * i)
@@ -215,7 +223,9 @@ class BlueSpaceRenderer {
             // that.device!.queue.writeBuffer(that.modelMatrixBuffer!, 0, that.modelMatrixArray)
             
             // that.camera.phi += that.ROTATION_SPEED
+            that.cameraTargetMoveUpdate()
             that.camera.rotateInSpherical()
+            that.camera.lookAt()
             that.device!.queue.writeBuffer(that.viewMatrixBuffer!, 0, (that.camera.viewMatrix) as Float32Array)
 
             that.draw()
@@ -256,7 +266,7 @@ class BlueSpaceRenderer {
     /**
      * Zoom接口
      */
-    private readonly CAMERA_ZOOM_SPEED = 50
+    private readonly CAMERA_ZOOM_SPEED = 100
     private readonly CAMERA_RADIUS_MIN = 100
     private readonly CAMERA_RADIUS_MAX = 3000
     zoom(delta: number) {
@@ -266,6 +276,47 @@ class BlueSpaceRenderer {
         this.camera.radius += delta * this.CAMERA_ZOOM_SPEED
         this.camera.radius = Math.max(this.CAMERA_RADIUS_MIN, Math.min(this.CAMERA_RADIUS_MAX, this.camera.radius))
         // console.log("camera.radius: " + this.camera.radius)
+    }
+
+    /**
+     * 移动摄像机中心接口
+     */
+    private readonly CAMERA_MOVE_SPEED = 1
+    public buttonPressed = {
+        W: false,
+        S: false,
+        A: false,
+        D: false,
+        Space: false,
+        AltLeft: false,
+    }
+    private cameraTargetMoveUpdate() {
+        let direct: vec2 = vec2.fromValues(this.camera.gaze[0], this.camera.gaze[2])
+        vec2.normalize(direct, direct)
+        direct[0] *= this.CAMERA_MOVE_SPEED
+        direct[1] *= this.CAMERA_MOVE_SPEED
+        if(this.buttonPressed.W) {
+            this.camera.target[0] += direct[0] 
+            this.camera.target[2] += direct[1] 
+        }
+        if(this.buttonPressed.S) {
+            this.camera.target[0] -= direct[0] 
+            this.camera.target[2] -= direct[1] 
+        }
+        if(this.buttonPressed.A) {
+            this.camera.target[0] += direct[1]
+            this.camera.target[2] -= direct[0]
+        }
+        if(this.buttonPressed.D) {
+            this.camera.target[0] -= direct[1]
+            this.camera.target[2] += direct[0]
+        }
+        if(this.buttonPressed.Space) {
+            this.camera.target[1] += this.CAMERA_MOVE_SPEED
+        }
+        if(this.buttonPressed.AltLeft) {
+            this.camera.target[1] -= this.CAMERA_MOVE_SPEED
+        }
     }
 
     /**
@@ -371,10 +422,19 @@ class BlueSpaceRenderer {
 
         let planets = new Array(num)
         let idx = 0;
+        
+        planets[0] = Planet.createPlanet(
+            {x:0, y:0, z:0},
+            {x:0, y:0, z:0},
+            {x:0, y:0, z:0},
+            Planet.STAR_SHADER_TYPE_BLACKHOLE,
+        )
+        idx++
+
         for(let i = 0; i <= 3; i++) { // 枚举每条旋臂
             let t = L
             const angle = i * Math.PI / 2.0
-            for(let j = 0; j < deltaSpiral || (i == 3 && idx < num); j++, idx++, t += deltaStar) { // 枚举旋臂上的每个位置
+            for(let j = 0; (i != 3 && j < deltaSpiral) || (i == 3 && idx < num); j++, idx++, t += deltaStar) { // 枚举旋臂上的每个位置
                 
                 const origin = this.equaiangularSpiral(angle, t, this.SPIRAL_SIZE, 0.4)
                 const delta = {
@@ -455,7 +515,7 @@ class BlueSpaceRenderer {
             const renderPass = encoder.beginRenderPass({
                 colorAttachments: [{
                     // view: that.context!.getCurrentTexture().createView(),
-                    view: that.postprocess![0].texture!.createView(),
+                    view: that.intermediateTextures![0].createView(),
                     loadOp: 'clear', // 'clear'清空原有内容，'load'保留原有内容
                     clearValue: {r:0, g:0, b:0, a:1}, // 'clear'时使用的颜色
                     storeOp: 'store', // 'store'保留结果，'discard'清除原有信息
@@ -480,26 +540,17 @@ class BlueSpaceRenderer {
         }
 
         for(let i = 0; i < this.POSTPROCESS_NUM; i++) {
-            let postprocessPass: GPURenderPassEncoder
-            if(i != this.POSTPROCESS_NUM - 1) {
-                postprocessPass = encoder.beginRenderPass({
-                    colorAttachments: [{
-                        view: that.postprocess![i + 1].texture!.createView(),
-                        loadOp: 'clear', // 'clear'清空原有内容，'load'保留原有内容
-                        clearValue: {r:0, g:0, b:0, a:1}, // 'clear'时使用的颜色
-                        storeOp: 'store', // 'store'保留结果，'discard'清除原有信息
-                    }],
-                })
-            } else {
-                postprocessPass = encoder.beginRenderPass({
-                    colorAttachments: [{
-                        view: that.context!.getCurrentTexture().createView(),
-                        loadOp: 'clear', // 'clear'清空原有内容，'load'保留原有内容
-                        clearValue: {r:0, g:0, b:0, a:1}, // 'clear'时使用的颜色
-                        storeOp: 'store', // 'store'保留结果，'discard'清除原有信息
-                    }],
-                })
-            }
+            let postprocessPass = encoder.beginRenderPass({
+                colorAttachments: [{
+                    view: 
+                        (that.postprocess![i].colorAttachment)
+                        ? (that.postprocess![i].colorAttachment!)
+                        : (that.context!.getCurrentTexture().createView()),
+                    loadOp: 'clear', // 'clear'清空原有内容，'load'保留原有内容
+                    clearValue: {r:0, g:0, b:0, a:1}, // 'clear'时使用的颜色
+                    storeOp: 'store', // 'store'保留结果，'discard'清除原有信息
+                }],
+            })
             // 绑定Pipeline和BindGroup
             postprocessPass.setPipeline(that.postprocess![i].pipeline)
             postprocessPass.setBindGroup(0, that.postprocess![i].group)
@@ -584,7 +635,7 @@ class BlueSpaceRenderer {
             layout: 'auto',
             vertex: {
                 module: that.device!.createShaderModule({
-                    code: shaderRaw
+                    code: planetShader
                 }),
                 entryPoint: 'vertex_main',
                 // 这里的buffers可以使用多个slots，表示js中需要传入的多个TypedArray
@@ -611,7 +662,7 @@ class BlueSpaceRenderer {
             },
             fragment: {
                 module: that.device!.createShaderModule({
-                    code: shaderRaw
+                    code: planetShader
                 }),
                 entryPoint: 'fragment_main',
                 targets: [{
@@ -811,107 +862,155 @@ class BlueSpaceRenderer {
     private async initPostprocess() {
         const that = this
 
-        this.postprocess = new Array(this.POSTPROCESS_NUM)
-
-        const postprocessShaders = [
-            composite1Shader,
-            composite2Shader,
-            finalShader,
-        ]
-
-        for(let i = 0; i <= 2; i++) {
-            // ===== Post-process Pipeline =====
-            const descriptor: GPURenderPipelineDescriptor = {
-                layout: 'auto',
-                vertex: {
-                    module: that.device!.createShaderModule({
-                        code: postprocessShaders[i]
-                    }),
-                    entryPoint: 'vertex_main',
-                    buffers: [{
-                        arrayStride: 5 * 4,
-                        attributes: [{
-                            // position
-                            shaderLocation: 0,
-                            offset: 0,
-                            format: 'float32x3',
-                        }, {
-                            // uv
-                            shaderLocation: 1,
-                            offset: 3 * 4,
-                            format: 'float32x2',
-                        }],
-                    }]
-                },
-                fragment: {
-                    module: that.device!.createShaderModule({
-                        code: postprocessShaders[i]
-                    }),
-                    entryPoint: 'fragment_main',
-                    targets: [{
-                        format: that.format,
-                    }],
-                },
-                primitive: {
-                    topology: 'triangle-list',
-                }
-            }
-            const pipeline = await that.device!.createRenderPipelineAsync(descriptor)
-
-            // ===== Post-process Buffer =====
-            const buffer = {
-                vertex: that.device!.createBuffer({
-                    label: 'GPUBuffer stores vertex',
-                    size: rectangle.vertex.byteLength,
-                    usage: GPUBufferUsage.VERTEX | GPUBufferUsage.COPY_DST,
-                }),
-                index: that.device!.createBuffer({
-                    label: 'GPUBuffer stores index',
-                    size: rectangle.index.byteLength,
-                    usage: GPUBufferUsage.INDEX | GPUBufferUsage.COPY_DST,
-                }),
-                numOfVertex: rectangle.vertexCount,
-                numOfIndex: rectangle.indexCount,
-            }
-            this.device!.queue.writeBuffer(buffer.vertex, 0, rectangle.vertex)
-            this.device!.queue.writeBuffer(buffer.index, 0, rectangle.index)
-
-            // ===== Intermediate Texture =====
-            // intermediate texture
-            const texture = this.device!.createTexture({
+        this.intermediateTextures = new Array(this.INTERMEDIATE_TEXTURE_NUM)
+        for(let i = 0; i < this.INTERMEDIATE_TEXTURE_NUM; i++) {
+            this.intermediateTextures[i] = this.device!.createTexture({
                 size: that.canvasSize,
                 format: 'bgra8unorm',
                 usage:
                     GPUTextureUsage.TEXTURE_BINDING |
                     GPUTextureUsage.RENDER_ATTACHMENT,
             })
-            
-            // ===== Post-process Group =====
-            const group = this.device!.createBindGroup({
-                label: 'Postprocess Group with intermediate texture and sampler',
-                layout: pipeline.getBindGroupLayout(0),
-                entries: [{
-                    binding: 0,
-                    resource: texture.createView(),
-                }, {
-                    binding: 1,
-                    resource: that.sampler!,
-                }, {
-                    binding: 2,
-                    resource: {
-                        buffer: that.environmentBuffer!,
-                    }
-                }],
-            })
-
-            this.postprocess[i] = {
-                pipeline,
-                buffer,
-                texture,
-                group,
-            }
         }
 
+        this.postprocess = new Array(this.POSTPROCESS_NUM)
+
+        // texture[0] => texture[1]
+        this.postprocess[0] = await this.createSimplePipeline(
+            "Composite1",
+            composite1Shader,
+            [{
+                binding: 0,
+                resource: { buffer: that.environmentBuffer! }
+            }, {
+                binding: 1,
+                resource: that.sampler!,
+            }, {
+                binding: 2,
+                resource: that.intermediateTextures![0].createView(),
+            }],
+            that.intermediateTextures![1].createView()
+        )
+
+        // texture[1] => texture[2]
+        this.postprocess[1] = await this.createSimplePipeline(
+            "Composite2",
+            composite2Shader,
+            [{
+                binding: 0,
+                resource: { buffer: that.environmentBuffer! }
+            }, {
+                binding: 1,
+                resource: that.sampler!,
+            }, {
+                binding: 2,
+                resource: that.intermediateTextures![1].createView(),
+            }],
+            that.intermediateTextures![2].createView()
+        )
+
+        // texture[0] & texture[2] => Final
+        this.postprocess[2] = await this.createSimplePipeline(
+            "Final",
+            finalShader,
+            [{
+                binding: 0,
+                resource: { buffer: that.environmentBuffer! }
+            }, {
+                binding: 1,
+                resource: that.sampler!,
+            }, {
+                binding: 2,
+                resource: that.intermediateTextures![0].createView(),
+            }, {
+                binding: 3,
+                resource: that.intermediateTextures![2].createView(),
+            }]
+        )
+    }
+
+    /**
+     * 异步的创建一个简单管线
+     * 简单管线只有一个BindGroup
+     * @param label 标签 
+     * @param shader 着色器
+     * @param bindGroupEntries BindGroup的内容
+     * @param colorAttachment 管线的ColorAttachment
+     * @returns 
+     */
+    private async createSimplePipeline(label: string, shader: string, bindGroupEntries: Iterable<GPUBindGroupEntry>, colorAttachment?: GPUTextureView) {
+        const that = this
+
+        // ===== Post-process Pipeline =====
+        const descriptor: GPURenderPipelineDescriptor = {
+            layout: 'auto',
+            vertex: {
+                module: that.device!.createShaderModule({
+                    code: shader
+                }),
+                entryPoint: 'vertex_main',
+                buffers: [{
+                    arrayStride: 5 * 4,
+                    attributes: [{
+                        // position
+                        shaderLocation: 0,
+                        offset: 0,
+                        format: 'float32x3',
+                    }, {
+                        // uv
+                        shaderLocation: 1,
+                        offset: 3 * 4,
+                        format: 'float32x2',
+                    }],
+                }]
+            },
+            fragment: {
+                module: that.device!.createShaderModule({
+                    code: shader
+                }),
+                entryPoint: 'fragment_main',
+                targets: [{
+                    format: that.format,
+                }],
+            },
+            primitive: {
+                topology: 'triangle-list',
+            }
+        }
+        const pipeline = await that.device!.createRenderPipelineAsync(descriptor)
+
+        // ===== Post-process Buffer =====
+        const buffer = {
+            vertex: that.device!.createBuffer({
+                label: 'GPUBuffer stores vertex',
+                size: rectangle.vertex.byteLength,
+                usage: GPUBufferUsage.VERTEX | GPUBufferUsage.COPY_DST,
+            }),
+            index: that.device!.createBuffer({
+                label: 'GPUBuffer stores index',
+                size: rectangle.index.byteLength,
+                usage: GPUBufferUsage.INDEX | GPUBufferUsage.COPY_DST,
+            }),
+            numOfVertex: rectangle.vertexCount,
+            numOfIndex: rectangle.indexCount,
+        }
+        this.device!.queue.writeBuffer(buffer.vertex, 0, rectangle.vertex)
+        this.device!.queue.writeBuffer(buffer.index, 0, rectangle.index)
+
+        // ===== Post-process Group =====
+        const group = this.device!.createBindGroup({
+            label: 'Postprocess Group ' + label,
+            layout: pipeline.getBindGroupLayout(0),
+            entries: bindGroupEntries,
+        })
+
+        return {
+            label,
+            pipeline,
+            buffer,
+            group,
+            colorAttachment,
+        }
     }
 }
 
@@ -960,6 +1059,46 @@ starmapElement!.addEventListener("mousewheel", (e) => {
         renderer.zoom(1)
     } else if((e as WheelEvent).deltaY < 0) {
         renderer.zoom(-1)
+    }
+})
+document.addEventListener("keydown", e => {
+    if(e.code === "KeyW") {
+        renderer.buttonPressed.W = true
+    }
+	if(e.code === "KeyS") {
+        renderer.buttonPressed.S = true
+    }
+	if(e.code === "KeyA") {
+        renderer.buttonPressed.A = true
+    }
+	if(e.code === "KeyD") {
+        renderer.buttonPressed.D = true
+    }
+	if(e.code === "Space") {
+        renderer.buttonPressed.Space = true
+    }
+	if(e.code === "AltLeft") {
+        renderer.buttonPressed.AltLeft = true
+    }
+})
+document.addEventListener("keyup", e => {
+    if(e.code === "KeyW") {
+        renderer.buttonPressed.W = false
+    }
+	if(e.code === "KeyS") {
+        renderer.buttonPressed.S = false
+    }
+	if(e.code === "KeyA") {
+        renderer.buttonPressed.A = false
+    }
+	if(e.code === "KeyD") {
+        renderer.buttonPressed.D = false
+    }
+	if(e.code === "Space") {
+        renderer.buttonPressed.Space = false
+    }
+	if(e.code === "AltLeft") {
+        renderer.buttonPressed.AltLeft = false
     }
 })
 

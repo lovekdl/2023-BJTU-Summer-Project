@@ -13,7 +13,7 @@ struct VertexOutput {
     @location(0) fragPosition: vec4<f32>,
     @location(1) fragNormal: vec3<f32>,
     @location(2) fragUV: vec2<f32>,
-    @location(3) index: f32,
+    @location(3) starType: f32,
 };
 
 
@@ -29,7 +29,7 @@ fn vertex_main(
     out.position = projectionMatrix * viewMatrix * modelMatrixArray[index] * position;
     out.fragPosition = (position + 2 * vec4(1.0)) / 3;
     out.fragUV = uv;
-    out.index = f32(index);
+    out.starType = starShaderTypeArray[index];
     return out;
 }
 
@@ -39,50 +39,54 @@ fn fragment_main(
     @location(0) fragPosition: vec4<f32>,
     @location(1) fragNormal: vec3<f32>,
     @location(2) fragUV: vec2<f32>,
-    @location(3) index: f32,
+    @location(3) starType: f32,
 ) -> @location(0) vec4<f32> {
     var tmp = environmentArray[0];
-    var starType: f32 = starShaderTypeArray[u32(index)];
-    var result: vec4<f32> = textureSample(myTexture, mySampler, fragUV);
-    if(starType == 1) {
-        result = STAR_O();
-    } else if(starType == 2) {
-        result = STAR_B();
-    } else if(starType == 3) {
-        result = STAR_A();
-    } else if(starType == 4) {
-        result = STAR_F();
-    } else if(starType == 5) {
-        result = STAR_G();
-    } else if(starType == 6) {
-        result = STAR_K();
+    var color: vec3<f32> = textureSample(myTexture, mySampler, fragUV).rgb;
+    if(starType <= 0.5) {
+        color = STAR_BLACKHOLE();
+    } else if(starType <= 1.5) {
+        color = STAR_O();
+    } else if(starType <= 2.5) {
+        color = STAR_B();
+    } else if(starType <= 3.5) {
+        color = STAR_A();
+    } else if(starType <= 4.5) {
+        color = STAR_F();
+    } else if(starType <= 5.5) {
+        color = STAR_G();
+    } else if(starType <= 6.5) {
+        color = STAR_K();
     } else {
-        result = STAR_M();
+        color = STAR_M();
     }
-    return result;
+    return vec4(color, 1.0);
     // return vec4(1.0);
 }
 
-fn STAR_O() -> vec4<f32> {
-    return vec4(0.0, 0.9, 1.0, 1.0);
+fn STAR_BLACKHOLE() -> vec3<f32> {
+    return vec3(0.1, 0.1, 0.1);
 }
-fn STAR_B() -> vec4<f32> {
-    return vec4(0.73, 1.0, 1.0, 1.0);
+fn STAR_O() -> vec3<f32> {
+    return vec3(0.0, 0.9, 1.0);
 }
-fn STAR_A() -> vec4<f32> {
-    return vec4(1.0, 1.0, 1.0, 1.0);
+fn STAR_B() -> vec3<f32> {
+    return vec3(1.0, 0.0, 0.0);
 }
-fn STAR_F() -> vec4<f32> {
-    return vec4(1.0, 0.89, 0.71, 1.0);
+fn STAR_A() -> vec3<f32> {
+    return vec3(1.0, 1.0, 1.0);
 }
-fn STAR_G() -> vec4<f32> {
-    return vec4(1.0, 0.9, 0.0, 1.0);
+fn STAR_F() -> vec3<f32> {
+    return vec3(1.0, 0.89, 0.71);
 }
-fn STAR_K() -> vec4<f32> {
-    return vec4(0.9, 0.8, 0.0, 1.0);
-    // return vec4(1.0, 0.64, 0.0, 1.0);
+fn STAR_G() -> vec3<f32> {
+    return vec3(1.0, 0.9, 0.0);
 }
-fn STAR_M() -> vec4<f32> {
-    return vec4(0.8, 0.6, 0.0, 1.0);
-    // return vec4(0.80, 0.4, 0.0, 1.0);
+fn STAR_K() -> vec3<f32> {
+    return vec3(0.9, 0.8, 0.0);
+    // return vec3(1.0, 0.64, 0.0);
+}
+fn STAR_M() -> vec3<f32> {
+    return vec3(0.7, 0.9, 1.0);
+    // return vec3(0.80, 0.4, 0.0);
 }
