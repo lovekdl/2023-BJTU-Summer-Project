@@ -30,7 +30,7 @@ class BlueSpaceRenderer {
     // ===== ===== ===== Renderer Properties ===== ===== =====
 
     private haveSetup: boolean = false
-    private haveRun:   boolean = false
+    // private haveRun:   boolean = false
     // created when initWebGPU
     private device?: GPUDevice = undefined
     private context?: GPUCanvasContext = undefined
@@ -193,7 +193,7 @@ class BlueSpaceRenderer {
         }
         requestAnimationFrame(frame)
 
-        this.haveRun = true;
+        // this.haveRun = true;
     }
 
     /**

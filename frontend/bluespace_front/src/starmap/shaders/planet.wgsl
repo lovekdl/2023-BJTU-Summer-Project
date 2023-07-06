@@ -1,4 +1,4 @@
-@group(0) @binding(0) var<storage> modelMatrixArray:    array<mat4x4<f32>>;
+@group(0) @binding(0) var<storage> modelMatrices:    array<mat4x4<f32>>;
 @group(0) @binding(1) var<storage> viewMatrix:          mat4x4<f32>;
 @group(0) @binding(2) var<storage> projectionMatrix:    mat4x4<f32>;
 @group(0) @binding(3) var<storage> starShaderTypeArray: array<f32>;
@@ -27,9 +27,14 @@ fn vertex_main(
 ) -> VertexOutput {
     var tmp = environmentArray[0];
     var out: VertexOutput;
-    out.position = projectionMatrix * viewMatrix * modelMatrixArray[index] * position;
-    out.fPosition = position;
-    out.normal = normal;
+    out.position = projectionMatrix * viewMatrix * modelMatrices[index] * position;
+    out.fPosition = modelMatrices[index] * position;
+    var normalMatrix = mat3x3<f32>(
+        modelMatrices[index][0].xyz,
+        modelMatrices[index][1].xyz,
+        modelMatrices[index][2].xyz,
+    );
+    out.normal = normalMatrix * normal;
     out.uv = uv;
     out.starType = starShaderTypeArray[index];
     return out;
@@ -48,9 +53,9 @@ fn fragment_main(
     if(starType <= 0.5) {
         color = STAR_BLACKHOLE(fPosition.xyz, normal);
     } else if(starType <= 1.5) {
-        color = STAR_O();
+        color = STAR_O(fPosition.xyz, normal);
     } else if(starType <= 2.5) {
-        color = STAR_B();
+        color = STAR_B(fPosition.xyz, normal);
     } else if(starType <= 3.5) {
         color = STAR_A();
     } else if(starType <= 4.5) {
@@ -66,17 +71,17 @@ fn fragment_main(
     // return vec4(1.0);
 }
 
-fn CENTER_BLACK(position: vec3<f32>, normal: vec3<f32>) -> f32 {
-    return 1 - saturate(dot(normalize(cameraPosition - position), normalize(normal)));
+fn CENTER_BLACK(position: vec3<f32>, normal: vec3<f32>, strength: f32) -> f32 {
+    return 1 - saturate(dot(normalize(cameraPosition - position), normalize(normal))) * strength;
 }
 fn STAR_BLACKHOLE(position: vec3<f32>, normal: vec3<f32>) -> vec3<f32> {
-    return vec3(0.2, 0.0, 0.4) * CENTER_BLACK(position, normal);
+    return vec3(0.2, 0.0, 0.4) * CENTER_BLACK(position, normal, 1.0);
 }
-fn STAR_O() -> vec3<f32> {
-    return vec3(0.0, 0.9, 1.0);
+fn STAR_O(position: vec3<f32>, normal: vec3<f32>) -> vec3<f32> {
+    return vec3(0.0, 0.9, 1.0) * CENTER_BLACK(position, normal, 0.8);
 }
-fn STAR_B() -> vec3<f32> {
-    return vec3(1.0, 0.0, 0.0);
+fn STAR_B(position: vec3<f32>, normal: vec3<f32>) -> vec3<f32> {
+    return vec3(1.0, 0.0, 0.0) * CENTER_BLACK(position, normal, 0.8);
 }
 fn STAR_A() -> vec3<f32> {
     return vec3(1.0, 1.0, 1.0);

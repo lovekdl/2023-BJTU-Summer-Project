@@ -39,3 +39,10 @@
 * 3: Camera Position Y
 * 4: Camera Position Z
 * 5: 
+
+## 4. TODO Lists
+
+### 4.1 Wait for study
+
+* How to get View Matrix (look at methods)
+* How to get Normal Matrix [szszss's blog](http://blog.hakugyokurou.net/?p=1653)

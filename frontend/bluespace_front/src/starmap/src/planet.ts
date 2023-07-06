@@ -38,7 +38,7 @@ class Planet {
 
     static readonly STAR_SCALE_K: number = 1.5
     static readonly STAR_SCALE: Array<number> = [
-        20.0 * this.STAR_SCALE_K,
+        30.0 * this.STAR_SCALE_K,
         6.0 * this.STAR_SCALE_K,
         4.0 * this.STAR_SCALE_K,
         2.0 * this.STAR_SCALE_K,
