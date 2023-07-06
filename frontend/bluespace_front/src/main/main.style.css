@@ -136,14 +136,6 @@ footer::before {
   opacity: 0.2;
 }
 
-footer svg {
-  margin-right: 20px;
-}
-
-footer a {
-  text-decoration: none;
-  color: var(--accent);
-}
 
 
 
@@ -162,9 +154,6 @@ footer a {
   background: var(--background);
 }
 
-html {
-  scroll-snap-type: y mandatory;
-}
 
 
 
@@ -177,7 +166,6 @@ html {
   justify-content: center;
   align-items: center;
   position: relative;
-  scroll-snap-align: center;
   perspective: 500px;
 }
 
@@ -197,7 +185,9 @@ html {
   right:0;
   height:5vh;
   background: var(--accent);
-  
+  display: flex;
+  align-items: center;
+  justify-content: center;
   z-index: 100;
   color:var(--white);
   /* transform: translateX(-100%);
@@ -207,3 +197,4 @@ html {
   padding-top: 100px;
   height:100vh;
 }
+

@@ -3,3 +3,64 @@
 .menu .MuiAppBar-colorInherit {
   background-color: rgb(128, 106, 196);
 }
+
+.menuScroll {
+  
+  filter: drop-shadow(1px 1px 1px #5116a9);
+  width: 100px;
+}
+
+.ul1 {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background-color: rgb(110, 87, 179);
+}
+
+.li1 {
+  color: var(--background);
+  display: block;
+  transform-origin: -20px 50%;
+}
+
+.ul1,
+.li1 {
+  list-style: none;
+  margin: 0;
+  padding: 10px;
+}
+
+.MenuButton {
+  -webkit-appearance: button;
+  appearance: button;
+  background: var(--purplr);
+  color: var(--background);
+  border: none;
+  height:47px;
+  width: 47px;
+  border-radius: 50%;
+  font-size: 18px;
+  font-weight: 700;
+  cursor: pointer;
+  
+  text-align: cebter;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  outline: none;
+}
+.subMenu{
+  
+  
+  position: absolute;
+  left: 0;
+  z-index: 999; 
+  
+
+}
+
+.TollBar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

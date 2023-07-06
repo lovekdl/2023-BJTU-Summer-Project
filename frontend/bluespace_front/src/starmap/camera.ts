@@ -88,9 +88,9 @@ class Camera {
             this.up = vec3.fromValues(-x*y/v, v, -z*y/v)
         }
 
-        console.log("position: " + this.position)
-        console.log("gaze: " + this.gaze)
-        console.log("up: " + this.up)
+        // console.log("position: " + this.position)
+        // console.log("gaze: " + this.gaze)
+        // console.log("up: " + this.up)
     }
 
     // 通过Camera的position, gaze, up得到viewMatrix
