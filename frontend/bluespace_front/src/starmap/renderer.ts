@@ -1,6 +1,7 @@
 import shaderRaw from "./shader.wgsl?raw"
 import postprocessRaw from "./postprocess.wgsl?raw"
 import * as sphere from "./util/sphere"
+import * as rectangle from "./util/rectangle"
 import { mat4, vec3, vec4 } from 'gl-matrix'
 
 import { Camera } from './camera'
@@ -57,6 +58,11 @@ class BlueSpaceRenderer {
     private transformGroup?: GPUBindGroup = undefined
     private textureGroup?: GPUBindGroup = undefined
 
+    // ===== Post-process =====
+    private postprocessPipeline?: GPURenderPipeline = undefined
+    private postprocessBuffer?: {vertex: GPUBuffer, index: GPUBuffer, numOfVertex: number, numOfIndex: number} = undefined
+    private postprocessTexture?: GPUTexture = undefined
+    private postprocessGroup?: GPUBindGroup = undefined
 
     // ===== ===== ===== Data Properties ===== ===== =====
 
@@ -140,6 +146,7 @@ class BlueSpaceRenderer {
         await this.initTexture()
         await this.initSampler()
         await this.initGroup()
+        await this.initPostprocess()
 
         // ===== Projection Matrix =====
         // 因为需要使用到canvasSize，所以需要在WebGPU初始化后才能定义Perspective矩阵
@@ -424,32 +431,53 @@ class BlueSpaceRenderer {
 
         // ===== 录制命令部分 =====
         // 下面这个API的Pass的概念类似于“图层”
+        {
+            const renderPass = encoder.beginRenderPass({
+                colorAttachments: [{
+                    // view: that.context!.getCurrentTexture().createView(),
+                    view: that.postprocessTexture!.createView(),
+                    loadOp: 'clear', // 'clear'清空原有内容，'load'保留原有内容
+                    clearValue: {r:0, g:0, b:0, a:1}, // 'clear'时使用的颜色
+                    storeOp: 'store', // 'store'保留结果，'discard'清除原有信息
+                }],
+                depthStencilAttachment: {
+                    view: that.depthTexture!.createView(),
+                    depthClearValue: 1.0,
+                    depthLoadOp: 'clear',
+                    depthStoreOp: 'store',
+                }
+            })
+            // 绑定Pipeline和BindGroup
+            renderPass.setPipeline(that.pipeline!)
+            renderPass.setBindGroup(0, that.transformGroup!)
+            renderPass.setBindGroup(1, that.textureGroup!)
+            // 绑定Vertex/IndexBuffer，并且按Index绘制
+            renderPass.setVertexBuffer(0, that.sphereBuffer!.vertex)
+            renderPass.setIndexBuffer(that.sphereBuffer!.index, 'uint16')
+            renderPass.drawIndexed(that.sphereBuffer!.numOfIndex, that.numOfPlanets, 0, 0, 0)
+            // 结束
+            renderPass.end()
+        }
 
-        const renderPass = encoder.beginRenderPass({
-            colorAttachments: [{
-                view: that.context!.getCurrentTexture().createView(),
-                // view: intermediateTexture.createView(),
-                loadOp: 'clear', // 'clear'清空原有内容，'load'保留原有内容
-                clearValue: {r:0, g:0, b:0, a:1}, // 'clear'时使用的颜色
-                storeOp: 'store', // 'store'保留结果，'discard'清除原有信息
-            }],
-            depthStencilAttachment: {
-                view: that.depthTexture!.createView(),
-                depthClearValue: 1.0,
-                depthLoadOp: 'clear',
-                depthStoreOp: 'store',
-            }
-        })
-        // 绑定Pipeline和BindGroup
-        renderPass.setPipeline(that.pipeline!)
-        renderPass.setBindGroup(0, that.transformGroup!)
-        renderPass.setBindGroup(1, that.textureGroup!)
-        // 绑定Vertex/IndexBuffer，并且按Index绘制
-        renderPass.setVertexBuffer(0, that.sphereBuffer!.vertex)
-        renderPass.setIndexBuffer(that.sphereBuffer!.index, 'uint16')
-        renderPass.drawIndexed(that.sphereBuffer!.numOfIndex, that.numOfPlanets, 0, 0, 0)
-        // 结束
-        renderPass.end()
+        {
+            const postprocessPass = encoder.beginRenderPass({
+                colorAttachments: [{
+                    view: that.context!.getCurrentTexture().createView(),
+                    loadOp: 'clear', // 'clear'清空原有内容，'load'保留原有内容
+                    clearValue: {r:0, g:0, b:0, a:1}, // 'clear'时使用的颜色
+                    storeOp: 'store', // 'store'保留结果，'discard'清除原有信息
+                }],
+            })
+            // 绑定Pipeline和BindGroup
+            postprocessPass.setPipeline(that.postprocessPipeline!)
+            postprocessPass.setBindGroup(0, that.postprocessGroup!)
+            // 绑定Vertex/IndexBuffer，并且按Index绘制
+            postprocessPass.setVertexBuffer(0, that.postprocessBuffer!.vertex)
+            postprocessPass.setIndexBuffer(that.postprocessBuffer!.index, 'uint16')
+            postprocessPass.drawIndexed(that.postprocessBuffer!.numOfIndex, 1, 0, 0, 0)
+            // 结束
+            postprocessPass.end()
+        }
 
         const buffer = encoder.finish()
         // 将Command今天提交，这个时候上面的指令才会被真正执行
@@ -572,65 +600,6 @@ class BlueSpaceRenderer {
     }
 
 
-    private async initPostprocess() {
-        const that = this
-
-        // ===== Post-process Pipeline =====
-        const descriptor: GPURenderPipelineDescriptor = {
-            layout: 'auto',
-            vertex: {
-                module: that.device!.createShaderModule({
-                    code: postprocessRaw
-                }),
-                entryPoint: 'vertex_main',
-                // 这里的buffers可以使用多个slots，表示js中需要传入的多个TypedArray
-                // 这里的attributes也可以有多个，表示每个TypedArray被划分到不同的location
-                buffers: [{
-                    arrayStride: 8 * 4, // 因为每个顶点有3个数字，所以步长为3
-                    attributes: [{
-                        // position
-                        shaderLocation: 0,
-                        offset: 0,
-                        format: 'float32x3',
-                    }, {
-                        // normal
-                        shaderLocation: 1,
-                        offset: 3 * 4,
-                        format: 'float32x3',
-                    }, {
-                        // uv
-                        shaderLocation: 2,
-                        offset: 6 * 4,
-                        format: 'float32x2',
-                    }],
-                }]
-            },
-            fragment: {
-                module: that.device!.createShaderModule({
-                    code: postprocessRaw
-                }),
-                entryPoint: 'fragment_main',
-                targets: [{
-                    format: that.format,
-                }],
-            },
-            primitive: {
-                topology: 'triangle-list',
-                // cullMode: 'back', // 因为正方体是封闭的，所以通过这个封闭的图形，来从几何上剔除内部
-            }
-        }
-        this.postprocessPipeline = await that.device!.createRenderPipelineAsync(descriptor)
-
-
-        // ===== Post-process Buffer =====
-        
-        // ===== Post-process Texture =====
-        
-        // ===== Post-process Group =====
-
-        
-    }
-
     /**
      * 初始化Buffer&Array
      * 
@@ -652,7 +621,7 @@ class BlueSpaceRenderer {
                 usage: GPUBufferUsage.VERTEX | GPUBufferUsage.COPY_DST,
             }),
             index: that.device!.createBuffer({
-                label: 'GPUBuffer stores vertex index',
+                label: 'GPUBuffer stores index',
                 size: sphere.index.byteLength,
                 usage: GPUBufferUsage.INDEX | GPUBufferUsage.COPY_DST,
             }),
@@ -700,15 +669,6 @@ class BlueSpaceRenderer {
             usage: GPUTextureUsage.RENDER_ATTACHMENT,
         })
         
-        // ===== Intermediate Texture =====
-        const intermediateTexture = this.device!.createTexture({
-            size: that.canvasSize,
-            format: 'rgba8unorm',
-            usage:
-                GPUTextureUsage.TEXTURE_BINDING |
-                GPUTextureUsage.RENDER_ATTACHMENT,
-        })
-
         // ===== Texture =====
         // 小知识： 在浏览器中，webp包含了jpeg/png/gif等格式的优点，所以在开发中，应该优先使用webp格式
         // 小知识2：视频格式，推荐VP8/9
@@ -791,6 +751,95 @@ class BlueSpaceRenderer {
             entries: [{
                 binding: 0,
                 resource: that.texture!.createView(),
+            }, {
+                binding: 1,
+                resource: that.sampler!,
+            }],
+        })
+    }
+
+    /**
+     * 后处理相关组件的初始化
+     */
+    private async initPostprocess() {
+        const that = this
+
+        // ===== Post-process Pipeline =====
+        const descriptor: GPURenderPipelineDescriptor = {
+            layout: 'auto',
+            vertex: {
+                module: that.device!.createShaderModule({
+                    code: postprocessRaw
+                }),
+                entryPoint: 'vertex_main',
+                // 这里的buffers可以使用多个slots，表示js中需要传入的多个TypedArray
+                // 这里的attributes也可以有多个，表示每个TypedArray被划分到不同的location
+                buffers: [{
+                    arrayStride: 5 * 4, // 因为每个顶点有3个数字，所以步长为3
+                    attributes: [{
+                        // position
+                        shaderLocation: 0,
+                        offset: 0,
+                        format: 'float32x3',
+                    }, {
+                        // uv
+                        shaderLocation: 1,
+                        offset: 3 * 4,
+                        format: 'float32x2',
+                    }],
+                }]
+            },
+            fragment: {
+                module: that.device!.createShaderModule({
+                    code: postprocessRaw
+                }),
+                entryPoint: 'fragment_main',
+                targets: [{
+                    format: that.format,
+                }],
+            },
+            primitive: {
+                topology: 'triangle-list',
+                // cullMode: 'back', // 因为正方体是封闭的，所以通过这个封闭的图形，来从几何上剔除内部
+            }
+        }
+        this.postprocessPipeline = await that.device!.createRenderPipelineAsync(descriptor)
+
+
+        // ===== Post-process Buffer =====
+        this.postprocessBuffer = {
+            vertex: that.device!.createBuffer({
+                label: 'GPUBuffer stores vertex',
+                size: rectangle.vertex.byteLength,
+                usage: GPUBufferUsage.VERTEX | GPUBufferUsage.COPY_DST,
+            }),
+            index: that.device!.createBuffer({
+                label: 'GPUBuffer stores index',
+                size: rectangle.index.byteLength,
+                usage: GPUBufferUsage.INDEX | GPUBufferUsage.COPY_DST,
+            }),
+            numOfVertex: rectangle.vertexCount,
+            numOfIndex: rectangle.indexCount,
+        }
+        this.device!.queue.writeBuffer(that.postprocessBuffer!.vertex, 0, rectangle.vertex)
+        this.device!.queue.writeBuffer(that.postprocessBuffer!.index, 0, rectangle.index)
+        
+        // ===== Intermediate Texture =====
+        this.postprocessTexture = this.device!.createTexture({
+            size: that.canvasSize,
+            format: 'rgba8unorm',
+            usage:
+                GPUTextureUsage.TEXTURE_BINDING |
+                GPUTextureUsage.RENDER_ATTACHMENT,
+        })
+        
+        // ===== Post-process Group =====
+        this.postprocessGroup = this.device!.createBindGroup({
+            label: 'Texture Group with Texture and Sampler',
+            layout: that.postprocessPipeline!.getBindGroupLayout(0),
+            entries: [{
+                binding: 0,
+                resource: that.postprocessTexture!.createView(),
             }, {
                 binding: 1,
                 resource: that.sampler!,
