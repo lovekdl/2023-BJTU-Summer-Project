@@ -58,7 +58,7 @@
   position: absolute;
   left: 0;
   z-index: 999; 
-  
+  pointer-events:none;
 
 }
 

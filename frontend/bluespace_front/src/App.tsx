@@ -7,6 +7,8 @@ import { LoginForm } from "./authority";
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import { MainComponent } from "./main/index";
 import "./App.css"
+import {Prediction} from "./forecast/index";
+import { Profile } from "./userprofile/index";
 
 
 
@@ -26,12 +28,15 @@ export default function App() {
           </div>} 
         />
         <Route path="/prediction" element={
+          <div>
           <ButtonAppBar></ButtonAppBar>
+          <Prediction></Prediction>
+          </div>
         }></Route>
         <Route path = "/login" element={<LoginForm />} />
         <Route path = "/profile" element={<div>
           <ButtonAppBar></ButtonAppBar>
-          
+          <Profile></Profile>
         </div>} />
       </Routes>
 
