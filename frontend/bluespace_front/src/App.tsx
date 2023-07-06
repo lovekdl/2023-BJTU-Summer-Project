@@ -2,11 +2,13 @@
 
 import { useState,useEffect } from "react";
 import { useAnimate, stagger,motion } from "framer-motion";
-import { ButtonAppBar, Menu, MenuToggle} from "./menu/index";
+import { ButtonAppBar} from "./menu/index";
 import { LoginForm } from "./authority";
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import { MainComponent } from "./main/index";
-
+import "./App.css"
+import {Prediction} from "./forecast/index";
+import { Profile } from "./userprofile/index";
 
 
 
@@ -18,15 +20,24 @@ export default function App() {
       <Routes>
       
         <Route path = "/" element={
-          <div>
+          <div className = 'black-background'>
             <ButtonAppBar ></ButtonAppBar>
-            {[1, 2].map((image) => (
-              <MainComponent id={image} />
-            ))}
+            
+              <MainComponent/>
+           
           </div>} 
         />
-
-      <Route path = "/login" element={<LoginForm />} />
+        <Route path="/prediction" element={
+          <div>
+          <ButtonAppBar></ButtonAppBar>
+          <Prediction></Prediction>
+          </div>
+        }></Route>
+        <Route path = "/login" element={<LoginForm />} />
+        <Route path = "/profile" element={<div>
+          <ButtonAppBar></ButtonAppBar>
+          <Profile></Profile>
+        </div>} />
       </Routes>
 
       

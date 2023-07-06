@@ -9,6 +9,7 @@ import IconButton from '@material-ui/core/IconButton';
 import MenuIcon from '@material-ui/icons/Menu';
 import { useNavigate } from 'react-router-dom';
 import "./menu.css"
+import MenuScroll from './MenuScroll';
 const styles = createStyles({
   root: {
     flexGrow: 1,
@@ -31,14 +32,18 @@ function ButtonAppBar(props: Props) {
     console.log("clicked")
     navigate('/login', {replace:false})
   }
-
+  
   return (
+    
     <div className='menu'>
+      
       <AppBar color='inherit' position='static'>
-        <Toolbar>
-          <IconButton className={classes.menuButton} color="inherit" aria-label="Menu">
-            <MenuIcon />
-          </IconButton>
+        <Toolbar className = 'TollBar'>
+        
+          
+          <MenuScroll></MenuScroll>
+
+
           <Typography variant="h6" color="inherit" className={classes.grow}>
             BLUE SPACE
           </Typography>

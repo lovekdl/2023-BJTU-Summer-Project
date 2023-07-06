@@ -1,0 +1,16 @@
+.SliderMenu{
+  margin-top: 5vh;
+  height:95vh;
+  padding:5px;
+  font-size: 20px;
+}
+
+.InnerMessage{
+  width: 100vw;
+  margin-top:5vh;
+}
+
+.SliderMenu .ant-menu-item-selected{
+  background-color: rgb(186, 175, 221);
+  color:white;
+}
