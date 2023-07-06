@@ -61,13 +61,15 @@ body {
   --yellow: #ffbb00;
 
   --background: var(--white);
-  --accent: var(--blue);
+  --accent: var(--purple);
 
   margin: 0;
   padding: 0;
-  background-color: var(--background);
   color: var(--black);
   overflow-x: hidden;
+}
+.black-background {
+  background-color: black;
 }
 
 * {
@@ -140,6 +142,7 @@ footer::before {
   height: 5px;
   width: 5px;
   background: var(--background);
+  display: none;
 }
 
 ::-webkit-scrollbar-thumb {

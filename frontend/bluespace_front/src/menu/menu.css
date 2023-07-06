@@ -7,13 +7,14 @@
 .menuScroll {
   
   filter: drop-shadow(1px 1px 1px #5116a9);
-  width: 100px;
+  width: 45%;
 }
 
 .ul1 {
   display: flex;
   flex-direction: column;
   gap: 10px;
+  
   background-color: rgb(110, 87, 179);
 }
 
@@ -21,12 +22,13 @@
   color: var(--background);
   display: block;
   transform-origin: -20px 50%;
+  margin-top: 5px;
 }
 
 .ul1,
 .li1 {
   list-style: none;
-  margin: 0;
+  
   padding: 10px;
 }
 

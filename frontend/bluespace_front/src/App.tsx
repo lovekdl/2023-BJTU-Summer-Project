@@ -3,10 +3,10 @@
 import { useState,useEffect } from "react";
 import { useAnimate, stagger,motion } from "framer-motion";
 import { ButtonAppBar} from "./menu/index";
-import { LoginForm, RegisterForm } from "./authority/index";
+import { LoginForm } from "./authority";
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import { MainComponent } from "./main/index";
-
+import "./App.css"
 
 
 
@@ -18,17 +18,17 @@ export default function App() {
       <Routes>
       
         <Route path = "/" element={
-          <div>
+          <div className = 'black-background'>
             <ButtonAppBar ></ButtonAppBar>
             
-              <MainComponent></MainComponent>
-            
-          </div>
-          }
+              <MainComponent/>
+           
+          </div>} 
         />
 
       <Route path = "/login" element={<LoginForm />} />
-    </Routes>
+          
+      </Routes>
 
       
 
