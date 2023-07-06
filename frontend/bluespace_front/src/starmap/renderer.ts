@@ -32,7 +32,7 @@ class BlueSpaceRenderer {
     private device?: GPUDevice = undefined
     private context?: GPUCanvasContext = undefined
     private format: GPUTextureFormat = "rgba8unorm"
-    private canvasSize: {width: number, height: number} = {width: 0, height: 0}
+    public canvasSize: {width: number, height: number} = {width: 0, height: 0}
 
     // created when initPipeline
     private pipeline?: GPURenderPipeline = undefined
@@ -46,6 +46,8 @@ class BlueSpaceRenderer {
 
     private modelMatrixArray: Float32Array = new Float32Array()
     private starShaderTypeArray: Float32Array = new Float32Array()
+
+    private environmentBuffer?: GPUBuffer = undefined
 
     // created when initTexture
     private depthTexture?: GPUTexture = undefined
@@ -429,6 +431,9 @@ class BlueSpaceRenderer {
         // 因为createCommandEncoder这个API没有和GPU进行交互，所以它不是异步的
         const encoder = this.device!.createCommandEncoder()
 
+        // console.log("Format: " + this.context!.getCurrentTexture().format)
+        // console.log("Format View: " + this.context!.getCurrentTexture().createView())
+
         // ===== 录制命令部分 =====
         // 下面这个API的Pass的概念类似于“图层”
         {
@@ -654,6 +659,15 @@ class BlueSpaceRenderer {
             usage: GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_DST,
         })
         this.starShaderTypeArray = new Float32Array(that.numOfPlanets)
+
+        // ===== Environment Buffer =====
+        this.environmentBuffer = that.device!.createBuffer({
+            size: 256,
+            usage: GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_DST,
+        })
+        this.device!.queue.writeBuffer(that.environmentBuffer!, 0,
+            Float32Array.from([that.canvasSize.width, that.canvasSize.height])
+        )
     }
 
     /**
@@ -754,10 +768,16 @@ class BlueSpaceRenderer {
             }, {
                 binding: 1,
                 resource: that.sampler!,
+            }, {
+                binding: 2,
+                resource: {
+                    buffer: that.environmentBuffer!,
+                }
             }],
         })
     }
 
+    // ===== ===== ===== Post-process ===== ===== =====
     /**
      * 后处理相关组件的初始化
      */
@@ -772,10 +792,8 @@ class BlueSpaceRenderer {
                     code: postprocessRaw
                 }),
                 entryPoint: 'vertex_main',
-                // 这里的buffers可以使用多个slots，表示js中需要传入的多个TypedArray
-                // 这里的attributes也可以有多个，表示每个TypedArray被划分到不同的location
                 buffers: [{
-                    arrayStride: 5 * 4, // 因为每个顶点有3个数字，所以步长为3
+                    arrayStride: 5 * 4,
                     attributes: [{
                         // position
                         shaderLocation: 0,
@@ -800,11 +818,9 @@ class BlueSpaceRenderer {
             },
             primitive: {
                 topology: 'triangle-list',
-                // cullMode: 'back', // 因为正方体是封闭的，所以通过这个封闭的图形，来从几何上剔除内部
             }
         }
         this.postprocessPipeline = await that.device!.createRenderPipelineAsync(descriptor)
-
 
         // ===== Post-process Buffer =====
         this.postprocessBuffer = {
@@ -823,11 +839,12 @@ class BlueSpaceRenderer {
         }
         this.device!.queue.writeBuffer(that.postprocessBuffer!.vertex, 0, rectangle.vertex)
         this.device!.queue.writeBuffer(that.postprocessBuffer!.index, 0, rectangle.index)
-        
+
         // ===== Intermediate Texture =====
+        // intermediate texture
         this.postprocessTexture = this.device!.createTexture({
             size: that.canvasSize,
-            format: 'rgba8unorm',
+            format: 'bgra8unorm',
             usage:
                 GPUTextureUsage.TEXTURE_BINDING |
                 GPUTextureUsage.RENDER_ATTACHMENT,
@@ -835,7 +852,7 @@ class BlueSpaceRenderer {
         
         // ===== Post-process Group =====
         this.postprocessGroup = this.device!.createBindGroup({
-            label: 'Texture Group with Texture and Sampler',
+            label: 'Postprocess Group with intermediate texture and sampler',
             layout: that.postprocessPipeline!.getBindGroupLayout(0),
             entries: [{
                 binding: 0,
@@ -843,6 +860,11 @@ class BlueSpaceRenderer {
             }, {
                 binding: 1,
                 resource: that.sampler!,
+            }, {
+                binding: 2,
+                resource: {
+                    buffer: that.environmentBuffer!,
+                }
             }],
         })
     }

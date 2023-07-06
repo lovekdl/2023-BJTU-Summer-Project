@@ -90,27 +90,27 @@ class Camera {
     }
 
     // 通过Camera的position, gaze, up得到viewMatrix
-    private getViewMatrix(): mat4 {
-        let viewMatrix: mat4 = mat4.create()
-        // opengl 这玩意是先列再行
-        // 所以实际上，下面这个矩阵按习惯读是Tview的转置
-        const Tview: mat4 = mat4.fromValues(
-            1, 0, 0, 0,
-            0, 1, 0, 0,
-            0, 0, 1, 0, 
-            this.position[0], this.position[1], this.position[2], 1
-        )
-        let gxt: vec3 = vec3.create()
-        vec3.cross(gxt, this.gaze, this.up)
-        const Rview: mat4 = mat4.fromValues(
-            gxt[0], gxt[1], gxt[2], 0,
-            this.up[0], this.up[1], this.up[2], 0,
-            -this.gaze[0], -this.gaze[1], -this.gaze[2], 0,
-            0, 0, 0, 1,
-        )
-        mat4.multiply(viewMatrix, Rview, Tview)
-        return viewMatrix
-    }
+    // private getViewMatrix(): mat4 {
+    //     let viewMatrix: mat4 = mat4.create()
+    //     // opengl 这玩意是先列再行
+    //     // 所以实际上，下面这个矩阵按习惯读是Tview的转置
+    //     const Tview: mat4 = mat4.fromValues(
+    //         1, 0, 0, 0,
+    //         0, 1, 0, 0,
+    //         0, 0, 1, 0, 
+    //         this.position[0], this.position[1], this.position[2], 1
+    //     )
+    //     let gxt: vec3 = vec3.create()
+    //     vec3.cross(gxt, this.gaze, this.up)
+    //     const Rview: mat4 = mat4.fromValues(
+    //         gxt[0], gxt[1], gxt[2], 0,
+    //         this.up[0], this.up[1], this.up[2], 0,
+    //         -this.gaze[0], -this.gaze[1], -this.gaze[2], 0,
+    //         0, 0, 0, 1,
+    //     )
+    //     mat4.multiply(viewMatrix, Rview, Tview)
+    //     return viewMatrix
+    // }
 
     // 通过Camera的position, gaze, up得到viewMatrix 【版本2】
     private lookAtOrigin(): mat4 {
