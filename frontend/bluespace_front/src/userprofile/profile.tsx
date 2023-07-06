@@ -2,7 +2,7 @@ import React from 'react';
 import type { MenuProps } from "antd";
 import { Breadcrumb, Layout, Menu, theme } from "antd";
 import { UploadOutlined, VideoCameraOutlined } from '@ant-design/icons';
-
+import "./userprofile.style.css"
 
 const { Content, Sider } = Layout;
 
@@ -15,6 +15,19 @@ export default function Profile() {
   const {
     token: { colorBgContainer },
   } = theme.useToken();
+  
+
+  function getLabel(x:number) {
+    if(x === 1) {
+      return "profile"
+    }
+    if(x === 2) {
+      return "friends"
+    }
+    if(x === 3) {
+      return "planets"
+    }
+  }
   return (
     <div>
       <Layout>
@@ -38,7 +51,7 @@ export default function Profile() {
             (icon, index) => ({
               key: String(index + 1),
               icon: React.createElement(icon),
-              label: `nav ${index + 1}`,
+              label: `${getLabel(index+1)}`,
             }),
           )}
         />
@@ -47,15 +60,8 @@ export default function Profile() {
       
         <Layout style={{ padding: "0 24px 0px" }}>
             
-          <Content
-            style={{
-              padding: 24,
-              margin: 5,
-              minHeight: 100,
-              background: colorBgContainer
-            }}
-          >
-            
+          <Content className='ProfileContent'>
+            aaa
           </Content>
         </Layout>
       </Layout>
