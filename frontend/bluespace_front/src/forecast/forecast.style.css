@@ -14,3 +14,11 @@
   background-color: rgb(186, 175, 221);
   color:white;
 }
+.ContentLayout {
+  display: flex;
+  white-space: nowrap;
+}
+.ContentLayout {
+  display: flex;
+  white-space: nowrap;
+}

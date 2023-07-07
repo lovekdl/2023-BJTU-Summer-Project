@@ -12,8 +12,8 @@ function StarMap() {
     const canvas = document.createElement("canvas")
     canvas.style.width = '100vw'
     canvas.style.height = '100vh'
-    
-    
+
+
     document.getElementById("StarMap")?.appendChild(script)
     document.getElementById("StarMap")?.appendChild(canvas)
 

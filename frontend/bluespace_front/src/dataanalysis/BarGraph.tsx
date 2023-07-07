@@ -16,6 +16,10 @@ export default class BarGraph extends PureComponent {
             legend: {
                 data: ["销量"],
             },
+            grid: {
+                show: 'true',
+                borderWidth: '0'
+            },
             xAxis: {
                 data: ["衬衫", "羊毛衫", "雪纺衫", "裤子", "高跟鞋", "袜子"],
             },
