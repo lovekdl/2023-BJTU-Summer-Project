@@ -272,24 +272,31 @@ class BlueSpaceRenderer {
     }
     
     // compare in world coordinate system
-    private readonly SELECT_PLANET_HIT_COEFFICIENT= 0
+    private readonly SELECT_PLANET_HIT_COEFFICIENT = 20
     selectPlanet(cx: number, cy: number): number {
-        const tx = cx - 0.5
-        const ty = -(cy - 0.5) - 0.04
+        let tx = cx - 0.5
+        let ty = -(cy - 0.5)
+        
+        // tx = 0
+        // ty = 0
 
         const nearHeight = 2 * this.PERSPECTIVE_NEAR * Math.tan(this.PERSPECTIVE_FOVY * 0.5)
         const nearWidth = this.canvasSize.width / this.canvasSize.height * nearHeight
         
-        const BA4: vec4 = vec4.fromValues(tx * nearWidth, ty * nearHeight, this.PERSPECTIVE_NEAR, 0.0)
-        // const BA4:
-        const inverseViewMatrix: mat4 = mat4.create()
+        const B4: vec4 = vec4.fromValues(tx * nearWidth, ty * nearHeight, -this.PERSPECTIVE_NEAR, 1.0)
+
         this.camera.update()
-        mat4.invert(inverseViewMatrix, this.camera.viewMatrix)
-        console.log("Before: " + BA4)
-        vec4.transformMat4(BA4, BA4, inverseViewMatrix)
-        console.log("After : " + BA4)
-        const BA: vec3 = vec3.fromValues(-BA4[0], -BA4[1], BA4[2])
-        vec3.normalize(BA, BA)
+
+        console.clear()
+        console.log("Click:  " + tx + ", " + ty + ")")
+        console.log("Camera: " + this.camera.position)
+        console.log("Before: " + B4)
+        vec4.transformMat4(B4, B4, this.camera.getInverseViewMatrix())
+        console.log("After : " + B4)
+
+        const A: vec3 = this.camera.position
+        const BA: vec3 = vec3.create()
+        vec3.sub(BA, vec3.fromValues(B4[0], B4[1], B4[2]), A)
 
         
         let mnDis = -1
@@ -297,27 +304,25 @@ class BlueSpaceRenderer {
         let mnD = -1
         for(let i = 0; i < this.numOfPlanets; i++) {
             const CA: vec3 = vec3.create()
-            const pos: vec3 = vec3.fromValues(this.planets[i].position.x, this.planets[i].position.y, this.planets[i].position.z)
-            vec3.sub(CA, pos, this.camera.position)
-
-            // vec3.normalize(CA, CA)
+            const C: vec3 = vec3.fromValues(this.planets[i].position.x, this.planets[i].position.y, this.planets[i].position.z)
+            vec3.sub(CA, C, A)
 
             const S: vec3 = vec3.create()
             vec3.cross(S, BA, CA)
             let d = vec3.len(S) / vec3.len(BA)
-            const dis = vec3.len(CA)
+            const depth = vec3.len(CA)
 
             d = d - this.planets[i].starRadius
 
-            if(i == 0 || i == 1) {
-                console.log("Planet" + i + ": " + pos)
+            if(i == 0) {
+                console.log("Planet" + i + ": " + C)
                 console.log("Dot: " + vec3.dot(BA, CA))
-                console.log("BA: "+BA+";\nCA: "+CA+"\nd: "+d+"\ndis:"+dis)
+                console.log("BA: "+BA+";\nCA: "+CA+"\nd: "+d+"\ndepth:"+depth)
             }
 
-            if(d <= this.SELECT_PLANET_HIT_COEFFICIENT && (mnId == -1 || dis < mnDis)) {
+            if(d <= this.SELECT_PLANET_HIT_COEFFICIENT && (mnId == -1 || d < mnDis)) {
                 mnId = i
-                mnDis = dis
+                mnDis = d
                 mnD = d
             }
         }

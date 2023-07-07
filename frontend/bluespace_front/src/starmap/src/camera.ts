@@ -148,7 +148,9 @@ class Camera {
         // console.log("up: " + this.up)
     }
 
-    // 通过Camera的position, gaze, up得到viewMatrix 【版本2】
+    // 更新Camera的viewMatrix
+    // 输入: position, target, (假设)up朝上
+    // 输出: viewMatrix
     private lookAt(target?: vec3) {
         const that = this
 
@@ -158,7 +160,7 @@ class Camera {
 
         let F = vec3.create()
         {
-            vec3.subtract(F, that.position, this.target)
+            vec3.subtract(F, that.position, this.target) // here is negative
             vec3.normalize(F, F)
         }
 
@@ -184,6 +186,44 @@ class Camera {
             R[1], U[1], F[1], 0,
             R[2], U[2], F[2], 0,
             -t[0], -t[1], -t[2], 1
+        )
+    }
+    
+    // 得到ViewMatrix ^ -1
+    // 输入: position, target, (假设)up朝上
+    // 输出: viewMatrix
+    private getInverseViewMatrix(target?: vec3): mat4 {
+        const that = this
+
+        if(!target) {
+            target = this.target
+        }
+
+        let F = vec3.create()
+        {
+            vec3.subtract(F, that.position, this.target)
+            vec3.normalize(F, F)
+        }
+
+        let R = vec3.create()
+        {
+            vec3.cross(R, vec3.fromValues(0, 1, 0), F)
+            vec3.normalize(R, R)
+        }
+
+        let U = vec3.create()
+        {
+            vec3.cross(U, F, R)
+            vec3.normalize(U, U)
+        }
+
+        let t = this.position
+
+        return mat4.fromValues(
+            R[0], R[1], R[2], 0,
+            U[0], U[1], U[2], 0,
+            F[0], F[1], F[2], 0,
+            t[0], t[1], t[2], 1
         )
     }
 }
