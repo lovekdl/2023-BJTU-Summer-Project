@@ -52,9 +52,10 @@ class Camera {
      * 竖直旋转接口
      */
     private readonly CAMERA_VERTICAL_ROTATE_SPEED = Math.PI / 1440
+    private readonly CAMERA_VERTICAL_ROTATE_MAX = Math.PI - 0.01
     rotateVertical(delta: number) {
         this.theta += delta * this.CAMERA_VERTICAL_ROTATE_SPEED
-        this.theta = Math.max(0.01 , Math.min(Math.PI, this.theta))
+        this.theta = Math.max(0.01 , Math.min(this.CAMERA_VERTICAL_ROTATE_MAX, this.theta))
     }
 
     /**

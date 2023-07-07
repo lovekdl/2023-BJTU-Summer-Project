@@ -74,6 +74,10 @@ fn fragment_main(
 fn CENTER_BLACK(position: vec3<f32>, normal: vec3<f32>, strength: f32) -> f32 {
     return 1 - saturate(dot(normalize(cameraPosition - position), normalize(normal))) * strength;
 }
+
+/**
+ * TODO: 远距离时，黑洞中间纯白周围亮黄；近距离时，黑洞中间纯黑周围紫色
+ */
 fn STAR_BLACKHOLE(position: vec3<f32>, normal: vec3<f32>) -> vec3<f32> {
     return vec3(0.2, 0.0, 0.4) * CENTER_BLACK(position, normal, 1.0);
 }
