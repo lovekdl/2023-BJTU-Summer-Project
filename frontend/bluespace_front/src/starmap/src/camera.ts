@@ -54,7 +54,7 @@ class Camera {
     private readonly CAMERA_VERTICAL_ROTATE_SPEED = Math.PI / 1440
     rotateVertical(delta: number) {
         this.theta += delta * this.CAMERA_VERTICAL_ROTATE_SPEED
-        this.theta = Math.max(0.01, Math.min(Math.PI, this.theta))
+        this.theta = Math.max(0.01 , Math.min(Math.PI, this.theta))
     }
 
     /**
@@ -192,7 +192,7 @@ class Camera {
     // 得到ViewMatrix ^ -1
     // 输入: position, target, (假设)up朝上
     // 输出: viewMatrix
-    private getInverseViewMatrix(target?: vec3): mat4 {
+    getInverseViewMatrix(target?: vec3): mat4 {
         const that = this
 
         if(!target) {
@@ -201,7 +201,7 @@ class Camera {
 
         let F = vec3.create()
         {
-            vec3.subtract(F, that.position, this.target)
+            vec3.subtract(F, that.position, this.target) // here is negative
             vec3.normalize(F, F)
         }
 

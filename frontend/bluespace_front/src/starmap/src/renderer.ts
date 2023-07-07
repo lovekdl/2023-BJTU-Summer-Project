@@ -272,13 +272,10 @@ class BlueSpaceRenderer {
     }
     
     // compare in world coordinate system
-    private readonly SELECT_PLANET_HIT_COEFFICIENT = 20
+private readonly SELECT_PLANET_HIT_COEFFICIENT = 20
     selectPlanet(cx: number, cy: number): number {
         let tx = cx - 0.5
         let ty = -(cy - 0.5)
-        
-        // tx = 0
-        // ty = 0
 
         const nearHeight = 2 * this.PERSPECTIVE_NEAR * Math.tan(this.PERSPECTIVE_FOVY * 0.5)
         const nearWidth = this.canvasSize.width / this.canvasSize.height * nearHeight
@@ -287,17 +284,14 @@ class BlueSpaceRenderer {
 
         this.camera.update()
 
-        console.clear()
-        console.log("Click:  " + tx + ", " + ty + ")")
-        console.log("Camera: " + this.camera.position)
-        console.log("Before: " + B4)
+        console.log("A: " + this.camera.position)
         vec4.transformMat4(B4, B4, this.camera.getInverseViewMatrix())
-        console.log("After : " + B4)
+        console.log("B: " + B4)
 
+        // const A: vec3 = vec3.fromValues(this.camera.position[0], this.camera.position[1], this.camera.position[2])
         const A: vec3 = this.camera.position
         const BA: vec3 = vec3.create()
         vec3.sub(BA, vec3.fromValues(B4[0], B4[1], B4[2]), A)
-
         
         let mnDis = -1
         let mnId = -1
@@ -315,9 +309,7 @@ class BlueSpaceRenderer {
             d = d - this.planets[i].starRadius
 
             if(i == 0) {
-                console.log("Planet" + i + ": " + C)
-                console.log("Dot: " + vec3.dot(BA, CA))
-                console.log("BA: "+BA+";\nCA: "+CA+"\nd: "+d+"\ndepth:"+depth)
+                console.log(" - C" + i + ": " + C + "\nd: "+d)
             }
 
             if(d <= this.SELECT_PLANET_HIT_COEFFICIENT && (mnId == -1 || d < mnDis)) {
