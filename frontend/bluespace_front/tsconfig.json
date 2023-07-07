@@ -21,7 +21,8 @@
     "noFallthroughCasesInSwitch": true,
 
     /* WebGPU */
-    "types": ["vite/client", "@webgpu/types", "@types/dom-webcodecs"]
+    "types": ["vite/client", "@webgpu/types", "@types/dom-webcodecs"],
+    "allowSyntheticDefaultImports": true
   },
   "include": ["src"],
   "references": [{ "path": "./tsconfig.node.json" }]
