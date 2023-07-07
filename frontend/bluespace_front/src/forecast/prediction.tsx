@@ -11,6 +11,7 @@ import Gauge from "../dataanalysis/Gauge";
 import BarGraph from "../dataanalysis/BarGraph";
 import PieChart from "../dataanalysis/PieChart";
 import LineChart from "../dataanalysis/LineChart";
+import DataTable from "../dataanalysis/DataTable";
 import {
   UserOutlined
 } from "@ant-design/icons";
@@ -41,7 +42,8 @@ function Prediction() {
   useEffect(()=>{
     if(nowKey == 1) {//Statistics
       setContent(
-      <div>
+      <div className='ContentLayout'>
+        <DataTable></DataTable>
       </div>
       )
     } 
