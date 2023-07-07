@@ -1,6 +1,7 @@
-import {useEffect, useState} from 'react'
+import {RefObject, useEffect, useState} from 'react'
 import "./authority.style.css"
 import logo from '../assets/logo.png'
+import React, { useRef } from 'react';
 import { useStore } from '../store';
 import { useNavigate } from 'react-router-dom';
 import Scrolls from "./scroll";
@@ -9,11 +10,23 @@ import { observer } from 'mobx-react-lite';
 import qq from '../assets/QQ.png'
 import wechat from '../assets/WeChat.png'
 import Stars from './stars';
+import { RegisterForm } from '.';
+import {message} from 'antd'
 
+
+interface InputRef {
+  value: string;
+}
 
 function LoginForm  ()  {
   const navigate = useNavigate()
+  const usernameRef = useRef<InputRef>(null) as RefObject<HTMLInputElement>;
+  const passwordRef = useRef<InputRef>(null) as RefObject<HTMLInputElement>;
   const [ current_page , setCurrentPage ] = useState('login');
+  
+  const {loginStore} = useStore();
+  
+
   const handleOnClicked = () => {
     console.log('okokok')
   }
@@ -21,10 +34,29 @@ function LoginForm  ()  {
     console.log('ck')
     setCurrentPage('register')
   }
-  const handleLoginOnClicked = () => {
-    setCurrentPage('login')
-  }
+  
+  async function handleLoginSubmit(event:any) {
+    if(!usernameRef.current || !passwordRef.current) return;
+    console.log('Uername is:', usernameRef.current.value);
+    console.log('Password:', passwordRef.current.value);
+    event.preventDefault();
 
+
+    try {
+      await loginStore.getTokenByLogin({
+        username: usernameRef.current.value,
+        password: passwordRef.current.value
+      })
+      message.success('登录成功')
+      navigate('/', {replace:true})
+      window.location.reload()
+    } catch(e:any) {
+      console.log(e)
+      if(e.response)
+        message.error(e.response.data.error_message)
+      else message.error(e.message)
+    }
+  }
   return (
     
     <div className="content">
@@ -46,33 +78,37 @@ function LoginForm  ()  {
             
           
             <h1>Log in</h1>
-            
-            <div className="input-items">
+            <form onSubmit={handleLoginSubmit}>
+              <div className="input-items">
+                  <span className="input-tips">
+                      Username
+                  </span>
+                  <input type="text"  className="inputs" placeholder="Enter your email" ref={usernameRef}  ></input>
+                  
+              </div>
+              <div className="input-items">
                 <span className="input-tips">
-                    Email Address
+                    Password
                 </span>
-                <input type="text" className="inputs" placeholder="Enter your email"></input>
                 
-            </div>
-            <div className="input-items">
-              <span className="input-tips">
-                  Password
-              </span>
+                <input type="password" className="inputs" placeholder="Enter password" ref={passwordRef}/>
+                
+                <span className="forgot">Forgot Password</span>
+              </div>
               
-              <input type="password" className="inputs" placeholder="Enter password"/>
-              
-              <span className="forgot">Forgot Password</span>
-            </div>
+              <motion.button
+                className="box" 
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                transition={{ type: "spring", stiffness: 400, damping: 20 }}
+                // onClick={handleOnClicked}
+                type = 'submit'
+              >
+                Log in
+              </motion.button>
+            </form>
             {/* <button className="btn">Log in</button> */}
-            <motion.div
-              className="box" 
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              transition={{ type: "spring", stiffness: 400, damping: 20 }}
-              onClick={handleOnClicked}
-            >
-              Log in
-            </motion.div>
+            
             <div className="siginup-tips">
               <span>Don't Have An Account?</span>
               <span onClick={handleSignUpOnClicked}>Signup</span>
@@ -97,66 +133,8 @@ function LoginForm  ()  {
           </div>
           
         </div>:
-        <div className="right-login-form">
-          <div className="form-wrapper">
-            
-          
-            <h1>Sign up</h1>
-            
-            <div className="input-items">
-                <span className="input-tips">
-                    Email Address
-                </span>
-                <input type="text" className="inputs" placeholder="Enter your email"></input>
-                
-            </div>
-            <div className="input-items">
-              <span className="input-tips">
-                  Password
-              </span>
-              
-              <input type="password" className="inputs" placeholder="Enter password"/>
-              <span className="input-tips">
-                  Confirm your password
-              </span>
-              
-              <input type="password" className="inputs" placeholder="Enter password"/>
-              
-            </div>
-            {/* <button className="btn">Log in</button> */}
-            <motion.div
-              className="box" 
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              transition={{ type: "spring", stiffness: 400, damping: 20 }}
-              onClick={handleOnClicked}
-            >
-              Register
-            </motion.div>
-            <div className="siginup-tips">
-              <span>Already Have An Account?</span>
-              <span onClick={handleLoginOnClicked}>Login</span>
-            </div>
-            <div className="other-login">
-              <div className="divider">
-                <span className="line"></span>
-                <span className="divider-text">About us</span>
-                <span className="line"></span>
-              </div>
-              <div className="other-login-wrapper">
-                <div className="other-login-item">
-                  <img src={qq} alt="QQ"/>
-                </div>
-                <div className="other-login-item">
-                  <img src={wechat} alt="WeChat"/>
-                </div>
-              </div>
-                
-            </div>
-            
-          </div>
-          
-        </div>}
+        <RegisterForm setCurrentPage ={setCurrentPage}></RegisterForm>
+        }
       </div>
     </div>
   );

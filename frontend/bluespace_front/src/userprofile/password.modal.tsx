@@ -49,12 +49,7 @@ function PasswordModal (props : any) {
       <div className = 'ModalInnerDiv'>
         
         <input type="text" className="input-box" placeholder="Enter your new password"/>
-      </div>
-      
-      
-      
-      
-      
+      </div>      
       <div className = 'ModalInnerButtonDiv'>
       <motion.button
           className="ModalChange" 

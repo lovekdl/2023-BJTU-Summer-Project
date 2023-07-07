@@ -27,14 +27,14 @@ function NameModal (props : any) {
       <br></br>
       <div className = 'ModalInnerDiv'>
         
-        <span className = 'ModalSpan'>Old Name &nbsp;&nbsp;</span>
+        <span className = 'ModalSpan'>Old name &nbsp;&nbsp;</span>
         <div className = 'Modal-purple-underline'> lovekdl</div>
       </div>
       
       
       <div className = 'ModalInnerDiv'>
         
-        <span className = 'ModalSpan'>New Name &nbsp;&nbsp;</span>
+        <span className = 'ModalSpan'>New name &nbsp;&nbsp;</span>
         <input type="text" className="input-box" placeholder="Enter your new name"/>
         
       </div>

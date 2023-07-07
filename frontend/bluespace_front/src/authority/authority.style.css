@@ -68,12 +68,18 @@
 .content .login-wrapper .right-login-form {
   flex: 1;
   position: relative;
+  margin-bottom: 10vh;
+}
+
+.down-margin-div {
+  margin-bottom: 65px;
 }
 .content .login-wrapper .right-login-form .form-wrapper {
   position: absolute;
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
+  
 }
 .content .login-wrapper .right-login-form .form-wrapper h1 {
   font-size: 30px;
@@ -120,6 +126,7 @@
   font-size: 25px;
   margin: 20px 0;
   cursor: pointer;
+ 
 }
 
 .box {

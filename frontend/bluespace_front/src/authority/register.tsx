@@ -1,4 +1,4 @@
-import {useEffect, useState} from 'react'
+import {useEffect, useState,useRef, RefObject} from 'react'
 import "./authority.style.css"
 import logo from '../assets/logo.png'
 import { useStore } from '../store';
@@ -10,90 +10,103 @@ import qq from '../assets/QQ.png'
 import wechat from '../assets/WeChat.png'
 import Stars from './stars';
 
+interface InputRef {
+  value: string;
+}
 
-function RegisterForm  ()  {
+function RegisterForm  (prop:any)  {
+  const usernameRef = useRef<InputRef>(null) as RefObject<HTMLInputElement>;
+  const passwordRef = useRef<InputRef>(null) as RefObject<HTMLInputElement>;
+  const emailRef = useRef<InputRef>(null) as RefObject<HTMLInputElement>;
+  const confirmedPasswordRef = useRef<InputRef>(null) as RefObject<HTMLInputElement>;
+  const codeRef = useRef<InputRef>(null) as RefObject<HTMLInputElement>;
 
-  const handleOnClicked = () => {
-    console.log('okokok')
+  const handleLoginOnClicked = () => {
+    prop.setCurrentPage('login')
+  }
+  async function handleRegisterSubmit(event:any) {
+    event.preventDefault();
+    console.log('aaa')
+    if(!usernameRef.current || ! passwordRef.current || !emailRef.current || !confirmedPasswordRef.current || !codeRef.current) return;
+    const username = usernameRef.current.value;
+    const email = emailRef.current.value;
+    const password = passwordRef.current.value;
+    const confirmedPassword = confirmedPasswordRef.current.value;
+    const code = codeRef.current.value;
+    console.log(username,email,password,confirmedPassword,code);
   }
   return (
     
-    <div className="content">
-      <Stars></Stars>
+    <div className="right-login-form">
       
-      {/* <Scrolls></Scrolls> */}
-      <div className="login-wrapper">
-        <div className="left-img">
-          <div className="glass">
-            <div className="tips">
-              <h1>BLUE SPACE</h1>
-              <span>explore the universe.</span>
-              <span>try to find your planet.</span>
-            </div>
-          </div>
-        </div>
-        <div className="right-login-form">
-          <div className="form-wrapper">
+      <div className="form-wrapper">
+        
+      <form onSubmit={handleRegisterSubmit}>
+        <h1>Sign up</h1>
+        <div className="input-items">
+            <span className="input-tips">
+                Username
+            </span>
+            <input type="text" className="inputs" placeholder="Enter your username" ref={usernameRef}></input>
+        
             
+        
+          <span className="input-tips">
+              Password
+          </span>
           
-            <h1>Sign up</h1>
-            
-            <div className="input-items">
-                <span className="input-tips">
-                    Email Address
-                </span>
-                <input type="text" className="inputs" placeholder="Enter your email"></input>
-                
-            </div>
-            <div className="input-items">
-              <span className="input-tips">
-                  Password
-              </span>
-              
-              <input type="password" className="inputs" placeholder="Enter password"/>
-              <span className="input-tips">
-                  Confirm your password
-              </span>
-              
-              <input type="password" className="inputs" placeholder="Enter password"/>
-              
-            </div>
-            {/* <button className="btn">Log in</button> */}
-            <motion.div
-              className="box" 
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              transition={{ type: "spring", stiffness: 400, damping: 20 }}
-              onClick={handleOnClicked}
-            >
-              Register
-            </motion.div>
-            <div className="siginup-tips">
-              <span>Already Have An Account?</span>
-              <span>Login</span>
-            </div>
-            <div className="other-login">
-              <div className="divider">
-                <span className="line"></span>
-                <span className="divider-text">About us</span>
-                <span className="line"></span>
-              </div>
-              <div className="other-login-wrapper">
-                <div className="other-login-item">
-                  <img src={qq} alt="QQ"/>
-                </div>
-                <div className="other-login-item">
-                  <img src={wechat} alt="WeChat"/>
-                </div>
-              </div>
-                
-            </div>
-            
-          </div>
+          <input type="password" className="inputs" placeholder="Enter password" ref={passwordRef}/>
+          <span className="input-tips">
+              Confirm your password
+          </span>
+          <input type="password" className="inputs" placeholder="Enter password" ref={confirmedPasswordRef}/>
+          
+          <span className="input-tips">
+                Email Address
+            </span>
+            <input type="text" className="inputs" placeholder="Enter your email" ref={emailRef}></input>
+          
+          <span className="input-tips">
+              Verification code
+          </span>
+          <input type="password" className="inputs" placeholder="Verification code you received" ref={codeRef}/>
           
         </div>
+        {/* <button className="btn">Log in</button> */}
+        <motion.button
+          className="box" 
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          transition={{ type: "spring", stiffness: 400, damping: 20 }}
+          type='submit'
+        >
+          Register
+        </motion.button>
+        </form>
+        <div className="siginup-tips">
+          <span>Already Have An Account?</span>
+          <span onClick={handleLoginOnClicked}>Login</span>
+        </div>
+        <div className="other-login">
+          <div className="divider">
+            <span className="line"></span>
+            <span className="divider-text">About us</span>
+            <span className="line"></span>
+          </div>
+          <div className="other-login-wrapper">
+            <div className="other-login-item">
+              <img src={qq} alt="QQ"/>
+            </div>
+            <div className="other-login-item">
+              <img src={wechat} alt="WeChat"/>
+            </div>
+          </div>
+            
+        </div>
+        
       </div>
-    </div>
+      </div>
+    
   );
 
 
