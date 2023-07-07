@@ -15,15 +15,6 @@ import { StarGenerator } from "./starGenerator"
  * 
  * 渲染星图
  * 
- * 由于渲染器需要异步初始化，所以必须按照如下方法进行实例化
- *   let renderer: BlueSpaceRenderer
- *   try {
- *     renderer = new BlueSpaceRenderer()
- *     await renderer.setup()
- *   } catch (error) {
- *     console.log("Error: ", error)
- *   }
- * 具体详见：https://stackoverflow.com/questions/35743426/async-constructor-functions-in-typescript
  */
 class BlueSpaceRenderer {
 
@@ -63,6 +54,15 @@ class BlueSpaceRenderer {
     // created when initGroup
     private transformGroup?: GPUBindGroup = undefined
     private textureGroup?: GPUBindGroup = undefined
+
+    // About Planet View
+    private isPlanetMode: boolean = false
+    private lightPositionBuffer?: GPUBuffer = undefined
+    private phongCoefficientBuffer?: GPUBuffer = undefined
+    private planetModelMatrixBuffer?: GPUBuffer = undefined
+
+    private planetTexture?: GPUTexture = undefined
+    
 
     // ===== Post-process =====
     private intermediateTextures?: Array<GPUTexture> = undefined
@@ -105,6 +105,21 @@ class BlueSpaceRenderer {
 
     // ===== ===== ===== Public Methods ===== ===== =====
 
+    /**
+     * 构造函数
+     *
+     * 由于渲染器需要异步初始化，所以必须按照如下方法进行实例化
+     *   let renderer: BlueSpaceRenderer
+     *   try {
+     *     renderer = new BlueSpaceRenderer()
+     *     renderer.setup().then(() => {
+     *       renderer.run()
+     *     }}
+     *   } catch (error) {
+     *     console.log("Error: ", error)
+     *   }
+     * 具体详见：https://stackoverflow.com/questions/35743426/async-constructor-functions-in-typescript
+     */
     constructor() {
         // ===== Camera =====
         this.camera = new Camera(this.CAMERA_THETA, this.CAMERA_PHI, this.CAMERA_RADIUS)
