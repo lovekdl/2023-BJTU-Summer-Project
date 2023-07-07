@@ -25,19 +25,28 @@ class Planet {
      * 
      * 恒星共有7种，分别为OBAFGKM
      */
-    static readonly STAR_SHADER_TYPE_MIN: number = 1
+    static readonly STAR_SHADER_TYPE_MIN: number = 0
     static readonly STAR_SHADER_TYPE_MAX: number = 7
-    static readonly STAR_SHADER_TYPE_O: number = 1
-    static readonly STAR_SHADER_TYPE_B: number = 2
-    static readonly STAR_SHADER_TYPE_A: number = 3
-    static readonly STAR_SHADER_TYPE_F: number = 4
-    static readonly STAR_SHADER_TYPE_G: number = 5
-    static readonly STAR_SHADER_TYPE_K: number = 6
-    static readonly STAR_SHADER_TYPE_M: number = 7
+    static readonly STAR_SHADER_TYPE_BLACKHOLE: number = 0
+    static readonly STAR_SHADER_TYPE_O:         number = 1
+    static readonly STAR_SHADER_TYPE_B:         number = 2
+    static readonly STAR_SHADER_TYPE_A:         number = 3
+    static readonly STAR_SHADER_TYPE_F:         number = 4
+    static readonly STAR_SHADER_TYPE_G:         number = 5
+    static readonly STAR_SHADER_TYPE_K:         number = 6
+    static readonly STAR_SHADER_TYPE_M:         number = 7
 
+    static readonly STAR_SCALE_K: number = 1.5
     static readonly STAR_SCALE: Array<number> = [
-        0.0, 6.0, 4.0, 2.0, 1.75, 1.5, 1.25, 1.0
-    ]
+        30.0 * this.STAR_SCALE_K,
+        6.0 * this.STAR_SCALE_K,
+        4.0 * this.STAR_SCALE_K,
+        2.0 * this.STAR_SCALE_K,
+        1.75 * this.STAR_SCALE_K,
+        1.5 * this.STAR_SCALE_K,
+        1.25 * this.STAR_SCALE_K,
+        1.0 * this.STAR_SCALE_K,
+    ] 
 
     // constructor
     constructor(

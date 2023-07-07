@@ -1,13 +1,14 @@
-import shaderRaw from "./shader.wgsl?raw"
-import composite1Shader from "./composite1.wgsl?raw"
-import composite2Shader from "./composite2.wgsl?raw"
-import finalShader from "./final.wgsl?raw"
-import * as sphere from "./util/sphere"
-import * as rectangle from "./util/rectangle"
-import { mat4, vec3, vec4 } from 'gl-matrix'
+import planetShader from "../shaders/planet.wgsl?raw"
+import composite1Shader from "../shaders/composite1.wgsl?raw"
+import composite2Shader from "../shaders/composite2.wgsl?raw"
+import finalShader from "../shaders/final.wgsl?raw"
+import * as sphere from "../util/sphere"
+import * as rectangle from "../util/rectangle"
+import { mat4, vec4, vec3 } from 'gl-matrix'
 
 import { Camera } from './camera'
 import { Planet } from './planet'
+import { StarGenerator } from "./starGenerator"
 
 /**
  * 蓝色空间渲染器
@@ -29,7 +30,7 @@ class BlueSpaceRenderer {
     // ===== ===== ===== Renderer Properties ===== ===== =====
 
     private haveSetup: boolean = false
-    private haveRun:   boolean = false
+    // private haveRun:   boolean = false
     // created when initWebGPU
     private device?: GPUDevice = undefined
     private context?: GPUCanvasContext = undefined
@@ -50,6 +51,7 @@ class BlueSpaceRenderer {
     private starShaderTypeArray: Float32Array = new Float32Array()
 
     private environmentBuffer?: GPUBuffer = undefined
+    private cameraPositionBuffer?: GPUBuffer = undefined
 
     // created when initTexture
     private depthTexture?: GPUTexture = undefined
@@ -63,16 +65,19 @@ class BlueSpaceRenderer {
     private textureGroup?: GPUBindGroup = undefined
 
     // ===== Post-process =====
+    private intermediateTextures?: Array<GPUTexture> = undefined
+
     private postprocess?: Array<{
+        label: string,
         pipeline: GPURenderPipeline,
         buffer: {vertex: GPUBuffer, index: GPUBuffer, numOfVertex: number, numOfIndex: number},
-        texture: GPUTexture,
         group: GPUBindGroup,
+        colorAttachment?: GPUTextureView,
     }> = undefined
 
     // ===== ===== ===== Data Properties ===== ===== =====
 
-    private camera: Camera
+    public camera: Camera
     private numOfPlanets: number
     private planets: Array<Planet>
 
@@ -84,34 +89,18 @@ class BlueSpaceRenderer {
 
     // ===== ===== ===== Constants ===== ===== =====
 
-    // 数学计算相关
-    private readonly PI: number = Math.PI
-    private readonly PI2: number = 2 * Math.PI
-
     // 摄像机(View矩阵)相关
-    private readonly CAMERA_THETA: number = Math.PI / 9 * 3
+    private readonly CAMERA_THETA: number = Math.PI / 9 * 2
     private readonly CAMERA_PHI: number = 0
-    private readonly CAMERA_RADIUS: number = 1000
+    private readonly CAMERA_RADIUS: number = 1300
 
     // 透视矩阵相关
     private readonly PERSPECTIVE_FOVY: number = Math.PI / 2
     private readonly PERSPECTIVE_NEAR: number = 0.1
     private readonly PERSPECTIVE_FAR: number = 10000
 
-    // 星球生成相关
-    private readonly COMMON_SPEED: number = 0.01
-    private readonly POSITION_RANGE: number = 50
-
-    // 旋臂分布相关
-    private readonly NORMAL_DIST_VARIANCE = 70
-    private readonly SPIRAL_SIZE = 100
-    private readonly SPIRAL_L = -0.3 * Math.PI
-    private readonly SPIRAL_R = 2.5 * Math.PI
-
-    // Update相关
-    private readonly ROTATION_SPEED = Math.PI / 3600
-
-    // Post-process图层数量
+    // Post-process相关
+    private readonly INTERMEDIATE_TEXTURE_NUM = 3
     private readonly POSTPROCESS_NUM = 3
 
     // ===== ===== ===== Public Methods ===== ===== =====
@@ -122,27 +111,7 @@ class BlueSpaceRenderer {
 
         // ===== Load Planets =====
         this.numOfPlanets = 20000
-        this.planets = new Array<Planet>(this.numOfPlanets)
-
-
-        this.planets = this.randomGalaxyStar(this.numOfPlanets)
-
-        // const positions = this.randomGalaxyStar(this.numOfPlanets)
-        // for(let i = 0; i < this.planets.length; i++) {
-        //     this.planets[i] = Planet.createPlanet(
-        //         positions[i], {
-        //             x: this.randomRange(-3.14, 3.14),
-        //             y: this.randomRange(-3.14, 3.14),
-        //             z: this.randomRange(-3.14, 3.14),
-        //         }, {
-        //             x: this.randomRange(-1.0, 1.0) * this.COMMON_SPEED,
-        //             y: this.randomRange(-1.0, 1.0) * this.COMMON_SPEED,
-        //             z: this.randomRange(-1.0, 1.0) * this.COMMON_SPEED,
-        //         },
-        //         Planet.STAR_SHADER_TYPE_G
-        //     )
-        //     // console.log(this.planets[i].starShaderType)
-        // }
+        this.planets = StarGenerator.randomGalaxyStar(this.numOfPlanets)
     }
 
     /**
@@ -151,7 +120,7 @@ class BlueSpaceRenderer {
     async setup() {
         const that = this
 
-        this.camera.rotateInSpherical()
+        this.camera.update()
 
         await this.initWebGPU()
         await this.initPipeline()
@@ -175,7 +144,6 @@ class BlueSpaceRenderer {
         // this.camera.position = vec3.fromValues(0, 1000, 0)
         // this.camera.gaze = vec3.fromValues(0, -1, 0)
         // this.camera.up = vec3.fromValues(0, 0, -1)
-        this.camera.rotateInSpherical()
         that.device!.queue.writeBuffer(that.viewMatrixBuffer!, 0, (this.camera.viewMatrix) as Float32Array)
         that.device!.queue.writeBuffer(that.projectionMatrixBuffer!, 0, this.projectionMatrix as Float32Array)
         
@@ -191,7 +159,7 @@ class BlueSpaceRenderer {
         that.device!.queue.writeBuffer(that.modelMatrixBuffer!, 0, that.modelMatrixArray)
         that.device!.queue.writeBuffer(that.starShaderTypeBuffer!, 0, that.starShaderTypeArray)
 
-        console.log(that.starShaderTypeArray)
+        // console.log(that.starShaderTypeArray)
 
         // 初始化完毕
         this.haveSetup = true
@@ -215,8 +183,9 @@ class BlueSpaceRenderer {
             // that.device!.queue.writeBuffer(that.modelMatrixBuffer!, 0, that.modelMatrixArray)
             
             // that.camera.phi += that.ROTATION_SPEED
-            that.camera.rotateInSpherical()
+            that.camera.update(true)
             that.device!.queue.writeBuffer(that.viewMatrixBuffer!, 0, (that.camera.viewMatrix) as Float32Array)
+            that.device!.queue.writeBuffer(that.cameraPositionBuffer!, 0, that.camera.position as Float32Array)
 
             that.draw()
 
@@ -224,48 +193,7 @@ class BlueSpaceRenderer {
         }
         requestAnimationFrame(frame)
 
-        this.haveRun = true;
-    }
-
-    /**
-     * 水平旋转接口
-     */
-    private readonly CAMERA_HORIZONTAL_ROTATE_SPEED = Math.PI / 1440
-    rotateHorizontal(delta: number) {
-        if(!this.haveRun) {
-            throw new Error("Renderer hasn't run")
-        }
-        this.camera.phi += delta * this.CAMERA_HORIZONTAL_ROTATE_SPEED
-        // this.camera.phi = Math.max(0, Math.min(this.PI2, this.camera.phi))
-        // console.log("camera.phi: " + this.camera.phi)
-    }
-
-    /**
-     * 竖直旋转接口
-     */
-    private readonly CAMERA_VERTICAL_ROTATE_SPEED = Math.PI / 1440
-    rotateVertical(delta: number) {
-        if(!this.haveRun) {
-            throw new Error("Renderer hasn't run")
-        }
-        this.camera.theta += delta * this.CAMERA_VERTICAL_ROTATE_SPEED
-        this.camera.theta = Math.max(0.01, Math.min(Math.PI, this.camera.theta))
-        // console.log("camera.theta: " + this.camera.theta)
-    }
-
-    /**
-     * Zoom接口
-     */
-    private readonly CAMERA_ZOOM_SPEED = 50
-    private readonly CAMERA_RADIUS_MIN = 100
-    private readonly CAMERA_RADIUS_MAX = 3000
-    zoom(delta: number) {
-        if(!this.haveRun) {
-            throw new Error("Renderer hasn't run")
-        }
-        this.camera.radius += delta * this.CAMERA_ZOOM_SPEED
-        this.camera.radius = Math.max(this.CAMERA_RADIUS_MIN, Math.min(this.CAMERA_RADIUS_MAX, this.camera.radius))
-        // console.log("camera.radius: " + this.camera.radius)
+        // this.haveRun = true;
     }
 
     /**
@@ -325,98 +253,6 @@ class BlueSpaceRenderer {
 
     // ===== ===== ===== Private Methods ===== ===== =====
 
-    /**
-     * 随机一个[L, R]的实数
-     */
-    private randomRange(L: number, R: number) {
-        return Math.random() * (R - L) + L
-    }
-
-    /**
-     * 随机一个二维符合正态分布的坐标
-     */
-    private randomNormalDist(mean: number, variance: number): {x: number, y: number} {
-        let u1 = 1 - Math.random(); // (0, 1]
-        let u2 = 1 - Math.random();
-        u1 = Math.sqrt(-2.0 * Math.log(u1))
-        u2 = 2.0 * Math.PI * u2
-        let z1 = u1 * Math.cos(u2); // random normal (0, 1)
-        let z2 = u1 * Math.sin(u2);
-        return {
-            x: z1 * variance + mean,
-            y: z2 * variance + mean,
-        }
-    }
-
-
-    /**
-     * 根据angle, u, a, b生成一个等角螺线上的一个随机点（无正态分布)
-     */
-    private equaiangularSpiral(angle: number, u: number, a: number, b: number): {x: number, y: number} {
-        const f = a * Math.pow(Math.E, b * u)
-        return {
-            x: f * Math.cos(u + angle),
-            y: f * Math.sin(u + angle),
-        }
-    }
-
-    /**
-     * 在银河系4条旋臂的基础上，随机出n个位置
-     */
-    private randomGalaxyStar(num: number): Array<Planet> {
-        const L = this.SPIRAL_L
-        const R = this.SPIRAL_R
-        const deltaSpiral = Math.floor(num / 4)
-        const deltaStar = (R - L) / deltaSpiral
-
-        let planets = new Array(num)
-        let idx = 0;
-        for(let i = 0; i <= 3; i++) { // 枚举每条旋臂
-            let t = L
-            const angle = i * Math.PI / 2.0
-            for(let j = 0; j < deltaSpiral || (i == 3 && idx < num); j++, idx++, t += deltaStar) { // 枚举旋臂上的每个位置
-                
-                const origin = this.equaiangularSpiral(angle, t, this.SPIRAL_SIZE, 0.4)
-                const delta = {
-                    x: this.randomNormalDist(0, this.NORMAL_DIST_VARIANCE).x,
-                    y: this.randomNormalDist(0, this.NORMAL_DIST_VARIANCE).x,
-                    z: this.randomNormalDist(0, this.NORMAL_DIST_VARIANCE).x,
-                }
-
-                let position = {
-                    x: origin.x + delta.x,
-                    y: 0        + delta.y,
-                    z: origin.y + delta.z,
-                }
-
-                let type = this.randomRange(0, 1)
-
-                planets[idx] = Planet.createPlanet(
-                    position, {
-                        x: this.randomRange(-3.14, 3.14),
-                        y: this.randomRange(-3.14, 3.14),
-                        z: this.randomRange(-3.14, 3.14),
-                    }, {
-                        x: this.randomRange(-1.0, 1.0) * this.COMMON_SPEED,
-                        y: this.randomRange(-1.0, 1.0) * this.COMMON_SPEED,
-                        z: this.randomRange(-1.0, 1.0) * this.COMMON_SPEED,
-                    },
-                    (type <= 0.002) ? (Planet.STAR_SHADER_TYPE_O) :
-                    (type <= 0.004) ? (Planet.STAR_SHADER_TYPE_B) :
-                    (type <= 0.012) ? (Planet.STAR_SHADER_TYPE_A) :
-                    (type <= 0.060) ? (Planet.STAR_SHADER_TYPE_F) :
-                    (type <= 0.143) ? (Planet.STAR_SHADER_TYPE_G) :
-                    (type <= 0.242) ? (Planet.STAR_SHADER_TYPE_K) :
-                    (Planet.STAR_SHADER_TYPE_M)
-                )
-                
-
-            }
-        }
-
-        return planets
-    }
-
     // ===== 关于renderPass的效率问题 =====
     // 1. setPipeline的效率消耗是最大的，因为它涉及到切换shaders、深度测试、图形组装、颜色混合等相关配置
     // 2. setVertexBuffer的效率消耗是第二大的，因为这个API会根据管线配置来切换数据，shader内部也要生成对应的一些局部变量
@@ -434,6 +270,7 @@ class BlueSpaceRenderer {
     // “尽量减少CPU和GPU的数据交换次数”
 
     // ===== ===== ===== Draw ===== ===== =====
+
     /**
      * 绘制函数
      */
@@ -455,7 +292,7 @@ class BlueSpaceRenderer {
             const renderPass = encoder.beginRenderPass({
                 colorAttachments: [{
                     // view: that.context!.getCurrentTexture().createView(),
-                    view: that.postprocess![0].texture!.createView(),
+                    view: that.intermediateTextures![0].createView(),
                     loadOp: 'clear', // 'clear'清空原有内容，'load'保留原有内容
                     clearValue: {r:0, g:0, b:0, a:1}, // 'clear'时使用的颜色
                     storeOp: 'store', // 'store'保留结果，'discard'清除原有信息
@@ -480,26 +317,17 @@ class BlueSpaceRenderer {
         }
 
         for(let i = 0; i < this.POSTPROCESS_NUM; i++) {
-            let postprocessPass: GPURenderPassEncoder
-            if(i != this.POSTPROCESS_NUM - 1) {
-                postprocessPass = encoder.beginRenderPass({
-                    colorAttachments: [{
-                        view: that.postprocess![i + 1].texture!.createView(),
-                        loadOp: 'clear', // 'clear'清空原有内容，'load'保留原有内容
-                        clearValue: {r:0, g:0, b:0, a:1}, // 'clear'时使用的颜色
-                        storeOp: 'store', // 'store'保留结果，'discard'清除原有信息
-                    }],
-                })
-            } else {
-                postprocessPass = encoder.beginRenderPass({
-                    colorAttachments: [{
-                        view: that.context!.getCurrentTexture().createView(),
-                        loadOp: 'clear', // 'clear'清空原有内容，'load'保留原有内容
-                        clearValue: {r:0, g:0, b:0, a:1}, // 'clear'时使用的颜色
-                        storeOp: 'store', // 'store'保留结果，'discard'清除原有信息
-                    }],
-                })
-            }
+            let postprocessPass = encoder.beginRenderPass({
+                colorAttachments: [{
+                    view: 
+                        (that.postprocess![i].colorAttachment)
+                        ? (that.postprocess![i].colorAttachment!)
+                        : (that.context!.getCurrentTexture().createView()),
+                    loadOp: 'clear', // 'clear'清空原有内容，'load'保留原有内容
+                    clearValue: {r:0, g:0, b:0, a:1}, // 'clear'时使用的颜色
+                    storeOp: 'store', // 'store'保留结果，'discard'清除原有信息
+                }],
+            })
             // 绑定Pipeline和BindGroup
             postprocessPass.setPipeline(that.postprocess![i].pipeline)
             postprocessPass.setBindGroup(0, that.postprocess![i].group)
@@ -516,6 +344,8 @@ class BlueSpaceRenderer {
         // 因为Submit的结果将直接绘制在屏幕上，而不需要JS来接收执行结果，所以这个API也不是异步的
         this.device!.queue.submit([buffer])
     }
+
+    // ===== ===== ===== Initialize Many Things ===== ===== =====
 
     /**
      * 初始化WebGPU
@@ -584,7 +414,7 @@ class BlueSpaceRenderer {
             layout: 'auto',
             vertex: {
                 module: that.device!.createShaderModule({
-                    code: shaderRaw
+                    code: planetShader
                 }),
                 entryPoint: 'vertex_main',
                 // 这里的buffers可以使用多个slots，表示js中需要传入的多个TypedArray
@@ -611,7 +441,7 @@ class BlueSpaceRenderer {
             },
             fragment: {
                 module: that.device!.createShaderModule({
-                    code: shaderRaw
+                    code: planetShader
                 }),
                 entryPoint: 'fragment_main',
                 targets: [{
@@ -695,6 +525,13 @@ class BlueSpaceRenderer {
         this.device!.queue.writeBuffer(that.environmentBuffer!, 0,
             Float32Array.from([that.canvasSize.width, that.canvasSize.height])
         )
+        
+        // ===== Camera Position Buffer =====
+        this.cameraPositionBuffer = that.device!.createBuffer({
+            size: 3 * 4,
+            usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
+        })
+        this.device!.queue.writeBuffer(that.cameraPositionBuffer!, 0, that.camera.position as Float32Array)
     }
 
     /**
@@ -797,9 +634,10 @@ class BlueSpaceRenderer {
                 resource: that.sampler!,
             }, {
                 binding: 2,
-                resource: {
-                    buffer: that.environmentBuffer!,
-                }
+                resource: { buffer: that.environmentBuffer! }
+            }, {
+                binding: 3,
+                resource: { buffer: that.cameraPositionBuffer! }
             }],
         })
     }
@@ -811,160 +649,156 @@ class BlueSpaceRenderer {
     private async initPostprocess() {
         const that = this
 
-        this.postprocess = new Array(this.POSTPROCESS_NUM)
-
-        const postprocessShaders = [
-            composite1Shader,
-            composite2Shader,
-            finalShader,
-        ]
-
-        for(let i = 0; i <= 2; i++) {
-            // ===== Post-process Pipeline =====
-            const descriptor: GPURenderPipelineDescriptor = {
-                layout: 'auto',
-                vertex: {
-                    module: that.device!.createShaderModule({
-                        code: postprocessShaders[i]
-                    }),
-                    entryPoint: 'vertex_main',
-                    buffers: [{
-                        arrayStride: 5 * 4,
-                        attributes: [{
-                            // position
-                            shaderLocation: 0,
-                            offset: 0,
-                            format: 'float32x3',
-                        }, {
-                            // uv
-                            shaderLocation: 1,
-                            offset: 3 * 4,
-                            format: 'float32x2',
-                        }],
-                    }]
-                },
-                fragment: {
-                    module: that.device!.createShaderModule({
-                        code: postprocessShaders[i]
-                    }),
-                    entryPoint: 'fragment_main',
-                    targets: [{
-                        format: that.format,
-                    }],
-                },
-                primitive: {
-                    topology: 'triangle-list',
-                }
-            }
-            const pipeline = await that.device!.createRenderPipelineAsync(descriptor)
-
-            // ===== Post-process Buffer =====
-            const buffer = {
-                vertex: that.device!.createBuffer({
-                    label: 'GPUBuffer stores vertex',
-                    size: rectangle.vertex.byteLength,
-                    usage: GPUBufferUsage.VERTEX | GPUBufferUsage.COPY_DST,
-                }),
-                index: that.device!.createBuffer({
-                    label: 'GPUBuffer stores index',
-                    size: rectangle.index.byteLength,
-                    usage: GPUBufferUsage.INDEX | GPUBufferUsage.COPY_DST,
-                }),
-                numOfVertex: rectangle.vertexCount,
-                numOfIndex: rectangle.indexCount,
-            }
-            this.device!.queue.writeBuffer(buffer.vertex, 0, rectangle.vertex)
-            this.device!.queue.writeBuffer(buffer.index, 0, rectangle.index)
-
-            // ===== Intermediate Texture =====
-            // intermediate texture
-            const texture = this.device!.createTexture({
+        this.intermediateTextures = new Array(this.INTERMEDIATE_TEXTURE_NUM)
+        for(let i = 0; i < this.INTERMEDIATE_TEXTURE_NUM; i++) {
+            this.intermediateTextures[i] = this.device!.createTexture({
                 size: that.canvasSize,
                 format: 'bgra8unorm',
                 usage:
                     GPUTextureUsage.TEXTURE_BINDING |
                     GPUTextureUsage.RENDER_ATTACHMENT,
             })
-            
-            // ===== Post-process Group =====
-            const group = this.device!.createBindGroup({
-                label: 'Postprocess Group with intermediate texture and sampler',
-                layout: pipeline.getBindGroupLayout(0),
-                entries: [{
-                    binding: 0,
-                    resource: texture.createView(),
-                }, {
-                    binding: 1,
-                    resource: that.sampler!,
-                }, {
-                    binding: 2,
-                    resource: {
-                        buffer: that.environmentBuffer!,
-                    }
-                }],
-            })
-
-            this.postprocess[i] = {
-                pipeline,
-                buffer,
-                texture,
-                group,
-            }
         }
 
+        this.postprocess = new Array(this.POSTPROCESS_NUM)
+
+        // texture[0] => texture[1]
+        this.postprocess[0] = await this.createSimplePipeline(
+            "Composite1",
+            composite1Shader,
+            [{
+                binding: 0,
+                resource: { buffer: that.environmentBuffer! }
+            }, {
+                binding: 1,
+                resource: that.sampler!,
+            }, {
+                binding: 2,
+                resource: that.intermediateTextures![0].createView(),
+            }],
+            that.intermediateTextures![1].createView()
+        )
+
+        // texture[1] => texture[2]
+        this.postprocess[1] = await this.createSimplePipeline(
+            "Composite2",
+            composite2Shader,
+            [{
+                binding: 0,
+                resource: { buffer: that.environmentBuffer! }
+            }, {
+                binding: 1,
+                resource: that.sampler!,
+            }, {
+                binding: 2,
+                resource: that.intermediateTextures![1].createView(),
+            }],
+            that.intermediateTextures![2].createView()
+        )
+
+        // texture[0] & texture[2] => Final
+        this.postprocess[2] = await this.createSimplePipeline(
+            "Final",
+            finalShader,
+            [{
+                binding: 0,
+                resource: { buffer: that.environmentBuffer! }
+            }, {
+                binding: 1,
+                resource: that.sampler!,
+            }, {
+                binding: 2,
+                resource: that.intermediateTextures![0].createView(),
+            }, {
+                binding: 3,
+                resource: that.intermediateTextures![2].createView(),
+            }]
+        )
+    }
+
+    /**
+     * 异步的创建一个简单管线
+     * 简单管线只有一个BindGroup
+     * @param label 标签 
+     * @param shader 着色器
+     * @param bindGroupEntries BindGroup的内容
+     * @param colorAttachment 管线的ColorAttachment
+     * @returns 一个建立好的简单管线
+     */
+    private async createSimplePipeline(label: string, shader: string, bindGroupEntries: Iterable<GPUBindGroupEntry>, colorAttachment?: GPUTextureView) {
+        const that = this
+
+        // ===== Post-process Pipeline =====
+        const descriptor: GPURenderPipelineDescriptor = {
+            layout: 'auto',
+            vertex: {
+                module: that.device!.createShaderModule({
+                    code: shader
+                }),
+                entryPoint: 'vertex_main',
+                buffers: [{
+                    arrayStride: 5 * 4,
+                    attributes: [{
+                        // position
+                        shaderLocation: 0,
+                        offset: 0,
+                        format: 'float32x3',
+                    }, {
+                        // uv
+                        shaderLocation: 1,
+                        offset: 3 * 4,
+                        format: 'float32x2',
+                    }],
+                }]
+            },
+            fragment: {
+                module: that.device!.createShaderModule({
+                    code: shader
+                }),
+                entryPoint: 'fragment_main',
+                targets: [{
+                    format: that.format,
+                }],
+            },
+            primitive: {
+                topology: 'triangle-list',
+            }
+        }
+        const pipeline = await that.device!.createRenderPipelineAsync(descriptor)
+
+        // ===== Post-process Buffer =====
+        const buffer = {
+            vertex: that.device!.createBuffer({
+                label: 'GPUBuffer stores vertex',
+                size: rectangle.vertex.byteLength,
+                usage: GPUBufferUsage.VERTEX | GPUBufferUsage.COPY_DST,
+            }),
+            index: that.device!.createBuffer({
+                label: 'GPUBuffer stores index',
+                size: rectangle.index.byteLength,
+                usage: GPUBufferUsage.INDEX | GPUBufferUsage.COPY_DST,
+            }),
+            numOfVertex: rectangle.vertexCount,
+            numOfIndex: rectangle.indexCount,
+        }
+        this.device!.queue.writeBuffer(buffer.vertex, 0, rectangle.vertex)
+        this.device!.queue.writeBuffer(buffer.index, 0, rectangle.index)
+
+        // ===== Post-process Group =====
+        const group = this.device!.createBindGroup({
+            label: 'Postprocess Group ' + label,
+            layout: pipeline.getBindGroupLayout(0),
+            entries: bindGroupEntries,
+        })
+
+        return {
+            label,
+            pipeline,
+            buffer,
+            group,
+            colorAttachment,
+        }
     }
 }
 
-
-let renderer: BlueSpaceRenderer
-try {
-    renderer = new BlueSpaceRenderer()
-    renderer.setup().then(() => {
-        renderer.run()
-    })
-} catch (error) {
-    throw new Error("Intializing renderer failed: " + error)
-}
-
-const starmapElement = document.getElementById("StarMap")
-let isMouseMiddleDown: boolean = false
-let last = {x: 0, y: 0}
-starmapElement!.addEventListener("mousedown", (e) => {
-    if(e.which === 1) {
-        const cx = e.offsetX / renderer.canvasSize.width
-        const cy = (e.offsetY - 64) / (renderer.canvasSize.height - 64)
-        const planetId = renderer.selectPlanet(cx, cy)
-        console.log(e.offsetX, e.offsetY, cx, cy, planetId)
-    } else if(e.which === 2) {
-        isMouseMiddleDown = true
-        last.x = e.clientX
-        last.y = e.clientY
-    }
-})
-starmapElement!.addEventListener("mousemove", (e) => {
-    if(isMouseMiddleDown && e.which === 2) {
-        // console.log("middle drag delta: " + (e.clientX - last.x) + ", " + (e.clientY - last.y))
-        renderer.rotateHorizontal(e.clientX - last.x)
-        renderer.rotateVertical(-(e.clientY - last.y))
-        last.x = e.clientX
-        last.y = e.clientY
-    }
-})
-starmapElement!.addEventListener("mouseup", (e) => {
-    if(e.which === 2) {
-        isMouseMiddleDown = false
-    }
-})
-starmapElement!.addEventListener("mousewheel", (e) => {
-    if((e as WheelEvent).deltaY > 0) {
-        renderer.zoom(1)
-    } else if((e as WheelEvent).deltaY < 0) {
-        renderer.zoom(-1)
-    }
-})
-
-window.oncontextmenu = function () {
-    return false;     // cancel default menu
-}
-
-// export { BlueSpaceRenderer }
+export { BlueSpaceRenderer }
