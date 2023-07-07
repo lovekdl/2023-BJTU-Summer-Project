@@ -207,7 +207,7 @@ class BlueSpaceRenderer {
      * 鼠标点击位置 (cx, cy), cx cy in [0, 1]
      * 鼠标相对位置 (tx, ty), tx ty in [-0.5, 0.5]
      */
-    private readonly SELECT_PLANET_HIT_DISTANCE = 20
+    private readonly SELECT_PLANET_HIT_DISTANCE = 10
     selectPlanet(cx: number, cy: number): number {
         const tx = cx - 0.5
         const ty = cy - 0.5
@@ -215,29 +215,22 @@ class BlueSpaceRenderer {
         const nearHeight = 2 * this.PERSPECTIVE_NEAR * Math.tan(this.PERSPECTIVE_FOVY * 0.5)
         const nearWidth = this.canvasSize.width / this.canvasSize.height * nearHeight
         
-        const BA4: vec4 = vec4.fromValues(tx * nearWidth, ty * nearHeight, this.PERSPECTIVE_NEAR, 0.0)
-        const inverseViewMatrix: mat4 = mat4.create()
-        mat4.invert(inverseViewMatrix, this.camera.viewMatrix)
-        vec4.transformMat4(BA4, BA4, inverseViewMatrix)
-        const BA: vec3 = vec3.fromValues(BA4[0], BA4[1], BA4[2])
-        const A: vec3 = this.camera.position
+        const BA: vec3 = vec3.fromValues(tx * nearWidth, ty * nearHeight, this.PERSPECTIVE_NEAR)
+        const A: vec3 = vec3.create(0, 0, 0)
         
-        const identity: mat4 = mat4.create()
-        mat4.mul(identity, inverseViewMatrix, this.camera.viewMatrix)
-
-        console.log(this.planets[0].position)
-
         let mnDis = -1
         let mnId = -1
         for(let i = 0; i < this.numOfPlanets; i++) {
             const CA: vec3 = vec3.create()
-            vec3.sub(CA, vec3.fromValues(this.planets[i].position.x, this.planets[i].position.y, this.planets[i].position.z), A)
+            const S: vec3 = vec3.create()
+            const pos: vec4 = vec4.fromValues(this.planets[i].position.x, this.planets[i].position.y, this.planets[i].position.z, 1.0)
+            vec4.transformMat4(pos, pos, this.camera.viewMatrix)
+            vec3.sub(CA, vec3.fromValues(pos[0], pos[1], pos[2]), A)
 
-            // console.log("BA: " + BA + ";\nCA: " + CA)
-            
-            vec3.cross(CA, BA, CA)
-            const d = vec3.len(CA) / vec3.len(BA)
+            vec3.cross(S, BA, CA)
+            const d = vec3.len(S) / vec3.len(BA)
 
+            // console.log("tPos: "+"("+pos[0]+","+pos[1]+","+pos[2]+")"+"\nBA: "+BA+";\nCA: "+CA+"\nS:"+S+"\nd: "+d)
 
             if(d <= this.SELECT_PLANET_HIT_DISTANCE && (mnId == -1 || d <= mnDis)) {
                 mnId = i
