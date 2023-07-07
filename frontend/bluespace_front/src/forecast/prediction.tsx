@@ -7,9 +7,15 @@ import {motion} from "framer-motion";
 import { observer } from 'mobx-react-lite'
 import {Avatar} from 'antd'
 import { useStore } from '../store';
+import Gauge from "../dataanalysis/Gauge";
+import BarGraph from "../dataanalysis/BarGraph";
+import PieChart from "../dataanalysis/PieChart";
+import LineChart from "../dataanalysis/LineChart";
 import {
   UserOutlined
 } from "@ant-design/icons";
+import {quat2} from "gl-matrix";
+import translate = module
 
 
 
@@ -36,15 +42,27 @@ function Prediction() {
     if(nowKey == 1) {//Statistics
       setContent(
       <div>
-        
       </div>
       )
     } 
     if(nowKey == 2) {//Analysis
       setContent(
-      <div>
-        
-      </div>
+      <Layout >
+        <div className='ContentLayout'>
+          <BarGraph></BarGraph>
+          <div style={{marginTop: 150}}>
+            <PieChart></PieChart>
+          </div>
+        </div>
+        <div className='ContentLayout'>
+          <div  style={{marginLeft: 100}}>
+            <LineChart></LineChart>
+          </div>
+          <div>
+            <Gauge></Gauge>
+          </div>
+        </div>
+      </Layout>
       )
     } 
     if(nowKey == 3) {//Prediction
@@ -110,9 +128,8 @@ function Prediction() {
 
       
         <Layout style={{ padding: "0 24px 0px" }}>
-          
-          <Content className='ProfileContent'>
-            
+          <Content >
+
             {content}
 
           </Content>
