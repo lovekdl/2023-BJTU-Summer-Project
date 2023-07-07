@@ -24,7 +24,7 @@ starmapElement!.addEventListener("mousedown", (e) => {
         const cx = e.offsetX / renderer.canvasSize.width
         const cy = (e.offsetY - 64) / (renderer.canvasSize.height - 64)
         const planetId = renderer.selectPlanet(cx, cy)
-        console.log(e.offsetX, e.offsetY, cx, cy, planetId)
+        // console.log(e.offsetX, e.offsetY, cx, cy, planetId)
     } else if(e.which === 2) {
         isMouseMiddleDown = true
         last.x = e.clientX

@@ -222,42 +222,111 @@ class BlueSpaceRenderer {
      * 鼠标点击位置 (cx, cy), cx cy in [0, 1]
      * 鼠标相对位置 (tx, ty), tx ty in [-0.5, 0.5]
      */
-    private readonly SELECT_PLANET_HIT_DISTANCE = 10
-    selectPlanet(cx: number, cy: number): number {
+    private readonly SELECT_PLANET_HIT_COEFFICIENT_2 = 0.05
+    selectPlanet2(cx: number, cy: number): number {
         const tx = cx - 0.5
-        const ty = cy - 0.5
+        const ty = -(cy - 0.5) - 0.01
+
+        // console.log("click in " + tx + ", " + ty)
 
         const nearHeight = 2 * this.PERSPECTIVE_NEAR * Math.tan(this.PERSPECTIVE_FOVY * 0.5)
         const nearWidth = this.canvasSize.width / this.canvasSize.height * nearHeight
         
         const BA: vec3 = vec3.fromValues(tx * nearWidth, ty * nearHeight, this.PERSPECTIVE_NEAR)
-        const A: vec3 = vec3.create(0, 0, 0)
+        vec3.normalize(BA, BA)
+
+        // console.log("BA: " + BA)
         
         let mnDis = -1
         let mnId = -1
+        let mnD = -1
         for(let i = 0; i < this.numOfPlanets; i++) {
-            const CA: vec3 = vec3.create()
             const S: vec3 = vec3.create()
             const pos: vec4 = vec4.fromValues(this.planets[i].position.x, this.planets[i].position.y, this.planets[i].position.z, 1.0)
             vec4.transformMat4(pos, pos, this.camera.viewMatrix)
-            vec3.sub(CA, vec3.fromValues(pos[0], pos[1], pos[2]), A)
+            const CA: vec3 = vec3.fromValues(pos[0], pos[1], -pos[2])
+            vec3.normalize(CA, CA)
+
 
             vec3.cross(S, BA, CA)
-            const d = vec3.len(S) / vec3.len(BA)
+            let d = vec3.len(S) / vec3.len(BA)
+            const dis = vec3.len(CA)
 
-            // console.log("tPos: "+"("+pos[0]+","+pos[1]+","+pos[2]+")"+"\nBA: "+BA+";\nCA: "+CA+"\nS:"+S+"\nd: "+d)
+            d = d * 10 / this.planets[i].starRadius
 
-            if(d <= this.SELECT_PLANET_HIT_DISTANCE && (mnId == -1 || d <= mnDis)) {
+            // if(i == 0) {
+            //     console.log("Planet0: " + pos)
+            //     console.log("tPos: "+"("+pos[0]+","+pos[1]+","+pos[2]+")"+"\nBA: "+BA+";\nCA: "+CA+"\nS:"+S+"\nd: "+d+"\ndis:"+dis)
+            // }
+
+            if(d <= this.SELECT_PLANET_HIT_COEFFICIENT_2 && (mnId == -1 || dis < mnDis)) {
                 mnId = i
-                mnDis = d
+                mnDis = dis
+                mnD = d
             }
         }
 
-        console.log(mnId + ": " + mnDis)
+        console.log(mnId + ": " + mnD + ", " + mnDis)
 
         return mnId
     }
     
+    // compare in world coordinate system
+    private readonly SELECT_PLANET_HIT_COEFFICIENT= 0
+    selectPlanet(cx: number, cy: number): number {
+        const tx = cx - 0.5
+        const ty = -(cy - 0.5) - 0.04
+
+        const nearHeight = 2 * this.PERSPECTIVE_NEAR * Math.tan(this.PERSPECTIVE_FOVY * 0.5)
+        const nearWidth = this.canvasSize.width / this.canvasSize.height * nearHeight
+        
+        const BA4: vec4 = vec4.fromValues(tx * nearWidth, ty * nearHeight, this.PERSPECTIVE_NEAR, 0.0)
+        // const BA4:
+        const inverseViewMatrix: mat4 = mat4.create()
+        this.camera.update()
+        mat4.invert(inverseViewMatrix, this.camera.viewMatrix)
+        console.log("Before: " + BA4)
+        vec4.transformMat4(BA4, BA4, inverseViewMatrix)
+        console.log("After : " + BA4)
+        const BA: vec3 = vec3.fromValues(-BA4[0], -BA4[1], BA4[2])
+        vec3.normalize(BA, BA)
+
+        
+        let mnDis = -1
+        let mnId = -1
+        let mnD = -1
+        for(let i = 0; i < this.numOfPlanets; i++) {
+            const CA: vec3 = vec3.create()
+            const pos: vec3 = vec3.fromValues(this.planets[i].position.x, this.planets[i].position.y, this.planets[i].position.z)
+            vec3.sub(CA, pos, this.camera.position)
+
+            // vec3.normalize(CA, CA)
+
+            const S: vec3 = vec3.create()
+            vec3.cross(S, BA, CA)
+            let d = vec3.len(S) / vec3.len(BA)
+            const dis = vec3.len(CA)
+
+            d = d - this.planets[i].starRadius
+
+            if(i == 0 || i == 1) {
+                console.log("Planet" + i + ": " + pos)
+                console.log("Dot: " + vec3.dot(BA, CA))
+                console.log("BA: "+BA+";\nCA: "+CA+"\nd: "+d+"\ndis:"+dis)
+            }
+
+            if(d <= this.SELECT_PLANET_HIT_COEFFICIENT && (mnId == -1 || dis < mnDis)) {
+                mnId = i
+                mnDis = dis
+                mnD = d
+            }
+        }
+
+        console.log(mnId + ": " + mnD + ", " + mnDis)
+
+        return mnId
+    }
+
 
     // ===== ===== ===== Private Methods ===== ===== =====
 

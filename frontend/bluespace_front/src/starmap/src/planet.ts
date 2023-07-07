@@ -55,6 +55,8 @@ class Planet {
         public rotationSpeed: {x: number, y: number, z: number},
         public scale: {x: number, y: number, z: number},
         
+        // 恒星radius
+        public starRadius: number,
         // 恒星的shader与model类型
         public starShaderType: number,
         public starModelType: number,
@@ -107,6 +109,7 @@ class Planet {
             rotation,
             rotationSpeed,
             {x: this.STAR_SCALE[t], y: this.STAR_SCALE[t], z: this.STAR_SCALE[t]},
+            this.STAR_SCALE[t],
             Math.max(this.STAR_SHADER_TYPE_MIN, Math.min(this.STAR_SHADER_TYPE_MAX, t)),
             1,
             1,
