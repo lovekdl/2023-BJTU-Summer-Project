@@ -13,6 +13,9 @@ import MenuScroll from './MenuScroll';
 import {useStore} from '../store/index'
 import {Avatar} from 'antd'
 import { observer } from 'mobx-react-lite'
+import {
+  UserOutlined
+} from "@ant-design/icons";
 const styles = createStyles({
   root: {
     flexGrow: 1,
@@ -35,7 +38,7 @@ function ButtonAppBar(props: Props) {
     console.log("clicked")
     navigate('/login', {replace:false})
   }
-  const {ProfileStore} = useStore()
+  const {ProfileStore,loginStore} = useStore()
 
   const handleAvatarOnClicked = ()=> {
     navigate("/profile", {replace:false});
@@ -55,7 +58,7 @@ function ButtonAppBar(props: Props) {
           <Typography variant="h6" color="inherit" className={classes.grow}>
             BLUE SPACE
           </Typography>
-          {ProfileStore.avatar===''? <Button color="inherit" onClick={handleClicked}>Login</Button> : <Avatar className = 'MenuAvatar' size={50} onClick ={handleAvatarOnClicked} src={<img src={ProfileStore.avatar}  alt="avatar" /> } />}
+          {loginStore.token===''? <Button color="inherit" onClick={handleClicked}>Login</Button> : (ProfileStore.avatar===''?<Avatar className = 'MenuAvatar' size={50}  onClick ={handleAvatarOnClicked} icon={<UserOutlined />} />:<Avatar className = 'MenuAvatar' size={50} onClick ={handleAvatarOnClicked} src={<img src={ProfileStore.avatar}  alt="avatar" /> } />)}
           
         </Toolbar>
       </AppBar>

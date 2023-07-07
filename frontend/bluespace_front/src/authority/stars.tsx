@@ -1,7 +1,7 @@
 
 import { Canvas, useThree, useFrame } from "@react-three/fiber";
-import { useRef, useLayoutEffect,RefObject  } from "react";
-import { useTransform, useScroll, useTime } from "framer-motion";
+import { useRef, useLayoutEffect,RefObject, useEffect  } from "react";
+import { useTransform, useScroll, useTime,useMotionValue, useMotionValueEvent, MotionValue } from "framer-motion";
 import { degreesToRadians, progress, mix } from "popmotion";
 import * as THREE from 'three';
 import { Mesh,BufferGeometry,NormalBufferAttributes,Material } from "three";
@@ -45,18 +45,35 @@ const Star = ({ p }: { p: number }) => {
 function Scene({ numStars = 100 }) {
   const gl = useThree((state) => state.gl);
   const { scrollYProgress } = useScroll();
+  const up= useMotionValue(0);
+  const pageHeight = document.documentElement.offsetHeight;
   const yAngle = useTransform(
     scrollYProgress,
     [0, 1],
     [0.001, degreesToRadians(180)]
   );
+  const upAngle = useTransform(
+    up,
+    [0, pageHeight],
+    [1.35,1 ]
+  )
   const distance = useTransform(scrollYProgress, [0, 1], [10, 3]);
   const time = useTime();
+  useEffect(()=>{
+    const handleMouseMove = (event:any) => {
+      console.log(event.clientX, event.clientY);
+      up.set(event.clientY);
+      console.log(up.get())
+      console.log(pageHeight)
+    };
     
+    document.addEventListener('mousemove', handleMouseMove);
+  },[])
+  
   useFrame(({ camera }) => {
     camera.position.setFromSphericalCoords(
       distance.get(),
-      1,
+      upAngle.get(),
       time.get() * 0.0005
     );
     camera.updateProjectionMatrix();

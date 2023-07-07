@@ -19,6 +19,13 @@ interface InputRef {
 }
 
 function LoginForm  ()  {
+  const [coordinates, setCoordinates] = useState({ x: 0, y: 0 });
+
+  const handleMouseMove = (event:any) => {
+    const { clientX, clientY } = event;
+    setCoordinates({ x: clientX, y: clientY });
+    console.log(coordinates)
+  };
   const navigate = useNavigate()
   const usernameRef = useRef<InputRef>(null) as RefObject<HTMLInputElement>;
   const passwordRef = useRef<InputRef>(null) as RefObject<HTMLInputElement>;
@@ -27,9 +34,6 @@ function LoginForm  ()  {
   const {loginStore} = useStore();
   
 
-  const handleOnClicked = () => {
-    console.log('okokok')
-  }
   const handleSignUpOnClicked = () => {
     console.log('ck')
     setCurrentPage('register')
@@ -59,8 +63,9 @@ function LoginForm  ()  {
   }
   return (
     
-    <div className="content">
-      <Stars></Stars>
+    
+    <div className="content" >
+    <Stars></Stars>
       
       {/* <Scrolls></Scrolls> */}
       <div className="login-wrapper">
