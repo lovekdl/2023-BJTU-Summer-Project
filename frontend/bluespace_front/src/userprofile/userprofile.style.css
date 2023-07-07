@@ -18,8 +18,23 @@
   justify-content: center; /* 水平居中，可根据需要调整 */
   text-align: center;
   user-select: none;
+  
 }
 .HeadPicture {
   margin-left:35vw;
   text-align: center;
+}
+
+.ProfileSpan {
+  margin: 5px 0;
+  white-space: nowrap;
+  font-weight: 500;
+  color:black;
+}
+.InnerDiv{
+  display: flex;
+  font-size: 30px;
+  margin-top: 3vh;
+  margin-left: 32vw;
+  white-space: nowrap;
 }

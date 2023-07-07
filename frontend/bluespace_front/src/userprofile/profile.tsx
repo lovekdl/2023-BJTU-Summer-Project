@@ -1,4 +1,4 @@
-import React,{useRef} from 'react';
+import React,{useRef,useState,useEffect} from 'react';
 import type { MenuProps } from "antd";
 import { Breadcrumb, Layout, Menu, theme } from "antd";
 import { UploadOutlined, VideoCameraOutlined } from '@ant-design/icons';
@@ -17,6 +17,8 @@ const { Content, Sider } = Layout;
 function Profile() {
   
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [nowKey, setNowKey] = useState(1);
+  const [content, setContent] = useState(<div></div>);
 
   const {ProfileStore} = useStore();
   function getLabel(x:number) {
@@ -30,7 +32,40 @@ function Profile() {
       return "planets"
     }
   }
-
+  useEffect(()=>{
+    if(nowKey == 1) {
+      setContent(
+      <div>
+        <div className = 'HeadPicture'>
+          {ProfileStore.avatar===''? <Avatar size={128} icon={<UserOutlined />} /> : <Avatar size={128} src={<img src={ProfileStore.avatar}  alt="avatar" />} />}
+          <input
+            type="file"
+            accept="image/*"
+            ref={fileInputRef}
+            style={{ display: 'none' }}
+            onChange={handleFileChange}
+          />
+          <motion.button
+            className="ProfileBox" 
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            transition={{ type: "spring", stiffness: 400, damping: 20 }}
+            onClick={handleUploadClicked}
+          >
+            Upload
+          </motion.button>
+        </div>
+        <div className = 'InnerDiv'>
+          <span className = 'ProfileSpan'>Email Address</span>
+          <input type="text" readOnly placeholder="Enter your email"></input>
+        </div>
+      </div>
+      )
+    } 
+    else {
+      setContent(<div></div>);
+    } 
+  },[nowKey])
   const handleUploadClicked = ()=> {
     console.log('hahaha')
     if(fileInputRef.current)
@@ -42,14 +77,20 @@ function Profile() {
     var reader = new FileReader();
     reader.onload=function(){
       var fileurl = reader.result
-      ProfileStore.setAvatar(fileurl) // 这个 useState 把获取的base64 给到img 的src 上
+      ProfileStore.setAvatar(fileurl)
       console.log('fileurl is ' + fileurl);
     }
     reader.readAsDataURL(imgfile)
 
   };
+  
+  function handleLeftMenuClicked  ({key} : any) {
+    console.log(key)
+    setNowKey(key)
+  }
   return (
     <div>
+      
       <Layout>
         <Sider
         breakpoint="lg"
@@ -71,9 +112,10 @@ function Profile() {
             (icon, index) => ({
               key: String(index + 1),
               icon: React.createElement(icon),
-              label: `${getLabel(index+1)}`,
+              label: <span >{`${getLabel(index+1)}`}</span>,
             }),
           )}
+          onSelect={handleLeftMenuClicked}
         />
       </Sider>
 
@@ -81,29 +123,8 @@ function Profile() {
         <Layout style={{ padding: "0 24px 0px" }}>
           
           <Content className='ProfileContent'>
-            <div className = 'HeadPicture'>
-              {ProfileStore.avatar===''? <Avatar size={128} icon={<UserOutlined />} /> : <Avatar size={128} src={<img src={ProfileStore.avatar}  alt="avatar" />} />}
-              <input
-                type="file"
-                accept="image/*"
-                ref={fileInputRef}
-                style={{ display: 'none' }}
-                onChange={handleFileChange}
-              />
-              <motion.button
-                className="ProfileBox" 
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                transition={{ type: "spring", stiffness: 400, damping: 20 }}
-                onClick={handleUploadClicked}
-              >
-                Upload
-              </motion.button>
-
-
-              
-            </div>
-
+            
+            {content}
 
           </Content>
         </Layout>
