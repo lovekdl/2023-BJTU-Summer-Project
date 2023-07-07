@@ -18,7 +18,26 @@
   justify-content: center; /* 水平居中，可根据需要调整 */
   text-align: center;
   user-select: none;
+  margin-bottom: 6  vh;
   
+}
+.ProfileChange {
+  width: 100px;
+  height: 40px;
+  
+  background-color: rgb(128, 106, 196);
+  border: 0;
+  border-radius: 10px;
+  color: #fff;
+  font-size: 20px;
+  margin-top: 10px;
+  cursor: pointer;
+  display: flex;
+  align-items: center; /* 垂直居中 */
+  justify-content: center; /* 水平居中，可根据需要调整 */
+  text-align: center;
+  user-select: none;
+  margin-bottom: 7px;
 }
 .HeadPicture {
   margin-left:35vw;
@@ -26,15 +45,104 @@
 }
 
 .ProfileSpan {
-  margin: 5px 0;
-  white-space: nowrap;
+  font-size: 30px;
   font-weight: 500;
   color:black;
+  min-width: 300px;
+  text-align: right;white-space: nowrap;
+  
 }
 .InnerDiv{
   display: flex;
-  font-size: 30px;
-  margin-top: 3vh;
-  margin-left: 32vw;
+  align-items: center;
+  text-align: center;
+  margin-top: 2vh;
+  margin-left: 18vw;
   white-space: nowrap;
+}
+
+.purple-underline {
+  min-width: 15vw;
+  font-size: 25px;
+  font-weight: 600;
+  
+  position: relative;
+  display: inline-block;
+  text-align: left;
+}
+.purple-underline::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 15vw; /* 调整下划线的长度 */
+  height: 3px; /* 调整下划线的高度 */
+  background-color: purple;
+}
+
+.Modal-purple-underline {
+  min-width: 15vw;
+  font-size: 20px;
+  font-weight: 600;
+  
+  position: relative;
+  display: inline-block;
+  text-align: left;
+}
+.Modal-purple-underline::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 15vw; /* 调整下划线的长度 */
+  height: 0.2vh; /* 调整下划线的高度 */
+  background-color: purple;
+}
+.ModalSpan {
+  font-size: 25px;
+  font-weight: 500;
+  min-width: 8vw;
+  color:black;
+  text-align: right;white-space: nowrap;
+}
+.ModalInnerDiv{
+  display: flex;
+  align-items: center;
+  text-align: center;
+  margin-top: 2vh;
+  white-space: nowrap;
+}
+
+.ModalChange {
+  width: 100px;
+  height: 40px;
+  
+  background-color: rgb(128, 106, 196);
+  border: 0;
+  border-radius: 10px;
+  color: #fff;
+  font-size: 15px;
+  margin-top: 10px;
+  cursor: pointer;
+  display: flex;
+  align-items: center; /* 垂直居中 */
+  justify-content: center; /* 水平居中，可根据需要调整 */
+  text-align: center;
+  user-select: none;
+  margin-bottom: 7px;
+}
+
+.ModalInnerButtonDiv {
+  display: flex;
+  margin-top: 20px;
+  justify-content: right; 
+}
+
+.input-box {
+  border: none;
+  border-bottom: 0.25vh solid purple;
+  outline: none;
+  width: 15vw;
+  font-size: 20px;
+  font-weight: 600;
 }
