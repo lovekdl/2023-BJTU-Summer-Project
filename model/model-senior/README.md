@@ -103,7 +103,7 @@
 * Median Accuracy: 0.9545454545454546
 * Standard Deviation: 0.03805545920372808
 
-最中我们选择了XGBoost模型。以下是ChatGPT4.0对XGBoost的介绍：
+最终我们选择了XGBoost模型。以下是ChatGPT4.0对XGBoost的介绍：
 
 XGBoost 是一种用于监督学习问题的决策树增强算法，名字代表 "Extreme Gradient Boosting"（极端梯度提升）。这是一种实现了梯度提升决策树算法的高效和灵活的开源库。XGBoost在许多机器学习竞赛中都取得了非常好的成绩，因为它能够有效地处理各种类型的数据和预测问题，并且提供了丰富的模型解释性。
 
