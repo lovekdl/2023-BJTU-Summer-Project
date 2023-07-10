@@ -2,9 +2,83 @@
 
 ## 1. 简介
 
+### 1.1 内容介绍
+
 这是一个行星宜居度预测的弱化版模型，只需要极少的数据就可以较高准确率的预测一颗行星是否宜居。但是因为所需的数据太少，模型考虑的周全度和准确度必然不如大模型。
 
-## 2. 所需要的数据（不可缺省）
+### 1.2 文件介绍
+
+1. Exo-planets(habitable).csv: 训练模型所需的可宜居星球数据
+2. Exo-planets(Non-habitable).csv: 训练模型所需的不可宜居星球数据
+3. Exo-planets.ipynb: 训练模型
+4. predict.ipynb: 预测demo
+5. rf_model.pkl: 最终的预测随机森林预测模型
+
+## 2. 训练数据
+
+### 2.1 数据来源
+
+使用了从完整数据中人工挑选出来的15列数据
+
+### 2.2 数据预处理
+
+1. 去除所有含有空值的行
+2. 使用`LabelEncoder` 将类别型数据转换为数值标签，以便后续在机器学习模型中使用
+3. 相关性分析和绘制相关性热力图，热力图可以帮助我们快速了解变量之间的相关性程度，从而在特征选择或数据探索中提供有用的信息。
+
+![](D:\LiqisPode\school\BlueSpace\2023-BJTU-Summer-Project\model\model-junior\IMAGE\heatmap.png)
+
+4. 在给定的数据集中绘制所选特征列之间的散点图。散点图矩阵可用于可视化多个特征之间的关系，以便观察它们之间的相关性、分布情况和可能的趋势。
+
+![](D:\LiqisPode\school\BlueSpace\2023-BJTU-Summer-Project\model\model-junior\IMAGE\ScatterPlots.png)
+
+5. 分析并出去相关度不高的列，最终剩余7列所需数据
+
+### 2.3 数据处理
+
+1. 这个行星数据集是不平衡的，即宜居样本（正样本）的数量远少于非宜居样本（负样本）。在拟合和评分模型时，这会造成问题。为了应对这个问题，我们使用了SMOTE过采样方法来人工增加正样本的数量。SMOTE代表"合成少数过采样技术"（Synthetic Minority Over-sampling Technique）。这是一种解决不平衡数据集问题的方法。它通过创建“合成”样本来增加少数类的数量。这些“合成”样本是从少数类样本中选择两个或者更多的相近样本，然后对它们的特征进行线性插值来创建的。通过这种方式，SMOTE可以在不改变原有类别分布的情况下，提高了少数类样本的数量，使得学习算法在训练时能更好地学习到少数类的特征，从而改善模型的性能。
+
+2. 将得到的数据集以3:1分割训练集以及测试集
+
+## 3. 训练模型
+
+我们尝试了sklearn库中的4种模型来训练，最终选择了随机森林模型。
+
+下面结果图片中上一行为测试集结果，下一行为训练集结果。
+
+### 3.1 逻辑回归模型
+
+尽管名为回归，但其实质上是一种分类方法，常用于二分类问题，但也可以处理多分类问题。
+
+逻辑回归基于对数几率函数（logit function），将线性回归的预测结果通过sigmoid函数映射到[0,1]之间，可以理解为预测结果属于某个类别的概率。然后通过设定阈值，将概率转化为具体的类别预测。
+
+![](D:\LiqisPode\school\BlueSpace\2023-BJTU-Summer-Project\model\model-junior\IMAGE\逻辑回归结果.png)
+
+### 3.2 SVM模型
+
+SVC (Support Vector Classifier) 是一种基于支持向量机（Support Vector Machine, SVM）的分类模型。SVM 是一种二元线性分类模型，其基本思想是寻找一个最优超平面，使得这个超平面能够最大化正负样本间的间隔。SVC 则是基于 SVM，通过引入核函数（Kernel Function）使得 SVM 能够解决非线性分类问题。
+
+![](D:\LiqisPode\school\BlueSpace\2023-BJTU-Summer-Project\model\model-junior\IMAGE\SVM结果.png)
+
+### 3.3 随机森林模型
+
+RandomForestClassifier 是一个基于随机森林的分类模型。随机森林是一个包含多个决策树的分类器，而且其输出的类别由个别树输出的类别的众数来决定。
+
+![](D:\LiqisPode\school\BlueSpace\2023-BJTU-Summer-Project\model\model-junior\IMAGE\随机森林模型.png)
+
+### 3.4 朴素贝叶斯
+
+GaussianNB 是一个朴素贝叶斯分类器，它假设每个特征在每个类别下都服从高斯分布（也就是正态分布）。这个假设使得模型能够使用每个类别中每个特征的均值和标准差来进行预测。
+
+在训练过程中，GaussianNB 会计算每个类别中每个特征的均值和方差。然后在预测时，对于给定的样本，计算其在每个类别下的概率（利用贝叶斯公式），并将概率最大的类别作为预测结果。
+
+朴素贝叶斯分类器是一种简单但很强大的算法，尤其适用于文本分类等场景。然而，朴素贝叶斯的“朴素”假设（即特征之间相互独立）在某些情况下可能会导致其性能不如其他更复杂的模型。
+
+![](D:\LiqisPode\school\BlueSpace\2023-BJTU-Summer-Project\model\model-junior\IMAGE\朴素贝叶斯结果.png)
+
+## 4. 如何使用
+
+### 4.1. 预测所需要的数据（不可缺省）
 
 1. Orbit_period : Orbital Period [days] 行星轨道周期
 2. Semi_major_axis : Orbit Semi-Major Axis [AU] 行星轨道的半长轴长度
@@ -14,4 +88,8 @@
 6. Stellar_mass : Stellar Mass [Solar mass] 所属恒星质量
 7. Stellar_radius :  Stellar Radius [Solar radii] 所属恒星半径
 
-## 3. 如何使用
+### 4.2 预测过程
+
+1. 使用joblib加载模型
+2. 将所需要预测的数据处理成dataframe格式
+3. 输出预测结果，1为可宜居星球，0为不可宜居星球
