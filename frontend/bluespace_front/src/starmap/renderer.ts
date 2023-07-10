@@ -8,7 +8,7 @@ import { mat4, vec3, vec4 } from 'gl-matrix'
 
 import { Camera } from './camera'
 import { Planet } from './planet'
-import {useStore} from '../store/index'
+import {rootStore} from '../store/index'
 /**
  * 蓝色空间渲染器
  * 
@@ -918,10 +918,10 @@ class BlueSpaceRenderer {
     }
 }
 
-const {LoadingStore} = useStore()
 let renderer: BlueSpaceRenderer
 try {
-    LoadingStore.setStarMapLoading(true);
+    rootStore.LoadingStore.setStarMapLoading(true);
+    
     renderer = new BlueSpaceRenderer()
     renderer.setup().then(() => {
         renderer.run()
@@ -929,7 +929,7 @@ try {
     let checkHaveRunInterval = setInterval(() => {
         console.log("haveRun = " +  renderer.getHaveRun())
         if(renderer.getHaveRun() === true) {
-            LoadingStore.setStarMapLoading(false);
+            rootStore.LoadingStore.setStarMapLoading(false);
             clearInterval(checkHaveRunInterval)
         }
     },1000)
@@ -940,6 +940,8 @@ try {
 const starmapElement = document.getElementById("StarMap")
 let isMouseMiddleDown: boolean = false
 let last = {x: 0, y: 0}
+
+
 starmapElement!.addEventListener("mousedown", (e) => {
     if(e.which === 1) {
         const cx = e.offsetX / renderer.canvasSize.width

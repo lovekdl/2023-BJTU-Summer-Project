@@ -21,4 +21,4 @@ const rootStore = new RootStore()
 const context = React.createContext(rootStore)
 const useStore = () => React.useContext(context)
 
-export {useStore}
+export {useStore, rootStore}
