@@ -1,9 +1,15 @@
 from django.http import HttpResponse
 
+import sys
 import json
+import numpy as np
+import pandas as pd
 
 from .tools import Tools
 from .models import *
+
+sys.path.append(r'..\..\..\model')
+from model.predictor import Predictor
 
 # === Account === #
 def login(request):
@@ -48,3 +54,48 @@ def sign(request, auto_create_account: bool):
 
     return Tools.toResponse(result, 200)
 
+
+# === Prediction === #
+def junior_predict(request):
+    result = {}
+    if request.method != 'POST':
+        return Tools.toErrorResponse('Request method is not POST.')
+    
+    data = json.loads(request.body)
+
+    if 'token' not in data or data['token'] is None:
+        return Tools.toErrorResponse('Token is none.')
+    token = data['token']
+    
+
+    predictor = Predictor()
+    
+    result = predictor.predict(2, request.body)
+    
+    if result == -1:
+        return Tools.toErrorResponse('Prediction incorrect.')
+    
+
+    return Tools.toResponse(result, 200)
+
+def senior_predict(request):
+    result = {}
+    if request.method != 'POST':
+        return Tools.toErrorResponse('Request method is not POST.')
+    
+    data = json.loads(request.body)
+
+    if 'token' not in data or data['token'] is None:
+        return Tools.toErrorResponse('Token is none.')
+    token = data['token']
+    
+
+    predictor = Predictor()
+    
+    result = predictor.predict(1, request.body)
+    
+    if result == -1:
+        return Tools.toErrorResponse('Prediction incorrect.')
+    
+
+    return Tools.toResponse(result, 200)
