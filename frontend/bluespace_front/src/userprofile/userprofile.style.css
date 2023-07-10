@@ -59,6 +59,11 @@
   margin-bottom: 7px;
 }
 
+.TableDiv {
+  display: flex;
+  white-space: nowrap ;
+}
+
 .HeadPicture {
   margin-left:35vw;
   text-align: center;

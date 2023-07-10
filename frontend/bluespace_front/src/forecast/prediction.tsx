@@ -43,7 +43,7 @@ function Prediction() {
     if(nowKey == 1) {//Statistics
       setContent(
       <div className='ContentLayout'>
-        <DataTable></DataTable>
+        {/* <DataTable></DataTable> */}
       </div>
       )
     } 

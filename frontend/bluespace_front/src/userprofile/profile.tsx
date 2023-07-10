@@ -7,6 +7,7 @@ import {motion} from "framer-motion";
 import { observer } from 'mobx-react-lite'
 import {Avatar} from 'antd'
 import { useStore } from '../store';
+import ProfilePlanets from './profileplanets';
 import {
   UserOutlined
 } from "@ant-design/icons";
@@ -39,10 +40,15 @@ function Profile() {
         <Innerprofile></Innerprofile>
       )
     } 
+    else if(nowKey == 2) {
+      setContent(
+        <ProfilePlanets></ProfilePlanets>
+      )
+    }
     else {
       setContent(<div></div>);
     } 
-  },[nowKey,ProfileStore.avatar])
+  },[nowKey])
   
   
   function handleLeftMenuClicked  ({key} : any) {
@@ -78,8 +84,8 @@ function Profile() {
           )}
           onSelect={handleLeftMenuClicked}
         />
-        
-      </Sider>
+          
+        </Sider>
 
       
         <Layout style={{ padding: "0 24px 0px" }}>
@@ -90,6 +96,7 @@ function Profile() {
 
           </Content>
         </Layout>
+        
       </Layout>
     </div>
   )

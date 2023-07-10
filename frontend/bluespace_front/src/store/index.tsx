@@ -4,13 +4,16 @@
 */
 import LoginStore from "./login.store"
 import ProfileStore from "./profile.store"
+import LoadingStore from "./loading.store"
 import React from "react"
 class RootStore {
   loginStore: LoginStore 
 	ProfileStore: ProfileStore
+	LoadingStore : LoadingStore
 	constructor() {
 		this.loginStore = new LoginStore()
-		this.ProfileStore = new ProfileStore();
+		this.ProfileStore = new ProfileStore()
+		this.LoadingStore = new LoadingStore()
 	}
 }
 

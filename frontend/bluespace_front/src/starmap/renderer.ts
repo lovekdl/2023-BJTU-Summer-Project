@@ -8,7 +8,7 @@ import { mat4, vec3, vec4 } from 'gl-matrix'
 
 import { Camera } from './camera'
 import { Planet } from './planet'
-
+import {useStore} from '../store/index'
 /**
  * 蓝色空间渲染器
  * 
@@ -755,6 +755,9 @@ class BlueSpaceRenderer {
      * Group的作用是传入Shader中的全局变量，
      * 可以传入Buffer、Texture、Sampler
      */
+    public getHaveRun() {
+        return this.haveRun
+    }
     private async initGroup() {
         const that = this
 
@@ -915,13 +918,21 @@ class BlueSpaceRenderer {
     }
 }
 
-
+const {LoadingStore} = useStore()
 let renderer: BlueSpaceRenderer
 try {
+    LoadingStore.setStarMapLoading(true);
     renderer = new BlueSpaceRenderer()
     renderer.setup().then(() => {
         renderer.run()
     })
+    let checkHaveRunInterval = setInterval(() => {
+        console.log("haveRun = " +  renderer.getHaveRun())
+        if(renderer.getHaveRun() === true) {
+            LoadingStore.setStarMapLoading(false);
+            clearInterval(checkHaveRunInterval)
+        }
+    },1000)
 } catch (error) {
     throw new Error("Intializing renderer failed: " + error)
 }
