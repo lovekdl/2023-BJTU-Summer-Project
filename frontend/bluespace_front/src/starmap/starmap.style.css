@@ -1,5 +1,10 @@
 .StarMap{
-
   width: 100vw;
   height: 100vh;
+}
+.StarMapLoading {
+  margin-left: 40vw;
+  margin-top: 30vh;
+  width:20vw;
+  color: aliceblue;
 }

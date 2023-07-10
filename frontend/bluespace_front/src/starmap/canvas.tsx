@@ -1,6 +1,24 @@
 import { useEffect } from "react"
+import {useStore} from "../store/index"
 import "./starmap.style.css"
+import { observer } from 'mobx-react-lite';
+
+import Lottie from 'react-lottie';
+import animationData from '../StarMapLoading.json';
+
 function StarMap() {
+  const {LoadingStore} = useStore()
+  //加载动画设置
+  const defaultOptions = {
+    loop: true, // 是否循环播放
+    autoplay: true, // 是否自动播放
+    
+    animationData: animationData, // 导入的动画数据
+    rendererSettings: {
+      scale:0.1,
+      preserveAspectRatio: 'xMidYMid slice' // 渲染设置
+    }
+  };
 
   useEffect(() => {
     const script = document.createElement("script")
@@ -23,7 +41,19 @@ function StarMap() {
     }
   }, [])
 
-  return <div className="StarMap"><div id="StarMap"></div></div>
+  return (
+    
+    <div className="StarMap">
+      {LoadingStore.starMapLoading && 
+        <div className = 'StarMapLoading'>
+          <Lottie options={defaultOptions} />
+        </div>
+      }
+      
+      <div id="StarMap" style={{ visibility: !LoadingStore.starMapLoading ? 'visible' : 'hidden' }}>
+      </div>
+    </div>
+    )
 }
 
-export default StarMap
+export default observer(StarMap)

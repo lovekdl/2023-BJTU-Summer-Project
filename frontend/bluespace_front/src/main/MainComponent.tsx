@@ -27,7 +27,8 @@ function MainComponent() {
     <div>
       
       <div className="good">
-          <StarMap></StarMap> 
+          <StarMap></StarMap>
+          aa 
       </div>
     </div>
   );
