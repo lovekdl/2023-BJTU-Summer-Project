@@ -21,10 +21,10 @@ let last = {x: 0, y: 0}
 // Mouse Down
 starmapElement!.addEventListener("mousedown", (e) => {
     if(e.which === 1) {
-        console.clear()
-        console.log("ratio: " + window.devicePixelRatio)
-        console.log("x: " + e.offsetX + ", " + renderer.canvasSize.width / window.devicePixelRatio)
-        console.log("y: " + e.offsetY + ", " + renderer.canvasSize.height / window.devicePixelRatio)
+        // console.clear()
+        // console.log("ratio: " + window.devicePixelRatio)
+        // console.log("x: " + e.offsetX + ", " + renderer.canvasSize.width / window.devicePixelRatio)
+        // console.log("y: " + e.offsetY + ", " + renderer.canvasSize.height / window.devicePixelRatio)
         const cx = e.offsetX / renderer.canvasSize.width * window.devicePixelRatio
         const cy = e.offsetY / renderer.canvasSize.height * window.devicePixelRatio
         const planetId = renderer.selectPlanet(cx, cy)

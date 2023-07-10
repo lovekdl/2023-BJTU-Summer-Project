@@ -1,12 +1,16 @@
-@group(0) @binding(0) var<storage> modelMatrices:    array<mat4x4<f32>>;
-@group(0) @binding(1) var<storage> viewMatrix:          mat4x4<f32>;
-@group(0) @binding(2) var<storage> projectionMatrix:    mat4x4<f32>;
-@group(0) @binding(3) var<storage> starShaderTypeArray: array<f32>;
+@group(0) @binding(0) var<storage> modelMatrices:         array<mat4x4<f32>>;
+@group(0) @binding(1) var<storage> viewMatrix:            mat4x4<f32>;
+@group(0) @binding(2) var<storage> projectionMatrix:      mat4x4<f32>;
+@group(0) @binding(3) var<storage> starShaderTypeArray:   array<f32>;
+@group(0) @binding(4) var<storage> planetShaderTypeArray: array<f32>; // 若值 < -1，则说明为行星
 
-@group(1) @binding(0) var myTexture: texture_2d<f32>;
-@group(1) @binding(1) var mySampler: sampler;
+@group(1) @binding(0) var myTexture:                 texture_2d<f32>;
+@group(1) @binding(1) var mySampler:                 sampler;
 @group(1) @binding(2) var<storage> environmentArray: array<f32>;
-@group(1) @binding(3) var<uniform> cameraPosition: vec3<f32>;
+@group(1) @binding(3) var<uniform> cameraPosition:   vec3<f32>;
+@group(1) @binding(4) var<uniform> ka:               vec3<f32>; // Ambient Coefficient
+@group(1) @binding(5) var<uniform> kd:               vec3<f32>; // Diffuse Coefficient
+@group(1) @binding(6) var<uniform> ks:               vec3<f32>; // Specular Coefficient
 
 
 struct VertexOutput {
@@ -48,6 +52,9 @@ fn fragment_main(
     @location(2) uv: vec2<f32>,
     @location(3) starType: f32,
 ) -> @location(0) vec4<f32> {
+    var Ka = ka;
+    var Kd = kd;
+    var Ks = ks;
     var tmp = environmentArray[0];
     var color: vec3<f32> = textureSample(myTexture, mySampler, uv).rgb;
     if(starType <= 0.5) {

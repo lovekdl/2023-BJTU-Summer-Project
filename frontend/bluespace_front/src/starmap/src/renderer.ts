@@ -1,4 +1,4 @@
-import planetShader from "../shaders/planet.wgsl?raw"
+import starShader from "../shaders/star.wgsl?raw"
 import composite1Shader from "../shaders/composite1.wgsl?raw"
 import composite2Shader from "../shaders/composite2.wgsl?raw"
 import finalShader from "../shaders/final.wgsl?raw"
@@ -21,7 +21,8 @@ class BlueSpaceRenderer {
     // ===== ===== ===== Renderer Properties ===== ===== =====
 
     private haveSetup: boolean = false
-    // private haveRun:   boolean = false
+    public  haveRun:   boolean = false
+    private renderMode: number = 0 // 0 银河系视图; 1 行星视图;
     // created when initWebGPU
     private device?: GPUDevice = undefined
     private context?: GPUCanvasContext = undefined
@@ -43,6 +44,9 @@ class BlueSpaceRenderer {
 
     private environmentBuffer?: GPUBuffer = undefined
     private cameraPositionBuffer?: GPUBuffer = undefined
+    private kaBuffer?: GPUBuffer = undefined
+    private kdBuffer?: GPUBuffer = undefined
+    private ksBuffer?: GPUBuffer = undefined
 
     // created when initTexture
     private depthTexture?: GPUTexture = undefined
@@ -209,6 +213,25 @@ class BlueSpaceRenderer {
         requestAnimationFrame(frame)
 
         // this.haveRun = true;
+    }
+
+    async switchMode(targetMode: number, targetPlanet?: number) {
+        if(!this.haveRun) {
+            throw new Error("Renderer not run.") 
+        }
+        if(this.renderMode === targetMode) {
+            console.log("TargetMode and CurrentMode are the same.")
+        }
+
+        if(this.renderMode === 0 && this.targetMode === 1) {
+            // 1. Stars (Scale)
+            // 2. Target Planet (ModelMatrix(update per frame), Texture,  
+            // 3. Camera
+        } else if(this.renderMode === 1 && this.targetMode === 0) {
+
+        } else {
+            throw new Error("TargetMode is unknown.")
+        }
     }
 
     /**
@@ -488,7 +511,7 @@ class BlueSpaceRenderer {
             layout: 'auto',
             vertex: {
                 module: that.device!.createShaderModule({
-                    code: planetShader
+                    code: starShader
                 }),
                 entryPoint: 'vertex_main',
                 // 这里的buffers可以使用多个slots，表示js中需要传入的多个TypedArray
@@ -515,7 +538,7 @@ class BlueSpaceRenderer {
             },
             fragment: {
                 module: that.device!.createShaderModule({
-                    code: planetShader
+                    code: starShader
                 }),
                 entryPoint: 'fragment_main',
                 targets: [{
@@ -606,6 +629,26 @@ class BlueSpaceRenderer {
             usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
         })
         this.device!.queue.writeBuffer(that.cameraPositionBuffer!, 0, that.camera.position as Float32Array)
+
+        // ===== Phong Coefficient Buffer =====
+        // ambient
+        this.kaBuffer = that.device!.createBuffer({
+            size: 3 * 4,
+            usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
+        })
+        this.device!.queue.writeBuffer(that.kaBuffer!, 0, Float32Array.from([0.1, 0.1, 0.1]))
+        // diffuse
+        this.kdBuffer = that.device!.createBuffer({
+            size: 3 * 4,
+            usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
+        })
+        this.device!.queue.writeBuffer(that.kdBuffer!, 0, Float32Array.from([0.1, 0.1, 0.1]))
+        // specular
+        this.ksBuffer = that.device!.createBuffer({
+            size: 3 * 4,
+            usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
+        })
+        this.device!.queue.writeBuffer(that.ksBuffer!, 0, Float32Array.from([0.1, 0.1, 0.1]))
     }
 
     /**
@@ -712,6 +755,15 @@ class BlueSpaceRenderer {
             }, {
                 binding: 3,
                 resource: { buffer: that.cameraPositionBuffer! }
+            }, {
+                binding: 4,
+                resource: { buffer: that.kaBuffer! }
+            }, {
+                binding: 5,
+                resource: { buffer: that.kdBuffer! }
+            }, {
+                binding: 6,
+                resource: { buffer: that.ksBuffer! }
             }],
         })
     }

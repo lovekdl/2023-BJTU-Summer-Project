@@ -60,11 +60,19 @@ class StarGenerator {
         let planets = new Array(num)
         let idx = 0;
         
-        planets[0] = Planet.createPlanet(
+        planets[idx] = Planet.createPlanet(
             {x:0, y:0, z:0},
             {x:0, y:0, z:0},
             {x:0, y:0, z:0},
             Planet.STAR_SHADER_TYPE_BLACKHOLE,
+        )
+        idx++
+
+        planets[idx] = Planet.createPlanet(
+            {x:0, y:0, z:0},
+            {x:0, y:0, z:0},
+            {x:0, y:0, z:0},
+            Planet.STAR_SHADER_TYPE_PLANET,
         )
         idx++
 

@@ -26,7 +26,7 @@ class Planet {
      * 恒星共有7种，分别为OBAFGKM
      */
     static readonly STAR_SHADER_TYPE_MIN: number = 0
-    static readonly STAR_SHADER_TYPE_MAX: number = 7
+    static readonly STAR_SHADER_TYPE_MAX: number = 8
     static readonly STAR_SHADER_TYPE_BLACKHOLE: number = 0
     static readonly STAR_SHADER_TYPE_O:         number = 1
     static readonly STAR_SHADER_TYPE_B:         number = 2
@@ -35,6 +35,7 @@ class Planet {
     static readonly STAR_SHADER_TYPE_G:         number = 5
     static readonly STAR_SHADER_TYPE_K:         number = 6
     static readonly STAR_SHADER_TYPE_M:         number = 7
+    static readonly STAR_SHADER_TYPE_PLANET:    number = 8
 
     static readonly STAR_SCALE_K: number = 1.5
     static readonly STAR_SCALE: Array<number> = [
@@ -46,6 +47,7 @@ class Planet {
         1.5 * this.STAR_SCALE_K,
         1.25 * this.STAR_SCALE_K,
         1.0 * this.STAR_SCALE_K,
+        0.0,
     ] 
 
     // constructor
@@ -61,8 +63,8 @@ class Planet {
         public starShaderType: number,
         public starModelType: number,
         // 行星的shader与model类型
-        public shaderType: number,
-        public modelType: number,
+        public planetShaderType: number,
+        public planetModelType: number,
     ) {
 
     }
