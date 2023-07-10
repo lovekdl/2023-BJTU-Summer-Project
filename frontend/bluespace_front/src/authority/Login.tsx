@@ -61,6 +61,13 @@ function LoginForm  ()  {
       else message.error(e.message)
     }
   }
+
+  const handleGithubClicked = () => {
+    window.open('https://github.com/lovekdl/2023-BJTU-Summer-Project', '_blank');
+  }
+  const handleBilibiliClicked = () => {
+    window.open('https://space.bilibili.com/99798809', '_blank');
+  }
   return (
     
     
@@ -88,7 +95,7 @@ function LoginForm  ()  {
                   <span className="input-tips">
                       Username
                   </span>
-                  <input type="text"  className="inputs" placeholder="Enter your email" ref={usernameRef}  ></input>
+                  <input type="text"  className="inputs" placeholder="Enter your username" ref={usernameRef}  ></input>
                   
               </div>
               <div className="input-items">
@@ -126,10 +133,10 @@ function LoginForm  ()  {
               </div>
               <div className="other-login-wrapper">
                 <div className="other-login-item">
-                  <img src={qq} alt="QQ"/>
+                  <img src={qq} alt="QQ" onClick={handleGithubClicked}/>
                 </div>
                 <div className="other-login-item">
-                  <img src={wechat} alt="WeChat"/>
+                  <img src={wechat} alt="WeChat" onClick = {handleBilibiliClicked}/>
                 </div>
               </div>
                 

@@ -9,11 +9,13 @@ import {
 } from "@ant-design/icons";
 import NameModal from "./name.modal";
 import PasswordModal from "./password.modal";
+import { useNavigate } from "react-router-dom";
 function InnerProfile() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [nameVisible, setNameVisible] = useState(false);
   const [passwordVisible, setPasswordVisible] = useState(false);
-  const {ProfileStore} = useStore();
+  const {ProfileStore,loginStore} = useStore();
+  const navigate = useNavigate();
   const handleUploadClicked = ()=> {
     console.log('hahaha')
     if(fileInputRef.current)
@@ -33,10 +35,15 @@ function InnerProfile() {
       var fileurl = reader.result
       ProfileStore.setAvatar(fileurl)
       console.log('fileurl is ' + fileurl);
+      console.log('type is '+typeof fileurl)
     }
     reader.readAsDataURL(imgfile)
 
   };
+  const handleLogoutClicked = () => {
+    loginStore.setToken('')
+    navigate('/',{replace:false})
+  }
   return (
   <div>
     <NameModal visible = {nameVisible} setVisible={setNameVisible}></NameModal>
@@ -94,7 +101,19 @@ function InnerProfile() {
       {/* <input type="text" readOnly placeholder="Enter your email"></input> */}
     </div>
     <br></br><br></br><br></br>
-    
+    <div className = 'InnerDiv'>
+      
+      <div className = 'hahaplace'></div>&nbsp;&nbsp;&nbsp;&nbsp;
+      <motion.button
+        className="LogoutButton" 
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.95 }}
+        transition={{ type: "spring", stiffness: 400, damping: 20 }}
+        onClick={handleLogoutClicked}
+      >
+        Log Out
+      </motion.button>
+    </div>
     {/* <div className = 'InnerDiv'>
     <span className = 'ProfileSpan'>Email Address &nbsp;&nbsp;<br></br></span>
       <br></br>

@@ -9,7 +9,6 @@ import { observer } from 'mobx-react-lite';
 import qq from '../assets/QQ.png'
 import wechat from '../assets/WeChat.png'
 import Stars from './stars';
-
 interface InputRef {
   value: string;
 }
@@ -20,13 +19,13 @@ function RegisterForm  (prop:any)  {
   const emailRef = useRef<InputRef>(null) as RefObject<HTMLInputElement>;
   const confirmedPasswordRef = useRef<InputRef>(null) as RefObject<HTMLInputElement>;
   const codeRef = useRef<InputRef>(null) as RefObject<HTMLInputElement>;
-
+  const {loginStore} = useStore();
   const handleLoginOnClicked = () => {
     prop.setCurrentPage('login')
   }
   async function handleRegisterSubmit(event:any) {
     event.preventDefault();
-    console.log('aaa')
+    
     if(!usernameRef.current || ! passwordRef.current || !emailRef.current || !confirmedPasswordRef.current || !codeRef.current) return;
     const username = usernameRef.current.value;
     const email = emailRef.current.value;
@@ -34,6 +33,9 @@ function RegisterForm  (prop:any)  {
     const confirmedPassword = confirmedPasswordRef.current.value;
     const code = codeRef.current.value;
     console.log(username,email,password,confirmedPassword,code);
+  }
+  const handleSendClicked = () => {
+    loginStore.resetWaiting();
   }
   return (
     
@@ -46,6 +48,7 @@ function RegisterForm  (prop:any)  {
         <div className="input-items">
             <span className="input-tips">
                 Username
+                
             </span>
             <input type="text" className="inputs" placeholder="Enter your username" ref={usernameRef}></input>
         
@@ -64,12 +67,29 @@ function RegisterForm  (prop:any)  {
           <span className="input-tips">
                 Email Address
             </span>
+            
+            
             <input type="text" className="inputs" placeholder="Enter your email" ref={emailRef}></input>
+            <div className='vertification' >
+            <input type="password" className="inputs2" placeholder="Enter verification code" ref={codeRef}/>
+            {loginStore.waiting <= 0? <motion.div
+              className='box3'
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={handleSendClicked}
+            >
+                Send
+            </motion.div> : <motion.div
+              
+              className='box2'
+            >
+                {loginStore.waiting}
+            </motion.div>} 
+            </div>
           
-          <span className="input-tips">
-              Verification code
-          </span>
-          <input type="password" className="inputs" placeholder="Verification code you received" ref={codeRef}/>
+          
+          
+              
           
         </div>
         {/* <button className="btn">Log in</button> */}
@@ -87,22 +107,7 @@ function RegisterForm  (prop:any)  {
           <span>Already Have An Account?</span>
           <span onClick={handleLoginOnClicked}>Login</span>
         </div>
-        <div className="other-login">
-          <div className="divider">
-            <span className="line"></span>
-            <span className="divider-text">About us</span>
-            <span className="line"></span>
-          </div>
-          <div className="other-login-wrapper">
-            <div className="other-login-item">
-              <img src={qq} alt="QQ"/>
-            </div>
-            <div className="other-login-item">
-              <img src={wechat} alt="WeChat"/>
-            </div>
-          </div>
-            
-        </div>
+        
         
       </div>
       </div>

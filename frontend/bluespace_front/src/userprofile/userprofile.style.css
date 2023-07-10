@@ -39,6 +39,26 @@
   user-select: none;
   margin-bottom: 7px;
 }
+
+.LogoutButton {
+  width: 16vw;
+  height: 40px;
+  
+  background-color: rgb(128, 106, 196);
+  border: 0;
+  border-radius: 10px;
+  color: #fff;
+  font-size: 20px;
+  margin-top: 10px;
+  cursor: pointer;
+  display: flex;
+  align-items: center; /* 垂直居中 */
+  justify-content: center; /* 水平居中，可根据需要调整 */
+  text-align: center;
+  user-select: none;
+  margin-bottom: 7px;
+}
+
 .HeadPicture {
   margin-left:35vw;
   text-align: center;
@@ -48,9 +68,13 @@
   font-size: 30px;
   font-weight: 500;
   color:black;
-  min-width: 300px;
+  min-width: 15vw;
   text-align: right;white-space: nowrap;
   
+}
+
+.hahaplace {
+  min-width: 18vw;
 }
 .InnerDiv{
   display: flex;

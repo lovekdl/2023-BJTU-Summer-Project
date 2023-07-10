@@ -2,11 +2,15 @@ import {makeAutoObservable} from 'mobx'
 import {http, setTokenFromLocalStorage, getTokenFromLocalStorage} from '../utils'
 class LoginStore {
 	token = getTokenFromLocalStorage()||''
-  
-
+	waiting:number = -1;
+	interval:number  = 0
 	constructor() {
+
 		//mobx 设置响应式
 		makeAutoObservable(this)
+		this.interval = setInterval(() => {
+			this.waiting -= 1;
+		},1000)
 	}
 	getTokenByLogin = async ({ username, password }: { username: string; password: string }) => {
 		//调用登录接口
@@ -31,6 +35,17 @@ class LoginStore {
 	setToken = (token:string)=> {
 		this.token = token
 		setTokenFromLocalStorage(this.token)
+	}
+
+	setWaiting = (x : number) => {
+		this.waiting = x
+	}
+	resetWaiting = () => {
+		clearInterval(this.interval);
+		this.setWaiting(60);
+		this.interval = setInterval(() => {
+			this.waiting -= 1;
+		},1000)
 	}
 }
 

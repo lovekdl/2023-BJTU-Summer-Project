@@ -61,10 +61,10 @@ function Scene({ numStars = 100 }) {
   const time = useTime();
   useEffect(()=>{
     const handleMouseMove = (event:any) => {
-      console.log(event.clientX, event.clientY);
-      up.set(event.clientY);
-      console.log(up.get())
-      console.log(pageHeight)
+      //console.log(event.clientX, event.clientY);
+       up.set(event.clientY);
+      // console.log(up.get())
+      // console.log(pageHeight)
     };
     
     document.addEventListener('mousemove', handleMouseMove);
