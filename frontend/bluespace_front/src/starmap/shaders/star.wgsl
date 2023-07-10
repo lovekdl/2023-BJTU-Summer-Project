@@ -56,7 +56,8 @@ fn fragment_main(
     var Kd = kd;
     var Ks = ks;
     var tmp = environmentArray[0];
-    var color: vec3<f32> = textureSample(myTexture, mySampler, uv).rgb;
+    var texColor: vec3<f32> = textureSample(myTexture, mySampler, uv).rgb;
+    var color: vec3<f32>;
     if(starType <= 0.5) {
         color = STAR_BLACKHOLE(fPosition.xyz, normal);
     } else if(starType <= 1.5) {
@@ -71,6 +72,10 @@ fn fragment_main(
         color = STAR_G();
     } else if(starType <= 6.5) {
         color = STAR_K();
+    } else if(starType <= 7.5) {
+        color = STAR_M();
+    } else if(starType <= 8.5) {
+        color = planet(fPosition.xyz, normal, texColor);
     } else {
         color = STAR_M();
     }
@@ -78,18 +83,26 @@ fn fragment_main(
     // return vec4(1.0);
 }
 
-fn CENTER_BLACK(position: vec3<f32>, normal: vec3<f32>, strength: f32) -> f32 {
-    return 1 - saturate(dot(normalize(cameraPosition - position), normalize(normal))) * strength;
+
+
+// ===== Planet =====
+fn planet(position: vec3<f32>, normal: vec3<f32>, texColor: vec3<f32>) -> vec3<f32> {
+    return vec3(texColor) * 0.2;
 }
 
+
+// ===== Star =====
 /**
  * TODO: 远距离时，黑洞中间纯白周围亮黄；近距离时，黑洞中间纯黑周围紫色
  */
+fn CENTER_BLACK(position: vec3<f32>, normal: vec3<f32>, strength: f32) -> f32 {
+    return 1 - saturate(dot(normalize(cameraPosition - position), normalize(normal))) * strength;
+}
 fn STAR_BLACKHOLE(position: vec3<f32>, normal: vec3<f32>) -> vec3<f32> {
     return vec3(0.2, 0.0, 0.4) * CENTER_BLACK(position, normal, 1.0);
 }
 fn STAR_O(position: vec3<f32>, normal: vec3<f32>) -> vec3<f32> {
-    return vec3(0.0, 0.9, 1.0) * CENTER_BLACK(position, normal, 0.8);
+    return vec3(0.3, 0.9, 1.0) * CENTER_BLACK(position, normal, 0.8);
 }
 fn STAR_B(position: vec3<f32>, normal: vec3<f32>) -> vec3<f32> {
     return vec3(1.0, 0.0, 0.0) * CENTER_BLACK(position, normal, 0.8);

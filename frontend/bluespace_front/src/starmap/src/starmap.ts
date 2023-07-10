@@ -19,15 +19,21 @@ let isMouseMiddleDown: boolean = false
 let last = {x: 0, y: 0}
 
 // Mouse Down
+let renderMode: number = 0
 starmapElement!.addEventListener("mousedown", (e) => {
     if(e.which === 1) {
-        // console.clear()
-        // console.log("ratio: " + window.devicePixelRatio)
-        // console.log("x: " + e.offsetX + ", " + renderer.canvasSize.width / window.devicePixelRatio)
-        // console.log("y: " + e.offsetY + ", " + renderer.canvasSize.height / window.devicePixelRatio)
-        const cx = e.offsetX / renderer.canvasSize.width * window.devicePixelRatio
-        const cy = e.offsetY / renderer.canvasSize.height * window.devicePixelRatio
-        const planetId = renderer.selectPlanet(cx, cy)
+        if(renderMode === 0) {
+            const cx = e.offsetX / renderer.canvasSize.width * window.devicePixelRatio
+            const cy = e.offsetY / renderer.canvasSize.height * window.devicePixelRatio
+            const planetId = renderer.selectPlanet(cx, cy)
+            console.log("Clicked: Planet " + planetId)
+            if(planetId != -1) {
+                renderer.switchMode(1, planetId)
+                renderMode = 1
+            }
+        } else if(renderMode === 1) {
+            // TODO
+        }
     } else if(e.which === 2) {
         isMouseMiddleDown = true
         last.x = e.clientX
@@ -55,6 +61,7 @@ starmapElement!.addEventListener("mouseup", (e) => {
 
 // Mouse Wheel
 starmapElement!.addEventListener("mousewheel", (e) => {
+    if(renderMode === 1) return;
     if((e as WheelEvent).deltaY > 0) {
         renderer.camera.zoom(1)
     } else if((e as WheelEvent).deltaY < 0) {
@@ -66,6 +73,7 @@ starmapElement!.addEventListener("mousewheel", (e) => {
 
 // Key Down
 document.addEventListener("keydown", e => {
+    if(renderMode === 1) return;
     if(e.code === "KeyW") {
         renderer.camera.buttonPressed.W = true
     }

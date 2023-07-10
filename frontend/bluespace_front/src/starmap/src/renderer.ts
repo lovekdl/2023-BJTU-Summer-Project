@@ -4,6 +4,7 @@ import composite2Shader from "../shaders/composite2.wgsl?raw"
 import finalShader from "../shaders/final.wgsl?raw"
 import * as sphere from "../util/sphere"
 import * as rectangle from "../util/rectangle"
+import earthPicture from "../../assets/2k_earth_daymap.jpg"
 import { mat4, vec4, vec3 } from 'gl-matrix'
 
 import { Camera } from './camera'
@@ -201,7 +202,9 @@ class BlueSpaceRenderer {
             // }
             // that.device!.queue.writeBuffer(that.modelMatrixBuffer!, 0, that.modelMatrixArray)
             
-            // that.camera.phi += that.ROTATION_SPEED
+            console.log(that.renderMode, Math.floor(that.renderMode+0.5) === 1)
+            if(Math.floor(that.renderMode+0.5) === 1)
+                that.camera.update(false, true)
             that.camera.update(true)
             that.device!.queue.writeBuffer(that.viewMatrixBuffer!, 0, (that.camera.viewMatrix) as Float32Array)
             that.device!.queue.writeBuffer(that.cameraPositionBuffer!, 0, that.camera.position as Float32Array)
@@ -212,7 +215,7 @@ class BlueSpaceRenderer {
         }
         requestAnimationFrame(frame)
 
-        // this.haveRun = true;
+        this.haveRun = true;
     }
 
     async switchMode(targetMode: number, targetPlanet?: number) {
@@ -223,11 +226,53 @@ class BlueSpaceRenderer {
             console.log("TargetMode and CurrentMode are the same.")
         }
 
-        if(this.renderMode === 0 && this.targetMode === 1) {
+        if(this.renderMode === 0 && targetMode === 1 && targetPlanet != undefined && targetPlanet >= 0) {
+            const that = this
             // 1. Stars (Scale)
-            // 2. Target Planet (ModelMatrix(update per frame), Texture,  
+            const scalueDownCoefficient = 0.3;
+            function scaleDown(i: number, k: number) {
+                that.planets[i].scale.x *= k
+                that.planets[i].scale.y *= k
+                that.planets[i].scale.z *= k
+                that.planets[i].updateModelMatrix()
+                that.modelMatrixArray.set((that.planets[i].modelMatrix as Float32Array), 4 * 4 * i)
+            }
+            const distance2Limit = 400
+            function distance2(a: {x:number,y:number,z:number}, b: {x:number,y:number,z:number}) {
+                const cx = a.x - b.x
+                const cy = a.y - b.y
+                const cz = a.z - b.z
+                return cx * cx + cy * cy + cz * cz
+            }
+            for(let i = 0; i < this.numOfPlanets; i++) {
+                if(i === 1) {
+                    continue;
+                } else if(i === targetPlanet) {
+                    scaleDown(i, 0.4)
+                } else if(distance2(this.planets[i].position, this.planets[targetPlanet].position) <= distance2Limit) {
+                    // 不显示一些过近的恒星 
+                    scaleDown(i, 0)
+                } else {
+                    scaleDown(i, 0.2)
+                }
+            }
+            // 2. Target Planet (ModelMatrix(update per frame), Texture)
+            this.planets[1].position = this.planets[targetPlanet].position
+            const posDelta = Math.max(10, this.planets[targetPlanet].starRadius)
+            this.planets[1].position.x += posDelta
+            this.planets[1].position.z += posDelta
+            this.planets[1].scale = {x: 0.5, y: 0.5, z: 0.5}
+            this.planets[1].updateModelMatrix()
+            this.modelMatrixArray.set((that.planets[1].modelMatrix as Float32Array), 4 * 4 * 1)
             // 3. Camera
-        } else if(this.renderMode === 1 && this.targetMode === 0) {
+            this.camera.target = vec3.fromValues(this.planets[1].position.x, this.planets[1].position.y, this.planets[1].position.z)
+            this.camera.theta = Math.PI / 2
+            this.camera.radius = 7
+            // 4. End
+            this.device!.queue.writeBuffer(this.modelMatrixBuffer!, 0, this.modelMatrixArray)
+            this.renderMode = 1
+            console.log("Scale down.")
+        } else if(this.renderMode === 1 && targetMode === 0) {
 
         } else {
             throw new Error("TargetMode is unknown.")
@@ -245,56 +290,6 @@ class BlueSpaceRenderer {
      * 鼠标点击位置 (cx, cy), cx cy in [0, 1]
      * 鼠标相对位置 (tx, ty), tx ty in [-0.5, 0.5]
      */
-    private readonly SELECT_PLANET_HIT_COEFFICIENT_2 = 0.05
-    selectPlanet2(cx: number, cy: number): number {
-        const tx = cx - 0.5
-        const ty = -(cy - 0.5) - 0.01
-
-        // console.log("click in " + tx + ", " + ty)
-
-        const nearHeight = 2 * this.PERSPECTIVE_NEAR * Math.tan(this.PERSPECTIVE_FOVY * 0.5)
-        const nearWidth = this.canvasSize.width / this.canvasSize.height * nearHeight
-        
-        const BA: vec3 = vec3.fromValues(tx * nearWidth, ty * nearHeight, this.PERSPECTIVE_NEAR)
-        vec3.normalize(BA, BA)
-
-        // console.log("BA: " + BA)
-        
-        let mnDis = -1
-        let mnId = -1
-        let mnD = -1
-        for(let i = 0; i < this.numOfPlanets; i++) {
-            const S: vec3 = vec3.create()
-            const pos: vec4 = vec4.fromValues(this.planets[i].position.x, this.planets[i].position.y, this.planets[i].position.z, 1.0)
-            vec4.transformMat4(pos, pos, this.camera.viewMatrix)
-            const CA: vec3 = vec3.fromValues(pos[0], pos[1], -pos[2])
-            vec3.normalize(CA, CA)
-
-
-            vec3.cross(S, BA, CA)
-            let d = vec3.len(S) / vec3.len(BA)
-            const dis = vec3.len(CA)
-
-            d = d * 10 / this.planets[i].starRadius
-
-            // if(i == 0) {
-            //     console.log("Planet0: " + pos)
-            //     console.log("tPos: "+"("+pos[0]+","+pos[1]+","+pos[2]+")"+"\nBA: "+BA+";\nCA: "+CA+"\nS:"+S+"\nd: "+d+"\ndis:"+dis)
-            // }
-
-            if(d <= this.SELECT_PLANET_HIT_COEFFICIENT_2 && (mnId == -1 || dis < mnDis)) {
-                mnId = i
-                mnDis = dis
-                mnD = d
-            }
-        }
-
-        // console.log(mnId + ": " + mnD + ", " + mnDis)
-
-        return mnId
-    }
-    
-    // compare in world coordinate system
     private readonly SELECT_PLANET_HIT_COEFFICIENT = 20
     selectPlanet(cx: number, cy: number): number {
         let tx = cx - 0.5
@@ -668,13 +663,21 @@ class BlueSpaceRenderer {
         // 小知识： 在浏览器中，webp包含了jpeg/png/gif等格式的优点，所以在开发中，应该优先使用webp格式
         // 小知识2：视频格式，推荐VP8/9
         // 获取图片
-        const textureUrl = "https://raw.githubusercontent.com/YXHXianYu/WebGPU-Learning/main/resource/XingHui.jpg"
-        const res = await fetch(textureUrl)
-        const img = await res.blob()
-        const bitmap = await createImageBitmap(img)
+        // const textureUrl = "https://raw.githubusercontent.com/YXHXianYu/WebGPU-Learning/main/resource/XingHui.jpg"
+        // const textureUrl = "./resource/2k_earth_daymap.jpg"
+        // const res = await fetch(textureUrl)
+        const bitmapPromise: Promise<ImageBitmap> = new Promise((resolve) => {
+            const img = new Image()
+            img.src = earthPicture
+            img.onload = async() => {
+                const bitmap = await createImageBitmap(img)
+                resolve(bitmap)
+            }
+        })
+        const bitmap: ImageBitmap = await bitmapPromise
         // 创建texture
         const textureSize = [bitmap.width, bitmap.height]
-        this.texture = that.device!.createTexture({
+        that.texture = that.device!.createTexture({
             size: textureSize,
             format: 'rgba8unorm',
             usage:

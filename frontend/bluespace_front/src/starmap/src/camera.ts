@@ -32,9 +32,13 @@ class Camera {
     /**
      * 每帧Update
      */
-    update(updateCameraMove?: boolean) {
+    private readonly AUTO_ROTATE_SPEED = Math.PI / 7200
+    update(updateCameraMove?: boolean, autoRotate?: boolean) {
         if(updateCameraMove) {
             this.updateCameraMove()
+        }
+        if(autoRotate) {
+            this.phi += this.AUTO_ROTATE_SPEED
         }
         this.rotateInSpherical()
         this.lookAt()
@@ -63,7 +67,7 @@ class Camera {
      */
     private readonly CAMERA_ZOOM_SPEED = 200
     private readonly CAMERA_RADIUS_MIN = 100
-    private readonly CAMERA_RADIUS_MAX = 2300
+    private readonly CAMERA_RADIUS_MAX = 2500
     zoom(delta: number) {
         this.radius += delta * this.CAMERA_ZOOM_SPEED
         this.radius = Math.max(this.CAMERA_RADIUS_MIN, Math.min(this.CAMERA_RADIUS_MAX, this.radius))
