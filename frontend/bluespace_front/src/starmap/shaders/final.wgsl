@@ -44,7 +44,9 @@ fn fragment_main(
     var color: vec3<f32> = textureSample(texture0, mySampler, uv).rgb;
     var highlight: vec3<f32> = textureSample(texture2, mySampler, uv).rgb;
 
-    color = color + highlight * 1.5; // TODO 远距离1.5 近距离0.1
+    color = color + highlight; // TODO 远距离1.5 近距离0.1
+    // color = color;
+    // color = highlight;
 
     color = tonemap(color);
 

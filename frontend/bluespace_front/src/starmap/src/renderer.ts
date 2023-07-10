@@ -272,7 +272,7 @@ class BlueSpaceRenderer {
     }
     
     // compare in world coordinate system
-private readonly SELECT_PLANET_HIT_COEFFICIENT = 20
+    private readonly SELECT_PLANET_HIT_COEFFICIENT = 20
     selectPlanet(cx: number, cy: number): number {
         let tx = cx - 0.5
         let ty = -(cy - 0.5)
