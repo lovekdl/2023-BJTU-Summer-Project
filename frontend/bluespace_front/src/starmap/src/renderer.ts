@@ -162,8 +162,8 @@ class BlueSpaceRenderer {
         that.device!.queue.writeBuffer(that.viewMatrixBuffer!, 0, (this.camera.viewMatrix) as Float32Array)
         that.device!.queue.writeBuffer(that.projectionMatrixBuffer!, 0, this.projectionMatrix as Float32Array)
         
-        console.log("viewMatrix: " + this.camera.viewMatrix)
-        console.log("projectionMatrix: " + this.projectionMatrix)
+        // console.log("viewMatrix: " + this.camera.viewMatrix)
+        // console.log("projectionMatrix: " + this.projectionMatrix)
         
         // ===== Load Planets to GPU =====
         for(let i = 0; i < that.planets.length; i++) {
@@ -266,7 +266,7 @@ class BlueSpaceRenderer {
             }
         }
 
-        console.log(mnId + ": " + mnD + ", " + mnDis)
+        // console.log(mnId + ": " + mnD + ", " + mnDis)
 
         return mnId
     }
@@ -284,9 +284,9 @@ private readonly SELECT_PLANET_HIT_COEFFICIENT = 20
 
         this.camera.update()
 
-        console.log("A: " + this.camera.position)
+        // console.log("A: " + this.camera.position)
         vec4.transformMat4(B4, B4, this.camera.getInverseViewMatrix())
-        console.log("B: " + B4)
+        // console.log("B: " + B4)
 
         // const A: vec3 = vec3.fromValues(this.camera.position[0], this.camera.position[1], this.camera.position[2])
         const A: vec3 = this.camera.position
@@ -308,9 +308,9 @@ private readonly SELECT_PLANET_HIT_COEFFICIENT = 20
 
             d = d - this.planets[i].starRadius
 
-            if(i == 0) {
-                console.log(" - C" + i + ": " + C + "\nd: "+d)
-            }
+            // if(i == 0) {
+            //     console.log(" - C" + i + ": " + C + "\nd: "+d)
+            // }
 
             if(d <= this.SELECT_PLANET_HIT_COEFFICIENT && (mnId == -1 || d < mnDis)) {
                 mnId = i
@@ -319,7 +319,7 @@ private readonly SELECT_PLANET_HIT_COEFFICIENT = 20
             }
         }
 
-        console.log(mnId + ": " + mnD + ", " + mnDis)
+        // console.log(mnId + ": " + mnD + ", " + mnDis)
 
         return mnId
     }
