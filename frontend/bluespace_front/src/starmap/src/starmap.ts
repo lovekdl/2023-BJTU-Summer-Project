@@ -33,17 +33,21 @@ let renderMode: number = 0
 starmapElement!.addEventListener("mousedown", (e) => {
     if(e.which === 1) {
         if(renderMode === 0) {
+            renderMode = -1
             const cx = e.offsetX / renderer.canvasSize.width * window.devicePixelRatio
             const cy = e.offsetY / renderer.canvasSize.height * window.devicePixelRatio
             const planetId = renderer.selectPlanet(cx, cy)
             console.log("Clicked: Planet " + planetId)
             if(planetId != -1) {
-                renderer.switchMode(1, planetId)
-                renderMode = 1
+                renderer.switchMode(1, planetId).then(() => {
+                    renderMode = 1
+                })
             }
         } else if(renderMode === 1) {
-            renderer.switchMode(0)
-            renderMode = 0
+            renderMode = -1
+            renderer.switchMode(0).then(() => {
+                renderMode = 0
+            })
         }
     } else if(e.which === 2) {
         isMouseMiddleDown = true

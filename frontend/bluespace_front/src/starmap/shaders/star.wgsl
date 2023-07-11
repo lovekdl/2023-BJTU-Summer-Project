@@ -11,6 +11,7 @@
 @group(1) @binding(4) var<uniform> ka:               vec3<f32>; // Ambient Coefficient
 @group(1) @binding(5) var<uniform> kd:               vec3<f32>; // Diffuse Coefficient
 @group(1) @binding(6) var<uniform> ks:               vec3<f32>; // Specular Coefficient
+@group(1) @binding(7) var<uniform> lightPosition:    vec3<f32>; // Light Position
 
 
 struct VertexOutput {
@@ -55,6 +56,7 @@ fn fragment_main(
     var Ka = ka;
     var Kd = kd;
     var Ks = ks;
+    var LightPosition = lightPosition;
     var tmp = environmentArray[0];
     var texColor: vec3<f32> = textureSample(myTexture, mySampler, uv).rgb;
     var color: vec3<f32>;
@@ -87,7 +89,15 @@ fn fragment_main(
 
 // ===== Planet =====
 fn planet(position: vec3<f32>, normal: vec3<f32>, texColor: vec3<f32>) -> vec3<f32> {
-    return vec3(texColor) * 0.2;
+
+    // ambient
+    var ambient = vec3(texColor) * ka; // modified
+
+    // diffuse
+    var lightDir = normalize(lightPosition - position);
+    var diffuse = vec3(texColor) * max(dot(normal, lightDir) + 0.2, 0.0) * kd;
+
+    return ambient + diffuse;
 }
 
 

@@ -21,7 +21,7 @@
     "noFallthroughCasesInSwitch": true,
 
     /* WebGPU */
-    "types": ["vite/client", "@webgpu/types", "@types/dom-webcodecs"],
+    "types": ["vite/client", "@webgpu/types", "@types/dom-webcodecs", "node"],
     "allowSyntheticDefaultImports": true
   },
   "include": ["src"],

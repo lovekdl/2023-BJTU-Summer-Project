@@ -25,8 +25,8 @@ class Planet {
      * 
      * 恒星共有7种，分别为OBAFGKM
      */
-    static readonly STAR_SHADER_TYPE_MIN: number = 0
-    static readonly STAR_SHADER_TYPE_MAX: number = 8
+    static readonly STAR_SHADER_TYPE_MIN:       number = 0
+    static readonly STAR_SHADER_TYPE_MAX:       number = 8
     static readonly STAR_SHADER_TYPE_BLACKHOLE: number = 0
     static readonly STAR_SHADER_TYPE_O:         number = 1
     static readonly STAR_SHADER_TYPE_B:         number = 2
@@ -48,7 +48,23 @@ class Planet {
         1.25 * this.STAR_SCALE_K,
         1.0 * this.STAR_SCALE_K,
         0.0,
-    ] 
+    ]
+
+    static readonly PLANET_TEXTURE_MIN: number = 0
+    static readonly PLANET_TEXTURE_MAX: number = 11
+    static readonly PLANET_TEXTURE_EARTH:    number = 0
+    static readonly PLANET_TEXTURE_CERES:    number = 1
+    static readonly PLANET_TEXTURE_HAUMEA:   number = 2
+    static readonly PLANET_TEXTURE_MAKEMAKE: number = 3
+    static readonly PLANET_TEXTURE_ERIS:     number = 4
+    static readonly PLANET_TEXTURE_MERCURY:  number = 5
+    static readonly PLANET_TEXTURE_VENUS:    number = 6
+    static readonly PLANET_TEXTURE_MARS:     number = 7
+    static readonly PLANET_TEXTURE_JUPITER:  number = 8
+    static readonly PLANET_TEXTURE_SATURN:   number = 9
+    static readonly PLANET_TEXTURE_URANUS:   number = 10
+    static readonly PLANET_TEXTURE_NEPTUNE:  number = 11
+
 
     // constructor
     constructor(
@@ -61,10 +77,8 @@ class Planet {
         public starRadius: number,
         // 恒星的shader与model类型
         public starShaderType: number,
-        public starModelType: number,
         // 行星的shader与model类型
-        public planetShaderType: number,
-        public planetModelType: number,
+        public planetTextureType: number,
     ) {
 
     }
@@ -110,7 +124,8 @@ class Planet {
         position: {x: number, y: number, z: number},
         rotation: {x: number, y: number, z: number},
         rotationSpeed: {x: number, y: number, z: number},
-        starShaderType: number
+        starShaderType: number,
+        planetTextureType: number,
     ): Planet {
         const t = starShaderType
         return new Planet(
@@ -120,9 +135,7 @@ class Planet {
             {x: this.STAR_SCALE[t], y: this.STAR_SCALE[t], z: this.STAR_SCALE[t]},
             this.STAR_SCALE[t],
             Math.max(this.STAR_SHADER_TYPE_MIN, Math.min(this.STAR_SHADER_TYPE_MAX, t)),
-            1,
-            1,
-            1
+            planetTextureType,
         )
     }
 }

@@ -256,13 +256,13 @@ class Camera {
     /**
      * 执行动画的一帧
      */
-    private updateAnimation() {
+    updateAnimation() {
         if(!this.haveAnimation) {
             return;
         }
         this.animationCurFrames += 1
 
-        console.log("Ani: " + this.animationCurFrames + " / " + this.animationFrames)
+        // console.log("Ani: " + this.animationCurFrames + " / " + this.animationFrames)
         if(this.animationCurFrames >= this.animationFrames) {
             this.target = vec3.clone(this.animationTarget)
             this.theta = this.animationTheta
@@ -284,7 +284,7 @@ class Camera {
     /**
      * 根据输入的四个参数，启动摄像机动画 (With ease in out)
      */
-    public startAnimation(target: vec3, theta: number, phi: number, radius: number, frames: number) {
+    startAnimation(target: vec3, theta: number, phi: number, radius: number, frames: number) {
         if(this.haveAnimation) {
             console.log("Last animation is running so it will be executed right now.") 
             this.target = vec3.clone(this.animationTarget)
