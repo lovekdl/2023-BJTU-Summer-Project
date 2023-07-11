@@ -6,8 +6,10 @@ import { observer } from 'mobx-react-lite';
 import Lottie from 'react-lottie';
 import animationData from '../StarMapLoading.json';
 
+
 function StarMap() {
-  const {LoadingStore} = useStore()
+  const {LoadingStore,StarMapStore} = useStore()
+
   //加载动画设置
   const defaultOptions = {
     loop: true, // 是否循环播放
@@ -41,7 +43,7 @@ function StarMap() {
     }
   }, [])
 
-  return (
+  return (<div>
     
     <div className="StarMap">
       {LoadingStore.starMapLoading && 
@@ -50,8 +52,18 @@ function StarMap() {
         </div>
       }
       
-      <div id="StarMap" style={{ visibility: !LoadingStore.starMapLoading ? 'visible' : 'hidden' }}>
+      <div id="StarMap" className = 'id="StarMap' style={{ visibility: !LoadingStore.starMapLoading ? 'visible' : 'hidden' }}>
+        <div className = 'StarMapMessage' style={{ visibility: StarMapStore.show? 'visible' : 'hidden' }}>
+          <div className="SolidOpacity" >
+            <h1>{StarMapStore.header}</h1>
+            <div>
+              {StarMapStore.message}
+            </div>
+          </div>
+        </div>
       </div>
+      
+    </div>
     </div>
     )
 }
