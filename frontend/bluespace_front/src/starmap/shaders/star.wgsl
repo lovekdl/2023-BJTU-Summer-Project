@@ -104,9 +104,8 @@ fn planet(position: vec3<f32>, normal: vec3<f32>, texColor: vec3<f32>) -> vec3<f
     // var specular = pow(max(dot(viewDir, reflectDir), 0.0), 32) * ks;
     // - blinnphong
     var halfwayDir = normalize(lightDir + viewDir);
-    var specular = pow(max(dot(normal, halfwayDir), 0.0), 32) * ks;
+    var specular = pow(max(dot(normal, halfwayDir), 0), 3) * ks; // There should be a bug here, because the exponent is too small.
     
-
     return ambient + diffuse + specular;
 }
 
@@ -125,7 +124,7 @@ fn STAR_O(position: vec3<f32>, normal: vec3<f32>) -> vec3<f32> {
     return vec3(0.3, 0.9, 1.0) * CENTER_BLACK(position, normal, 0.8);
 }
 fn STAR_B(position: vec3<f32>, normal: vec3<f32>) -> vec3<f32> {
-    return vec3(1.0, 0.0, 0.0) * CENTER_BLACK(position, normal, 0.8);
+    return vec3(0.6, 0.15, 0.05) * CENTER_BLACK(position, normal, 0.8);
 }
 fn STAR_A() -> vec3<f32> {
     return vec3(1.0, 1.0, 1.0);

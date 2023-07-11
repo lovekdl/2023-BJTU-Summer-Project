@@ -32,7 +32,7 @@ class Camera {
     /**
      * 每帧Update
      */
-    private readonly AUTO_ROTATE_SPEED = Math.PI / 7200
+    public readonly AUTO_ROTATE_SPEED = Math.PI / 7200
     update(updateCameraMove?: boolean, autoRotate?: boolean) {
         if(updateCameraMove) {
             this.updateCameraMove()
@@ -266,7 +266,7 @@ class Camera {
         if(this.animationCurFrames >= this.animationFrames) {
             this.target = vec3.clone(this.animationTarget)
             this.theta = this.animationTheta
-            this.phi = this.animationPhi
+            // this.phi = this.animationPhi
             this.radius = this.animationRadius
             this.haveAnimation = false
             return;
@@ -277,26 +277,26 @@ class Camera {
         this.target[1] += this.animationTargetDelta[1] * v
         this.target[2] += this.animationTargetDelta[2] * v
         this.theta  += this.animationThetaDelta * v
-        this.phi    += this.animationPhiDelta * v
+        // this.phi    += this.animationPhiDelta * v
         this.radius += this.animationRadiusDelta * v
     }
     
     /**
      * 根据输入的四个参数，启动摄像机动画 (With ease in out)
      */
-    startAnimation(target: vec3, theta: number, phi: number, radius: number, frames: number) {
+    startAnimation(target: vec3, theta: number, radius: number, frames: number) {
         if(this.haveAnimation) {
             console.log("Last animation is running so it will be executed right now.") 
             this.target = vec3.clone(this.animationTarget)
             this.theta = this.animationTheta
-            this.phi = this.animationPhi
+            // this.phi = this.animationPhi
             this.radius = this.animationRadius
         }
 
         // record basic parameters
         this.animationTarget = vec3.clone(target)
         this.animationTheta  = theta
-        this.animationPhi    = phi
+        // this.animationPhi    = phi
         this.animationRadius = radius
         this.animationFrames = frames
         this.animationCurFrames = 0
@@ -314,7 +314,7 @@ class Camera {
         this.animationTargetDelta[1] = (target[1] - this.target[1]) / this.animationCurveSum
         this.animationTargetDelta[2] = (target[2] - this.target[2]) / this.animationCurveSum
         this.animationThetaDelta = (theta - this.theta) / this.animationCurveSum
-        this.animationPhiDelta = (phi - this.phi) / this.animationCurveSum
+        // this.animationPhiDelta = (phi - this.phi) / this.animationCurveSum
         this.animationRadiusDelta = (radius - this.radius) / this.animationCurveSum
         
         this.haveAnimation = true

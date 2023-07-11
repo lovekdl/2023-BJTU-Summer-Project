@@ -205,9 +205,9 @@ class BlueSpaceRenderer {
             // that.device!.queue.writeBuffer(that.modelMatrixBuffer!, 0, that.modelMatrixArray)
             
             that.camera.updateAnimation()
-            if(Math.floor(that.renderMode+0.5) === 1)
-                that.camera.update(false, true)
-            that.camera.update(true)
+            // if(Math.floor(that.renderMode+0.5) === 1)
+            //     that.camera.update(false, true)
+            that.camera.update(true, true)
             that.device!.queue.writeBuffer(that.viewMatrixBuffer!, 0, (that.camera.viewMatrix) as Float32Array)
             that.device!.queue.writeBuffer(that.cameraPositionBuffer!, 0, that.camera.position as Float32Array)
 
@@ -286,7 +286,6 @@ class BlueSpaceRenderer {
             this.camera.startAnimation(
                 vec3.fromValues(this.planets[1].position.x, this.planets[1].position.y, this.planets[1].position.z),
                 Math.PI / 2,
-                this.camera.phi,
                 7,
                 60,
             )
@@ -317,7 +316,6 @@ class BlueSpaceRenderer {
             this.camera.startAnimation(
                 vec3.fromValues(0, 0, 0),
                 this.CAMERA_THETA,
-                this.camera.phi,
                 this.CAMERA_RADIUS,
                 60,
             )
@@ -698,7 +696,7 @@ class BlueSpaceRenderer {
             size: 3 * 4,
             usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
         })
-        this.device!.queue.writeBuffer(that.ksBuffer!, 0, Float32Array.from(new Array(3).fill(0)))
+        this.device!.queue.writeBuffer(that.ksBuffer!, 0, Float32Array.from(new Array(3).fill(0.25)))
 
         // light position
         this.lightPositionBuffer = that.device!.createBuffer({
