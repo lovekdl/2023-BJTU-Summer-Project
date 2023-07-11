@@ -97,7 +97,17 @@ fn planet(position: vec3<f32>, normal: vec3<f32>, texColor: vec3<f32>) -> vec3<f
     var lightDir = normalize(lightPosition - position);
     var diffuse = vec3(texColor) * max(dot(normal, lightDir) + 0.2, 0.0) * kd;
 
-    return ambient + diffuse;
+    // specular (have no test/debug)
+    var viewDir = normalize(cameraPosition - position);
+    // - phong
+    // var reflectDir = reflect(-lightDir, normal);
+    // var specular = pow(max(dot(viewDir, reflectDir), 0.0), 32) * ks;
+    // - blinnphong
+    var halfwayDir = normalize(lightDir + viewDir);
+    var specular = pow(max(dot(normal, halfwayDir), 0.0), 32) * ks;
+    
+
+    return ambient + diffuse + specular;
 }
 
 
