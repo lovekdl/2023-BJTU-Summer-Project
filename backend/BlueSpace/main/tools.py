@@ -20,7 +20,7 @@ class Tools:
 
         [username, password] = Tools.decode(data['token'])
 
-        users = Player.objects.filter(username=username)
+        users = User.objects.filter(username=username)
 
         if users.count() == 0:
             return False, Tools.toErrorResponse('Token is incorrect and username doesn\'t exist.')
