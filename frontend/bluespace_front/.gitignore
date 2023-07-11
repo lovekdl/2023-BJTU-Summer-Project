@@ -9,6 +9,7 @@ lerna-debug.log*
 
 # Add by YXH_XianYu
 package-lock.json
+.VSCodeCounter/
 
 node_modules
 dist
