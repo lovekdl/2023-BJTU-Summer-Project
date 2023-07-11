@@ -200,12 +200,14 @@ class BlueSpaceRenderer {
             // }
             // that.device!.queue.writeBuffer(that.modelMatrixBuffer!, 0, that.modelMatrixArray)
             
-            console.log(that.renderMode, Math.floor(that.renderMode+0.5) === 1)
+            that.camera.updateAnimation()
             if(Math.floor(that.renderMode+0.5) === 1)
                 that.camera.update(false, true)
             that.camera.update(true)
             that.device!.queue.writeBuffer(that.viewMatrixBuffer!, 0, (that.camera.viewMatrix) as Float32Array)
             that.device!.queue.writeBuffer(that.cameraPositionBuffer!, 0, that.camera.position as Float32Array)
+
+            console.log(that.camera.position[0] + ", " + that.camera.position[1] + ", " + that.camera.position[2])
 
             that.draw()
 
@@ -267,9 +269,16 @@ class BlueSpaceRenderer {
             this.planets[1].updateModelMatrix()
             this.modelMatrixArray.set((that.planets[1].modelMatrix as Float32Array), 4 * 4 * 1)
             // 3. Camera
-            this.camera.target = vec3.fromValues(this.planets[1].position.x, this.planets[1].position.y, this.planets[1].position.z)
-            this.camera.theta = Math.PI / 2
-            this.camera.radius = 7
+            // this.camera.target = vec3.fromValues(this.planets[1].position.x, this.planets[1].position.y, this.planets[1].position.z)
+            // this.camera.theta = Math.PI / 2
+            // this.camera.radius = 7
+            this.camera.startAnimation(
+                vec3.fromValues(this.planets[1].position.x, this.planets[1].position.y, this.planets[1].position.z),
+                Math.PI / 2,
+                this.camera.phi,
+                7,
+                60,
+            )
             // 4. End
             this.device!.queue.writeBuffer(this.modelMatrixBuffer!, 0, this.modelMatrixArray)
             this.renderMode = 1
@@ -280,13 +289,22 @@ class BlueSpaceRenderer {
                 this.planets[i].resetScale()
                 that.modelMatrixArray.set((that.planets[i].modelMatrix as Float32Array), 4 * 4 * i)
             }
+
             // 2. Target Planet (ModelMatrix(update per frame), Texture)
             // nothing
+
             // 3. Camera
-            this.camera.target = vec3.fromValues(0, 0, 0)
-            this.camera.theta = this.CAMERA_THETA
-            // this.camera.phi = this.CAMERA_PHI
-            this.camera.radius = this.CAMERA_RADIUS
+            // this.camera.target = vec3.fromValues(0, 0, 0)
+            // this.camera.theta = this.CAMERA_THETA
+            // this.camera.radius = this.CAMERA_RADIUS
+            this.camera.startAnimation(
+                vec3.fromValues(0, 0, 0),
+                this.CAMERA_THETA,
+                this.camera.phi,
+                this.CAMERA_RADIUS,
+                60,
+            )
+           
             // 4. End
             this.device!.queue.writeBuffer(this.modelMatrixBuffer!, 0, this.modelMatrixArray)
             this.renderMode = 0

@@ -205,22 +205,16 @@ class Camera {
         }
 
         let F = vec3.create()
-        {
-            vec3.subtract(F, that.position, this.target) // here is negative
-            vec3.normalize(F, F)
-        }
+        vec3.subtract(F, that.position, this.target) // here is negative
+        vec3.normalize(F, F)
 
         let R = vec3.create()
-        {
-            vec3.cross(R, vec3.fromValues(0, 1, 0), F)
-            vec3.normalize(R, R)
-        }
+        vec3.cross(R, vec3.fromValues(0, 1, 0), F)
+        vec3.normalize(R, R)
 
         let U = vec3.create()
-        {
-            vec3.cross(U, F, R)
-            vec3.normalize(U, U)
-        }
+        vec3.cross(U, F, R)
+        vec3.normalize(U, U)
 
         let t = this.position
 
@@ -230,6 +224,100 @@ class Camera {
             F[0], F[1], F[2], 0,
             t[0], t[1], t[2], 1
         )
+    }
+
+    // ===== Camera Animation =====
+    private readonly ANIMATION_CURVE_MAX = 5
+    private haveAnimation: boolean       = false
+    private animationTarget: vec3        = vec3.create()
+    private animationTheta: number       = 0
+    private animationPhi: number         = 0
+    private animationRadius: number      = 100
+    private animationFrames: number      = 0
+
+    private animationCurFrames: number   = 0
+    private animationCurveA: number      = 0
+    private animationCurveB: number      = 0
+    private animationCurveSum: number    = 0
+    private animationTargetDelta: vec3   = vec3.create()
+    private animationThetaDelta: number  = 0
+    private animationPhiDelta: number    = 0
+    private animationRadiusDelta: number = 0
+    
+    /**
+     * calculate y = ax^2 + bx + c
+     * this curve is through (0, 0), (f/2, h), (f, 0)
+     * => a=-4h/f^2; b=4h/f; c=0
+     */
+    private calculateAnimationCurve(x: number): number {
+        return this.animationCurveA * x * x + this.animationCurveB * x
+    }
+
+    /**
+     * 执行动画的一帧
+     */
+    private updateAnimation() {
+        if(!this.haveAnimation) {
+            return;
+        }
+        this.animationCurFrames += 1
+
+        console.log("Ani: " + this.animationCurFrames + " / " + this.animationFrames)
+        if(this.animationCurFrames >= this.animationFrames) {
+            this.target = vec3.clone(this.animationTarget)
+            this.theta = this.animationTheta
+            this.phi = this.animationPhi
+            this.radius = this.animationRadius
+            this.haveAnimation = false
+            return;
+        }
+
+        const v = this.calculateAnimationCurve(this.animationCurFrames)
+        this.target[0] += this.animationTargetDelta[0] * v
+        this.target[1] += this.animationTargetDelta[1] * v
+        this.target[2] += this.animationTargetDelta[2] * v
+        this.theta  += this.animationThetaDelta * v
+        this.phi    += this.animationPhiDelta * v
+        this.radius += this.animationRadiusDelta * v
+    }
+    
+    /**
+     * 根据输入的四个参数，启动摄像机动画 (With ease in out)
+     */
+    public startAnimation(target: vec3, theta: number, phi: number, radius: number, frames: number) {
+        if(this.haveAnimation) {
+            console.log("Last animation is running so it will be executed right now.") 
+            this.target = vec3.clone(this.animationTarget)
+            this.theta = this.animationTheta
+            this.phi = this.animationPhi
+            this.radius = this.animationRadius
+        }
+
+        // record basic parameters
+        this.animationTarget = vec3.clone(target)
+        this.animationTheta  = theta
+        this.animationPhi    = phi
+        this.animationRadius = radius
+        this.animationFrames = frames
+        this.animationCurFrames = 0
+
+        // calculate the curve
+        const f = frames;
+        const h = this.ANIMATION_CURVE_MAX
+        this.animationCurveA = -4 * h / (f * f)
+        this.animationCurveB = 4 * h / f
+        this.animationCurveSum = 0
+        for(let i = 1; i < this.animationFrames; i++) {
+            this.animationCurveSum += this.calculateAnimationCurve(i)
+        }
+        this.animationTargetDelta[0] = (target[0] - this.target[0]) / this.animationCurveSum
+        this.animationTargetDelta[1] = (target[1] - this.target[1]) / this.animationCurveSum
+        this.animationTargetDelta[2] = (target[2] - this.target[2]) / this.animationCurveSum
+        this.animationThetaDelta = (theta - this.theta) / this.animationCurveSum
+        this.animationPhiDelta = (phi - this.phi) / this.animationCurveSum
+        this.animationRadiusDelta = (radius - this.radius) / this.animationCurveSum
+        
+        this.haveAnimation = true
     }
 }
 
