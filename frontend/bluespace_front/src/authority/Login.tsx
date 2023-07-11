@@ -40,8 +40,9 @@ function LoginForm  ()  {
   }
   
   async function handleLoginSubmit(event:any) {
-    if(!usernameRef.current || !passwordRef.current) return;
     event.preventDefault();
+    if(!usernameRef.current?.value || !passwordRef.current?.value) return;
+    
 
 
     try {

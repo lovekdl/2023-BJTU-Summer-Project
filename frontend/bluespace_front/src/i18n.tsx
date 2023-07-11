@@ -63,6 +63,7 @@ i18n
           'Enter your new name' : 'Enter your new name',
           'Modify your name' : 'Modify your name',
           'Confirm' : 'Confirm',
+          'inputs can not be empty':'input can not be empty',
         }
       },
       zh: {
@@ -121,6 +122,7 @@ i18n
           'Enter your new name' : '输入新用户名',
           'Modify your name' : '修改用户名',
           'Confirm' : '确认',
+          'inputs can not be empty':'输入不能为空',
         }
       },
       jp: {
@@ -179,6 +181,7 @@ i18n
           'Repeat your new password' : '新しいパスワードを繰り返します。',
           'Modify your name' : 'ユーザー名を変更します',
           'Confirm' : '確認します',
+          'inputs can not be empty':'入力を空にすることはできません',
         }
       }
     },

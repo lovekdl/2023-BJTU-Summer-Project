@@ -11,7 +11,8 @@ import wechat from '../assets/WeChat.png'
 import Stars from './stars';
 import '../index.tsx';
 import {useTranslation} from 'react-i18next'
-
+import {http} from '../utils'
+import {message} from 'antd'
 interface InputRef {
   value: string;
 }
@@ -31,16 +32,55 @@ function RegisterForm  (prop:any)  {
     event.preventDefault();
     const [coordinates, setCoordinates] = useState({ x: 0, y: 0 });
   
-    if(!usernameRef.current || ! passwordRef.current || !emailRef.current || !confirmedPasswordRef.current || !codeRef.current) return;
+    if(!usernameRef.current || ! passwordRef.current || !emailRef.current || !confirmedPasswordRef.current || !codeRef.current) {
+      message.error(t('inputs can not be empty'))
+      return;}
     const username = usernameRef.current.value;
     const email = emailRef.current.value;
     const password = passwordRef.current.value;
     const confirmedPassword = confirmedPasswordRef.current.value;
     const code = codeRef.current.value;
-    console.log(username,email,password,confirmedPassword,code);
+    async function register() {
+      try {
+        const ret = await http.post('api/send',{
+          username : usernameRef.current?.value,
+          email : emailRef.current?.value,
+        })
+        if(ret.data.state == 'success') {
+          message.success('email has been sent.')
+          loginStore.resetWaiting();
+        }
+        else message.error('unknown error.')
+      }
+      catch(e:any) {
+        console.log('catch : ',e)
+        if(e.response) message.error(e.response.data.error_message)
+        else message.error(e.message)
+      }
+    }
+    register()
   }
   const handleSendClicked = () => {
-    loginStore.resetWaiting();
+    async function send() {
+      try {
+        const ret = await http.post('api/send',{
+          username : usernameRef.current?.value,
+          email : emailRef.current?.value,
+        })
+        if(ret.data.state == 'success') {
+          message.success('email has been sent.')
+          loginStore.resetWaiting();
+        }
+        else message.success('unknown error.')
+      }
+      catch(e:any) {
+        console.log('catch : ',e)
+        if(e.response) message.error(e.response.data.error_message)
+        else message.error(e.message)
+      }
+    }
+    send()
+    
   }
   return (
     

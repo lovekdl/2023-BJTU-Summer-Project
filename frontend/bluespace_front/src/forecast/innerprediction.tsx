@@ -30,6 +30,10 @@ function InnerPrediction() {
   }
   const handlePredictClicked = () => {
     console.log(Planet_name.current?.value)
+    if(!Planet_name.current?.value|| !Orbit_period.current?.value|| !Semi_major_axis.current?.value|| !Mass.current?.value||!Radius.current?.value||!Stellar_luminosity.current?.value||!Stellar_mass.current?.value||!Stellar_radius.current?.value) {
+      message.error(t('inputs can not be empty'))
+      return;
+    }
     for(const element of PredictionStore.items) {
       if(element.name == Planet_name.current?.value) {
         message.error('Repeated name')
