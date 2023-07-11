@@ -1,9 +1,10 @@
 import * as React from "react";
 import { useMotionValue, Reorder } from "framer-motion";
 import { useRaisedShadow } from "./use-raised-shadow";
-
+import "./forecast.style.css"
+import { motion } from "framer-motion";
 interface Props {
-  item: string;
+  item: any;
 }
 
 export const Item = ({ item }: Props) => {
@@ -11,10 +12,21 @@ export const Item = ({ item }: Props) => {
   const boxShadow = useRaisedShadow(y);
 
   return (
-    <div>
-      <Reorder.Item value={item} id={item} style={{ boxShadow, y }}>
-        <div>{item}</div>
+    <div className = 'ReorderItem'>
+      <Reorder.Item value={item} id={item.name} style={{ boxShadow, y }} >
+        <div>{item.name}| ESI:{item.esi} | {item.habitable===true?"Habitable    ":"NOT Habitable"}</div>
+        <motion.button
+          className="box3" 
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          transition={{ type: "spring", stiffness: 400, damping: 20 }}
+          
+          type = 'submit'
+        >
+          Save
+        </motion.button>
       </Reorder.Item>
+      
     </div>
   );
 };

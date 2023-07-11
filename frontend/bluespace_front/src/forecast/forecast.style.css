@@ -23,8 +23,17 @@
   display: flex;
   min-width: 100vw;
   min-height: 100vh;
+  margin-left: 18vw;
+  margin-top: 5vh;
+  flex:1;
 }
-
+.MiddleButtonContent{
+  margin-left: 20vw;
+  margin-top: 40vh;
+}
+.ReorderItem {
+  width: 32vw;
+}
 .ReorderContent ul,
 .ReorderContent li {
   list-style: none;
@@ -45,7 +54,7 @@
   width: 100%;
   padding: 15px 18px;
   position: relative;
-  background: rgb(186, 175, 221);
+  background: #F8E4FE;
   border-radius: 5px;
   display: flex;
   justify-content: space-between;
@@ -90,4 +99,12 @@ nav {
   justify-content: center;
   align-items: center;
   cursor: pointer;
+}
+
+.PredictInputContent{
+  width: 100px;
+  flex:1;
+}
+.InnerPredictionContent {
+  display: flex;
 }

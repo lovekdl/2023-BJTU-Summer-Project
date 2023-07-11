@@ -67,8 +67,8 @@
 }
 
 .HeadPicture {
+  
   margin-left:35vw;
-  text-align: center;
 }
 
 .ProfileSpan {
@@ -81,7 +81,7 @@
 }
 
 .hahaplace {
-  min-width: 18vw;
+  min-width: 12vw;
 }
 .InnerDiv{
   display: flex;

@@ -2,6 +2,7 @@
 
 import {makeAutoObservable} from 'mobx'
 import {http, setTokenFromLocalStorage, getTokenFromLocalStorage} from '../utils'
+import { List } from 'echarts';
 
 class PredictionStore {
 	DataSource = [
@@ -64,6 +65,11 @@ class PredictionStore {
 			dataIndex: 'Planet_name',
 			key: 'Planet_name',
 		},
+    {
+      title: 'Orbital Period[days]',
+			dataIndex: 'Orbit_period',
+			key: 'Orbit_period',
+    },
 		{
 			title: 'Orbit Semi-Major Axis',
 			dataIndex: 'Semi_major_axis',
@@ -94,7 +100,20 @@ class PredictionStore {
 			dataIndex: 'Stellar_radius',
 			key: 'Stellar_radius',
 		},
+		{
+			title: 'ESI',
+			dataIndex: 'esi',
+			key: 'esi',
+		},
+		{
+			title: 'Habitable',
+			dataIndex: 'habitable',
+			key: 'habitable',
+		},
 	];
+
+  items = [{name:"11111",esi:0.24,habitable:false}, {name:"222222",esi:0.9,habitable:true}, {name:"333333",esi:0.88,habitable:false}, {name:"4444444",esi:0.27,habitable:true}];
+
   starMapLoading:boolean = true
 
 	constructor() {
@@ -104,7 +123,12 @@ class PredictionStore {
 	setStarMapLoading = (x : boolean) => {
     this.starMapLoading = x
   }
-	
+  addItem = (newItem : any)=> {
+    this.items.push(newItem);
+  }
+  setItems = (newItems : any)=> {
+    this.items = newItems
+  }
 }
 
 export default PredictionStore

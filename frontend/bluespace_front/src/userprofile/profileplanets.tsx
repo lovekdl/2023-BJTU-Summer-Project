@@ -11,6 +11,10 @@ export default function ProfilePlanets() {
       <div>
         <Table className="TableDiv" columns={ProfileStore.likesColumns}  dataSource={ProfileStore.likesDataSource}></Table>
       </div>
+      <h3>My Planets</h3>
+      <div>
+        <Table className="TableDiv" columns={ProfileStore.likesColumns}  dataSource={ProfileStore.likesDataSource}></Table>
+      </div>
     </div>
   )
 }

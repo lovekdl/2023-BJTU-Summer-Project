@@ -50,6 +50,7 @@ function InnerProfile() {
     <PasswordModal visible = {passwordVisible} setVisible={setPasswordVisible}></PasswordModal>
     <div className = 'HeadPicture'>
       {ProfileStore.avatar===''? <Avatar size={128} icon={<UserOutlined />} /> : <Avatar size={128} src={<img src={ProfileStore.avatar}  alt="avatar" />} />}
+      
       <input
         type="file"
         accept="image/*"
