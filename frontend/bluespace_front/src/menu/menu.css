@@ -10,7 +10,16 @@
   width: 100%;
   
 }
-
+.Dropdown {
+  z-index: 999;
+  margin-left: 5vw;
+  color: aliceblue;
+}
+.Dropdown:hover {
+  z-index: 999;
+  margin-left: 5vw;
+  color: aliceblue;
+}
 .ul1 {
   display: flex;
   flex-direction: column;
@@ -36,6 +45,10 @@
   list-style: none;
   
   padding: 10px;
+}
+
+.ant-dropdown {
+  padding-top: 1vh;
 }
 
 .MenuButton {

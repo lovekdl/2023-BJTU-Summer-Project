@@ -9,6 +9,9 @@ import { observer } from 'mobx-react-lite';
 import qq from '../assets/QQ.png'
 import wechat from '../assets/WeChat.png'
 import Stars from './stars';
+import '../index.tsx';
+import {useTranslation} from 'react-i18next'
+
 interface InputRef {
   value: string;
 }
@@ -20,12 +23,14 @@ function RegisterForm  (prop:any)  {
   const confirmedPasswordRef = useRef<InputRef>(null) as RefObject<HTMLInputElement>;
   const codeRef = useRef<InputRef>(null) as RefObject<HTMLInputElement>;
   const {loginStore} = useStore();
+  const {t,i18n} = useTranslation()
   const handleLoginOnClicked = () => {
     prop.setCurrentPage('login')
   }
   async function handleRegisterSubmit(event:any) {
     event.preventDefault();
-    
+    const [coordinates, setCoordinates] = useState({ x: 0, y: 0 });
+  
     if(!usernameRef.current || ! passwordRef.current || !emailRef.current || !confirmedPasswordRef.current || !codeRef.current) return;
     const username = usernameRef.current.value;
     const email = emailRef.current.value;
@@ -44,41 +49,41 @@ function RegisterForm  (prop:any)  {
       <div className="form-wrapper">
         
       <form onSubmit={handleRegisterSubmit}>
-        <h1>Sign up</h1>
+        <h1>{t('Sign up')}</h1>
         <div className="input-items">
             <span className="input-tips">
-                Username
+                {t('Username')}
                 
             </span>
-            <input type="text" className="inputs" placeholder="Enter your username" ref={usernameRef}></input>
+            <input type="text" className="inputs" placeholder={t("Enter") + t("username")} ref={usernameRef}></input>
         
             
         
           <span className="input-tips">
-              Password
+              {t('Password')}
           </span>
           
-          <input type="password" className="inputs" placeholder="Enter password" ref={passwordRef}/>
+          <input type="password" className="inputs" placeholder={t("Enter") + t("password")} ref={passwordRef}/>
           <span className="input-tips">
-              Confirm your password
+              {t('Confirm your password')}
           </span>
-          <input type="password" className="inputs" placeholder="Enter password" ref={confirmedPasswordRef}/>
+          <input type="password" className="inputs" placeholder={t("Enter") + t("password")} ref={confirmedPasswordRef}/>
           
           <span className="input-tips">
-                Email Address
+                {t('Email Address')}
             </span>
             
             
-            <input type="text" className="inputs" placeholder="Enter your email" ref={emailRef}></input>
+            <input type="text" className="inputs" placeholder={t("Enter") + t("email")}  ref={emailRef}></input>
             <div className='vertification' >
-            <input type="password" className="inputs2" placeholder="Enter verification code" ref={codeRef}/>
+            <input type="password" className="inputs2" placeholder={t("Enter") + t("verification code")}  ref={codeRef}/>
             {loginStore.waiting <= 0? <motion.div
               className='box3'
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={handleSendClicked}
             >
-                Send
+                {t('Send')}
             </motion.div> : <motion.div
               
               className='box2'
@@ -100,11 +105,11 @@ function RegisterForm  (prop:any)  {
           transition={{ type: "spring", stiffness: 400, damping: 20 }}
           type='submit'
         >
-          Register
+          {t('Register')}
         </motion.button>
         </form>
         <div className="siginup-tips">
-          <span>Already Have An Account?</span>
+          <span>{t('Already Have An Account?')}</span>
           <span onClick={handleLoginOnClicked}>Login</span>
         </div>
         

@@ -18,26 +18,29 @@ import {
 import {quat2} from "gl-matrix";
 import Statistics from './statistics';
 import InnerPrediction from './innerprediction';
-
+import '../index.tsx';
+import {useTranslation} from 'react-i18next'
 
 
 const { Content, Sider } = Layout;
+
+
 function Prediction() {
   
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [nowKey, setNowKey] = useState(1);
   const [content, setContent] = useState(<div></div>);
-
+  const {t,i18n} = useTranslation()
   const {ProfileStore} = useStore();
   function getLabel(x:number) {
     if(x === 1) {
-      return "Statistics"
+      return t('Statistics')
     }
     if(x === 2) {
-      return "Analysis"
+      return t("Analysis")
     }
     if(x === 3) {
-      return "Prediction"
+      return t("Prediction")
     }
   }
   useEffect(()=>{

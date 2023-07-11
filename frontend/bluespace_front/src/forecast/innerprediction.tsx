@@ -7,7 +7,8 @@ import { motion } from "framer-motion";
 import { Item } from "./Item";
 import {useStore} from "../store/index"
 import {message} from "antd"
-
+import '../index.tsx';
+import {useTranslation} from 'react-i18next'
 
 
 function InnerPrediction() {
@@ -21,6 +22,7 @@ function InnerPrediction() {
   const Stellar_luminosity = useRef<HTMLInputElement>(null);
   const Stellar_mass = useRef<HTMLInputElement>(null);
   const Stellar_radius = useRef<HTMLInputElement>(null);
+  const {t,i18n} = useTranslation()
   const handleAddClicked = () => {
     console.log('aa')
     PredictionStore.addItem("newItem" + count)
@@ -41,66 +43,68 @@ function InnerPrediction() {
       <div className = 'PredictInputContent'>
         <div className="input-items">
           <span className="input-tips">
-              Planet name
+              {t('Planet name')}
           </span>
           <br></br>
-          <input type="text" className="predictinputs" placeholder="Enter Planet name" ref = {Planet_name} />
+          <input type="text" className="predictinputs" placeholder= {t("Enter")+ t('Planet name')} ref = {Planet_name} />
           
         </div>
         <div className="input-items">
           <span className="input-tips">
-            Orbital Period[days]
+            {t('Orbital Period[days]')}
           </span>
           <br></br>
-          <input type="number" className="predictinputs" placeholder="Enter Orbital Period[days]" ref = {Orbit_period} />
+          <input type="number" className="predictinputs" placeholder={t("Enter")+ t('Orbital Period[days]')} ref = {Orbit_period} />
           
         </div>
         <div className="input-items">
           <span className="input-tips">
-            Orbit Semi-Major Axis
+            {t('Orbit Semi-Major Axis')}
           </span>
           <br></br>
-          <input type="number" className="predictinputs" placeholder="Enter Orbit Semi-Major Axis" ref = {Semi_major_axis}/>
+          <input type="number" className="predictinputs" placeholder={t("Enter")+ t("Orbit Semi-Major Axis")} ref = {Semi_major_axis}/>
           
         </div>
         
         <div className="input-items">
           <span className="input-tips">
-            Planet Mass
+            {t('Planet Mass')}
           </span>
           <br></br>
-          <input type="number" className="predictinputs" placeholder="Enter Planet Mass" ref = {Mass} />
+          <input type="number" className="predictinputs" placeholder={t("Enter")+ t("Planet Mass")} ref = {Mass} />
           
         </div>
         <div className="input-items">
           <span className="input-tips">
-            Planet Radius
+            {t('Planet Radius')}
           </span>
           <br></br>
-          <input type="number" className="predictinputs" placeholder="Enter Planet Radius" ref={Radius}/>
+          <input type="number" className="predictinputs" placeholder={t("Enter")+ t("Planet Radius")} ref={Radius}/>
           
         </div>
         <div className="input-items">
           <span className="input-tips">
-            Stellar Luminosity
+            {t('Stellar Luminosity')}
+            
           </span>
           <br></br>
-          <input type="number" className="predictinputs" placeholder="Enter Stellar Luminosity" ref = {Stellar_luminosity}/>
+          <input type="number" className="predictinputs" placeholder={t("Enter")+ t("Stellar Luminosity")} ref = {Stellar_luminosity}/>
           
         </div>
         <div className="input-items">
           <span className="input-tips">
-            Stellar Mass
+            {t('Stellar Mass')}
           </span>
           <br></br>
-          <input type="number" className="predictinputs" placeholder="Enter Stellar Mass" ref = {Stellar_mass}/>
+          <input type="number" className="predictinputs" placeholder={t("Enter")+ t("Stellar Mass")} ref = {Stellar_mass}/>
         </div>
         <div className="input-items">
           <span className="input-tips">
-            Stellar Radius
+          {t('Stellar Radius')}
+            
           </span>
           <br></br>
-          <input type="number" className="predictinputs" placeholder="Enter Stellar Radius" ref = {Stellar_radius}/>
+          <input type="number" className="predictinputs" placeholder={t("Enter")+ t("Stellar Radius")} ref = {Stellar_radius}/>
         </div>
       </div>
       <div className="MiddleButtonContent">
@@ -112,7 +116,7 @@ function InnerPrediction() {
           onClick={handlePredictClicked}
           type = 'submit'
         >
-          Predict →
+          {t('Predict')} →
         </motion.button>
       </div>
 

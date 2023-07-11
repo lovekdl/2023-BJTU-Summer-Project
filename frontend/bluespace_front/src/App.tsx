@@ -11,10 +11,21 @@ import {Prediction} from "./forecast/index";
 import { Profile } from "./userprofile/index";
 import { AuthComponent } from "./route_auth/AuthComponent";
 import InnerPrediction from "./forecast/innerprediction";
-
-
+import {setLanguageFromLocalStorage,getLanguageFromLocalStorage} from "./utils/token"
+import './index.tsx';
+import {useTranslation} from 'react-i18next'
 
 export default function App() {
+  const {t,i18n} = useTranslation()
+  useEffect(()=> {
+    const language = getLanguageFromLocalStorage() || ''
+    if(language == '') {
+      setLanguageFromLocalStorage("en")
+    }
+    else (
+      i18n.changeLanguage(language)
+    )
+  },[])
   return (
     <Router>
 

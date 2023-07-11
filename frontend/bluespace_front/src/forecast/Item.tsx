@@ -3,6 +3,8 @@ import { useMotionValue, Reorder } from "framer-motion";
 import { useRaisedShadow } from "./use-raised-shadow";
 import "./forecast.style.css"
 import { motion } from "framer-motion";
+import '../index.tsx';
+import {useTranslation} from 'react-i18next'
 interface Props {
   item: any;
 }
@@ -10,7 +12,7 @@ interface Props {
 export const Item = ({ item }: Props) => {
   const y = useMotionValue(0);
   const boxShadow = useRaisedShadow(y);
-
+  const {t,i18n} = useTranslation()
   return (
     <div className = 'ReorderItem'>
       <Reorder.Item value={item} id={item.name} style={{ boxShadow, y }} >
@@ -23,7 +25,7 @@ export const Item = ({ item }: Props) => {
           
           type = 'submit'
         >
-          Save
+          {t("Save")}
         </motion.button>
       </Reorder.Item>
       

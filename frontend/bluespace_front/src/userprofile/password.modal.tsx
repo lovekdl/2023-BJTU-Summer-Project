@@ -8,6 +8,8 @@ import { observer } from 'mobx-react-lite';
 import { Checkbox ,Table} from 'antd';
 import { useStore } from '../store';
 import { motion } from 'framer-motion';
+import '../index.tsx';
+import {useTranslation} from 'react-i18next'
 
 function PasswordModal (props : any) {
   // const {RankStore} = useStore()
@@ -18,6 +20,7 @@ function PasswordModal (props : any) {
   // useEffect(()=> {
   //   RankStore.getRanking()
   // },[props.visible])
+  const {t,i18n} = useTranslation()
   const handleOk = ()=>{
     props.setVisible(false)
   }
@@ -26,29 +29,29 @@ function PasswordModal (props : any) {
     <Modal title="Modify your name" open={props.visible} onCancel={handleOk} destroyOnClose={true} footer={null} >
       <br></br>
       <div className = 'ModalInnerDiv'>
-        <span className = 'ModalSpan'>Old password &nbsp;&nbsp;</span>
+        <span className = 'ModalSpan2'>{t('Old password')} &nbsp;&nbsp;</span>
       </div>
       <div className = 'ModalInnerDiv'>
         
-        <input type="text" className="input-box" placeholder="Enter your old password"/>
+        <input type="text" className="input-box" placeholder={t("Enter your old password")}/>
       </div>
       
       
       
       <div className = 'ModalInnerDiv'>
         
-        <input type="password" className="input-box" placeholder="Repeat your old password"/>
+        <input type="password" className="input-box" placeholder={t("Repeat your new password")}/>
         
       </div>
 
 
 
       <div className = 'ModalInnerDiv'>
-        <span className = 'ModalSpan'>New password &nbsp;&nbsp;</span>
+        <span className = 'ModalSpan2'>{t('New password')} &nbsp;&nbsp;</span>
       </div>
       <div className = 'ModalInnerDiv'>
         
-        <input type="text" className="input-box" placeholder="Enter your new password"/>
+        <input type="text" className="input-box" placeholder={t("Enter your new password")}/>
       </div>      
       <div className = 'ModalInnerButtonDiv'>
       <motion.button

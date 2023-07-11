@@ -12,7 +12,8 @@ import {
   UserOutlined
 } from "@ant-design/icons";
 import Innerprofile from './innerprofile';
-
+import '../index.tsx';
+import {useTranslation} from 'react-i18next'
 
 
 const { Content, Sider } = Layout;
@@ -21,14 +22,14 @@ function Profile() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [nowKey, setNowKey] = useState(1);
   const [content, setContent] = useState(<div></div>);
-
+  const {t,i18n} = useTranslation()
   const {ProfileStore} = useStore();
   function getLabel(x:number) {
     if(x === 1) {
-      return "profile"
+      return t("profile")
     }
     if(x === 2) {
-      return "planets"
+      return t("planets")
     }
     
   }

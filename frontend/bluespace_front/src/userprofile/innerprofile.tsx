@@ -10,11 +10,16 @@ import {
 import NameModal from "./name.modal";
 import PasswordModal from "./password.modal";
 import { useNavigate } from "react-router-dom";
+import '../index.tsx';
+import {useTranslation} from 'react-i18next'
+
+
 function InnerProfile() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [nameVisible, setNameVisible] = useState(false);
   const [passwordVisible, setPasswordVisible] = useState(false);
   const {ProfileStore,loginStore} = useStore();
+  const {t,i18n} = useTranslation()
   const navigate = useNavigate();
   const handleUploadClicked = ()=> {
     console.log('hahaha')
@@ -65,11 +70,11 @@ function InnerProfile() {
         transition={{ type: "spring", stiffness: 400, damping: 20 }}
         onClick={handleUploadClicked}
       >
-        Upload
+        {t("Upload")}
       </motion.button>
     </div >
     <div className = 'InnerDiv'>
-      <span className = 'ProfileSpan'>Name &nbsp;&nbsp;</span>
+      <span className = 'ProfileSpan'>{t('Name')} &nbsp;&nbsp;</span>
       <div className = 'purple-underline'> lovekdl</div>&nbsp;&nbsp;&nbsp;&nbsp;
       <motion.button
         className="ProfileChange" 
@@ -78,17 +83,17 @@ function InnerProfile() {
         transition={{ type: "spring", stiffness: 400, damping: 20 }}
         onClick={handleModifyName}
       >
-        Modify
+        {t('Modify')}
       </motion.button>
       {/* <input type="text" readOnly placeholder="Enter your email"></input> */}
     </div>
     <div className = 'InnerDiv'>
-      <span className = 'ProfileSpan'>Email &nbsp;&nbsp;</span>
+      <span className = 'ProfileSpan'>{t('Email')} &nbsp;&nbsp;</span>
       <div className = 'purple-underline'> 2412162744@qq.com</div>&nbsp;&nbsp;&nbsp;&nbsp;
       {/* <input type="text" readOnly placeholder="Enter your email"></input> */}
     </div>
     <div className = 'InnerDiv'>
-      <span className = 'ProfileSpan'>Password &nbsp;&nbsp;</span>
+      <span className = 'ProfileSpan'>{t('Password')} &nbsp;&nbsp;</span>
       <div className = 'purple-underline'> ********</div>&nbsp;&nbsp;&nbsp;&nbsp;
       <motion.button
         className="ProfileChange" 
@@ -97,7 +102,7 @@ function InnerProfile() {
         transition={{ type: "spring", stiffness: 400, damping: 20 }}
         onClick={handleModifyPassword}
       >
-        Modify
+        {t('Modify')}
       </motion.button>
       {/* <input type="text" readOnly placeholder="Enter your email"></input> */}
     </div>
@@ -112,7 +117,7 @@ function InnerProfile() {
         transition={{ type: "spring", stiffness: 400, damping: 20 }}
         onClick={handleLogoutClicked}
       >
-        Log Out
+        {t('Log out')}
       </motion.button>
     </div>
     {/* <div className = 'InnerDiv'>

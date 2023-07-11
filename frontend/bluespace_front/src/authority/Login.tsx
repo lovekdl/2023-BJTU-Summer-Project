@@ -12,7 +12,8 @@ import wechat from '../assets/WeChat.png'
 import Stars from './stars';
 import { RegisterForm } from '.';
 import {message} from 'antd'
-
+import '../index.tsx';
+import {useTranslation} from 'react-i18next'
 
 interface InputRef {
   value: string;
@@ -20,7 +21,7 @@ interface InputRef {
 
 function LoginForm  ()  {
   const [coordinates, setCoordinates] = useState({ x: 0, y: 0 });
-
+  const {t,i18n} = useTranslation()
   const handleMouseMove = (event:any) => {
     const { clientX, clientY } = event;
     setCoordinates({ x: clientX, y: clientY });
@@ -35,14 +36,11 @@ function LoginForm  ()  {
   
 
   const handleSignUpOnClicked = () => {
-    console.log('ck')
     setCurrentPage('register')
   }
   
   async function handleLoginSubmit(event:any) {
     if(!usernameRef.current || !passwordRef.current) return;
-    console.log('Uername is:', usernameRef.current.value);
-    console.log('Password:', passwordRef.current.value);
     event.preventDefault();
 
 
@@ -51,7 +49,7 @@ function LoginForm  ()  {
         username: usernameRef.current.value,
         password: passwordRef.current.value
       })
-      message.success('登录成功')
+      message.success(t('Success'))
       navigate('/', {replace:true})
       window.location.reload()
     } catch(e:any) {
@@ -80,8 +78,8 @@ function LoginForm  ()  {
           <div className="glass">
             <div className="tips">
               <h1>BLUE SPACE</h1>
-              <span>explore the universe.</span>
-              <span>try to find your planet.</span>
+              <span>{t('explore the universe.')}</span>
+              <span>{t('try to find your planet.')}</span>
             </div>
           </div>
         </div>
@@ -89,23 +87,23 @@ function LoginForm  ()  {
           <div className="form-wrapper">
             
           
-            <h1>Log in</h1>
+            <h1>{t('Log in')}</h1>
             <form onSubmit={handleLoginSubmit}>
               <div className="input-items">
                   <span className="input-tips">
-                      Username
+                      {t('Username')}
                   </span>
-                  <input type="text"  className="inputs" placeholder="Enter your username" ref={usernameRef}  ></input>
+                  <input type="text"  className="inputs" placeholder={t("Enter")+ t('username')} ref={usernameRef}  ></input>
                   
               </div>
               <div className="input-items">
                 <span className="input-tips">
-                    Password
+                    {t('Password')}
                 </span>
                 
-                <input type="password" className="inputs" placeholder="Enter password" ref={passwordRef}/>
+                <input type="password" className="inputs" placeholder={t("Enter")+ t('password')} ref={passwordRef}/>
                 
-                <span className="forgot">Forgot Password</span>
+                <span className="forgot">{t('Forgot Password')}</span>
               </div>
               
               <motion.button
@@ -116,19 +114,19 @@ function LoginForm  ()  {
                 // onClick={handleOnClicked}
                 type = 'submit'
               >
-                Log in
+                {t('Log in')}
               </motion.button>
             </form>
             {/* <button className="btn">Log in</button> */}
             
             <div className="siginup-tips">
-              <span>Don't Have An Account?</span>
-              <span onClick={handleSignUpOnClicked}>Signup</span>
+              <span>{t("Don't Have An Account?")}</span>
+              <span onClick={handleSignUpOnClicked}>{t('Signup')}</span>
             </div>
             <div className="other-login">
               <div className="divider">
                 <span className="line"></span>
-                <span className="divider-text">About us</span>
+                <span className="divider-text">{t('About us')}</span>
                 <span className="line"></span>
               </div>
               <div className="other-login-wrapper">
