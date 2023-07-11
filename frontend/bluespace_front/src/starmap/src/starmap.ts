@@ -34,8 +34,8 @@ starmapElement!.addEventListener("mousedown", (e) => {
     if(e.which === 1) {
         if(renderMode === 0) {
             renderMode = -1
-            const cx = e.offsetX / renderer.canvasSize.width * window.devicePixelRatio
-            const cy = e.offsetY / renderer.canvasSize.height * window.devicePixelRatio
+            const cx = e.offsetX / renderer.getCanvasSize().width * window.devicePixelRatio
+            const cy = e.offsetY / renderer.getCanvasSize().height * window.devicePixelRatio
             const planetId = renderer.selectPlanet(cx, cy)
             console.log("Clicked: Planet " + planetId)
             if(planetId != -1) {

@@ -29,13 +29,13 @@ class BlueSpaceRenderer {
     // ===== ===== ===== Renderer Properties ===== ===== =====
 
     private haveSetup: boolean = false
-    public  haveRun:   boolean = false
+    private haveRun:   boolean = false
     private renderMode: number = 0 // 0 银河系视图; 1 行星视图;
     // created when initWebGPU
     private device?: GPUDevice = undefined
     private context?: GPUCanvasContext = undefined
     private format: GPUTextureFormat = "rgba8unorm"
-    public canvasSize: {width: number, height: number} = {width: 0, height: 0}
+    private canvasSize: {width: number, height: number} = {width: 0, height: 0}
 
     // created when initPipeline
     private pipeline?: GPURenderPipeline = undefined
@@ -56,6 +56,7 @@ class BlueSpaceRenderer {
     private kdBuffer             ?: GPUBuffer = undefined
     private ksBuffer             ?: GPUBuffer = undefined
     private lightPositionBuffer  ?: GPUBuffer = undefined
+    private runningTimeBuffer    ?: GPUBuffer = undefined
 
     // created when initTexture
     private depthTexture?: GPUTexture = undefined
@@ -196,6 +197,8 @@ class BlueSpaceRenderer {
         }
         const that = this
 
+        const startTime = Date.now();
+
         // ===== Animation & Rendering =====
         function frame() {
             // for(let i = 0; i < that.planets.length; i++) {
@@ -214,6 +217,9 @@ class BlueSpaceRenderer {
             // console.log(that.camera.position[0] + ", " + that.camera.position[1] + ", " + that.camera.position[2])
 
             that.draw()
+
+            that.device!.queue.writeBuffer(that.runningTimeBuffer!, 0, Float32Array.from([Date.now() - startTime]))
+            console.log("Running Time: " + (Date.now() - startTime))
 
             requestAnimationFrame(frame)
         }
@@ -332,7 +338,9 @@ class BlueSpaceRenderer {
     /**
      * 返回canvasSize
      */
-    // TODO
+    getCanvasSize(): {width:number, height:number} {
+        return this.canvasSize
+    }
 
     /**
      * 判断鼠标点击到哪个行星系
@@ -705,6 +713,13 @@ class BlueSpaceRenderer {
         })
         // no need to write buffer at this time
         // that.device!.queue.writeBuffer(that.lightPositionBuffer!, 0, Float32Array.from([0, 0, 0]))
+
+        // running time
+        this.runningTimeBuffer = that.device!.createBuffer({
+            size: 4,
+            usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
+        })
+        // write every frame since renderer runs
     }
 
     /**
@@ -843,6 +858,9 @@ class BlueSpaceRenderer {
             }, {
                 binding: 7,
                 resource: { buffer: that.lightPositionBuffer! }
+            }, {
+                binding: 8,
+                resource: { buffer: that.runningTimeBuffer! }
             }],
         })
     }

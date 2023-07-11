@@ -12,6 +12,7 @@
 @group(1) @binding(5) var<uniform> kd:               vec3<f32>; // Diffuse Coefficient
 @group(1) @binding(6) var<uniform> ks:               vec3<f32>; // Specular Coefficient
 @group(1) @binding(7) var<uniform> lightPosition:    vec3<f32>; // Light Position
+@group(1) @binding(8) var<uniform> runningTime:      f32;       // Running Time
 
 
 struct VertexOutput {
@@ -81,7 +82,13 @@ fn fragment_main(
     } else {
         color = STAR_M();
     }
-    return vec4(color, 1.0);
+    var startingBlack: f32;
+    if(runningTime >= 4000) {
+        startingBlack = 1.0;
+    } else {
+        startingBlack = (runningTime - 500) / 3500;
+    }
+    return vec4(color, 1.0) * startingBlack;
     // return vec4(1.0);
 }
 
