@@ -17,6 +17,7 @@ import {
 } from "@ant-design/icons";
 import {quat2} from "gl-matrix";
 import Statistics from './statistics';
+import InnerPrediction from './innerprediction';
 
 
 
@@ -68,7 +69,7 @@ function Prediction() {
     if(nowKey == 3) {//Prediction
       setContent(
       <div>
-        
+        <InnerPrediction></InnerPrediction>
       </div>
       )
     } 
