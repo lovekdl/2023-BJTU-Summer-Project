@@ -23,7 +23,7 @@ function StarMap() {
   useEffect(() => {
     const script = document.createElement("script")
 
-    script.src = "/src/starmap/renderer.ts"
+    script.src = "/src/starmap/src/starmap.ts"
     script.async = true
     script.type = "module"
 

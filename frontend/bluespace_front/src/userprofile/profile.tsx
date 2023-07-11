@@ -28,11 +28,9 @@ function Profile() {
       return "profile"
     }
     if(x === 2) {
-      return "friends"
-    }
-    if(x === 3) {
       return "planets"
     }
+    
   }
   useEffect(()=>{
     if(nowKey == 1) {
@@ -75,7 +73,7 @@ function Profile() {
           mode="inline"
           defaultSelectedKeys={['1']}
           className='SliderMenu'
-          items={[UserOutlined, VideoCameraOutlined, UploadOutlined].map(
+          items={[UserOutlined, UploadOutlined].map(
             (icon, index) => ({
               key: String(index + 1),
               icon: React.createElement(icon),

@@ -9,6 +9,7 @@ import { MainComponent } from "./main/index";
 import "./App.css"
 import {Prediction} from "./forecast/index";
 import { Profile } from "./userprofile/index";
+import { AuthComponent } from "./route_auth/AuthComponent";
 
 
 
@@ -28,10 +29,12 @@ export default function App() {
           </div>} 
         />
         <Route path="/prediction" element={
-          <div>
-          <ButtonAppBar></ButtonAppBar>
-          <Prediction></Prediction>
-          </div>
+          <AuthComponent>
+            <div>
+            <ButtonAppBar></ButtonAppBar>
+            <Prediction></Prediction>
+            </div>
+          </AuthComponent>
         }></Route>
         <Route path = "/login" element={<LoginForm />} />
         <Route path = "/profile" element={<div>

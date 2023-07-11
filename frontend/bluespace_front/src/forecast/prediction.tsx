@@ -16,7 +16,8 @@ import {
   UserOutlined
 } from "@ant-design/icons";
 import {quat2} from "gl-matrix";
-import translate = module
+import Statistics from './statistics';
+import InnerPrediction from './innerprediction';
 
 
 
@@ -42,9 +43,7 @@ function Prediction() {
   useEffect(()=>{
     if(nowKey == 1) {//Statistics
       setContent(
-      <div className='ContentLayout'>
-        {/* <DataTable></DataTable> */}
-      </div>
+        <Statistics/>
       )
     } 
     if(nowKey == 2) {//Analysis
@@ -70,7 +69,7 @@ function Prediction() {
     if(nowKey == 3) {//Prediction
       setContent(
       <div>
-        
+        <InnerPrediction></InnerPrediction>
       </div>
       )
     } 
@@ -130,10 +129,8 @@ function Prediction() {
 
       
         <Layout style={{ padding: "0 24px 0px" }}>
-          <Content >
-
+          <Content className='ProfileContent' >
             {content}
-
           </Content>
         </Layout>
       </Layout>
