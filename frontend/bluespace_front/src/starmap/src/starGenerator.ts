@@ -72,8 +72,9 @@ class StarGenerator {
             {x:0, y:0, z:0},
             Planet.STAR_SHADER_TYPE_BLACKHOLE,
             Planet.PLANET_TEXTURE_MARS,
-            loaderIdx++,
+            loaderIdx,
         )
+        loaderIdx = (loaderIdx + 1) % PlanetsDataLoader.getInstance().length()
         idx++
 
         planets[idx] = Planet.createPlanet(
@@ -124,8 +125,9 @@ class StarGenerator {
                     (type <= 0.242) ? (Planet.STAR_SHADER_TYPE_K) :
                     (Planet.STAR_SHADER_TYPE_M),
                     Math.floor(Math.random() * (Planet.PLANET_TEXTURE_MAX + 1)),
-                    loaderIdx++,
+                    loaderIdx,
                 )
+                loaderIdx = (loaderIdx + 1) % PlanetsDataLoader.getInstance().length()
             }
         }
 

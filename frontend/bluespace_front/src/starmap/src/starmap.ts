@@ -37,13 +37,17 @@ starmapElement!.addEventListener("mousedown", (e) => {
             renderMode = -1
             const cx = e.offsetX / renderer.getCanvasSize().width * window.devicePixelRatio
             const cy = e.offsetY / renderer.getCanvasSize().height * window.devicePixelRatio
-            const planetId = renderer.selectPlanet(cx, cy)
+            const {planetId, dataId} = renderer.selectPlanet(cx, cy)
             console.log("Clicked: Planet " + planetId)
             if(planetId != -1) {
                 renderer.switchMode(1, planetId).then(() => {
                     renderMode = 1
                 })
-                console.log(PlanetsDataLoader.getInstance().query(planetId))
+                console.log(dataId)
+                console.log(PlanetsDataLoader.getInstance().query(dataId))
+                rootStore.StarMapStore.setHeader("Header")
+                rootStore.StarMapStore.setMessage("Content1\nContent2")
+                rootStore.StarMapStore.setShow(true)
             }
         } else if(renderMode === 1) {
             renderMode = -1

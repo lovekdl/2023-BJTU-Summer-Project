@@ -18,7 +18,6 @@ import { StarGenerator } from "./starGenerator"
 
 // planet texture file
 import { planetTextureFileArray  } from './planetTexture'
-import { render } from 'react-dom'
 
 /**
  * 蓝色空间渲染器
@@ -359,7 +358,9 @@ class BlueSpaceRenderer {
      * 鼠标相对位置 (tx, ty), tx ty in [-0.5, 0.5]
      */
     private readonly SELECT_PLANET_HIT_COEFFICIENT = 20
-    selectPlanet(cx: number, cy: number): number {
+    selectPlanet(cx: number, cy: number): {planetId: number, dataId: number} {
+        const that = this
+
         let tx = cx - 0.5
         let ty = -(cy - 0.5)
 
@@ -407,7 +408,7 @@ class BlueSpaceRenderer {
 
         // console.log(mnId + ": " + mnD + ", " + mnDis)
 
-        return mnId
+        return {planetId: mnId, dataId: that.planets![mnId].id}
     }
 
 
