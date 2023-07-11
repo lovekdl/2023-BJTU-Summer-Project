@@ -79,6 +79,8 @@ class Planet {
         public starShaderType: number,
         // 行星的shader与model类型
         public planetTextureType: number,
+        // 行星的数据ID
+        public id: number,
     ) {
 
     }
@@ -126,6 +128,7 @@ class Planet {
         rotationSpeed: {x: number, y: number, z: number},
         starShaderType: number,
         planetTextureType: number,
+        id: number,
     ): Planet {
         const t = starShaderType
         return new Planet(
@@ -136,6 +139,7 @@ class Planet {
             this.STAR_SCALE[t],
             Math.max(this.STAR_SHADER_TYPE_MIN, Math.min(this.STAR_SHADER_TYPE_MAX, t)),
             planetTextureType,
+            id,
         )
     }
 }

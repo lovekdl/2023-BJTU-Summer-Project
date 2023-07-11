@@ -1,4 +1,5 @@
 import { Planet } from "./planet";
+import { PlanetsDataLoader } from "./planetsDataLoader";
 
 class StarGenerator {
 
@@ -51,21 +52,27 @@ class StarGenerator {
      * 
      * public方法
      */
-    static randomGalaxyStar(num: number): Array<Planet> {
+    static async randomGalaxyStar(num: number): Promise<Array<Planet>> {
         const L = StarGenerator.SPIRAL_L
         const R = StarGenerator.SPIRAL_R
         const deltaSpiral = Math.floor(num / 4)
         const deltaStar = (R - L) / deltaSpiral
 
+        await PlanetsDataLoader.getInstance().setup()
+        console.log(PlanetsDataLoader.getInstance().length())
+        console.log(PlanetsDataLoader.getInstance().query(1))
+        
         let planets = new Array(num)
         let idx = 0;
-        
+        let loaderIdx = 0;
+
         planets[idx] = Planet.createPlanet(
             {x:0, y:0, z:0},
             {x:0, y:0, z:0},
             {x:0, y:0, z:0},
             Planet.STAR_SHADER_TYPE_BLACKHOLE,
             Planet.PLANET_TEXTURE_MARS,
+            loaderIdx++,
         )
         idx++
 
@@ -75,6 +82,7 @@ class StarGenerator {
             {x:0, y:0, z:0},
             Planet.STAR_SHADER_TYPE_PLANET,
             Planet.PLANET_TEXTURE_EARTH,
+            -1,
         )
         idx++
 
@@ -115,7 +123,8 @@ class StarGenerator {
                     (type <= 0.143) ? (Planet.STAR_SHADER_TYPE_G) :
                     (type <= 0.242) ? (Planet.STAR_SHADER_TYPE_K) :
                     (Planet.STAR_SHADER_TYPE_M),
-                    Math.floor(Math.random() * (Planet.PLANET_TEXTURE_MAX + 1))
+                    Math.floor(Math.random() * (Planet.PLANET_TEXTURE_MAX + 1)),
+                    loaderIdx++,
                 )
             }
         }

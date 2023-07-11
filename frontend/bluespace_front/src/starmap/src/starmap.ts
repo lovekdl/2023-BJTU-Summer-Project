@@ -1,5 +1,6 @@
 import { BlueSpaceRenderer } from "./renderer"
-import {rootStore} from '../../store/index' // add by lovekdl
+import { rootStore } from '../../store/index' // add by lovekdl
+import { PlanetsDataLoader  } from "./planetsDataLoader";
 
 // ===== Start Renderer =====
 
@@ -42,6 +43,7 @@ starmapElement!.addEventListener("mousedown", (e) => {
                 renderer.switchMode(1, planetId).then(() => {
                     renderMode = 1
                 })
+                console.log(PlanetsDataLoader.getInstance().query(planetId))
             }
         } else if(renderMode === 1) {
             renderMode = -1

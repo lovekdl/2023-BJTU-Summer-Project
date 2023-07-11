@@ -22,7 +22,7 @@
 
     /* WebGPU */
     "types": ["vite/client", "@webgpu/types", "@types/dom-webcodecs", "node"],
-    "allowSyntheticDefaultImports": true
+    "allowSyntheticDefaultImports": true,
   },
   "include": ["src"],
   "references": [{ "path": "./tsconfig.node.json" }]
