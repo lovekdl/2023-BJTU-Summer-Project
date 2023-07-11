@@ -4,8 +4,8 @@ import axios from 'axios'
 import { getTokenFromLocalStorage } from './token'
 
 const http = axios.create({
-    baseURL : 'http://62.234.54.216:8000',
-    //baseURL : 'http://120.53.94.209:8000',
+    //baseURL : 'http://62.234.54.216:8000',
+    baseURL : 'http://120.53.94.209:8000',
     timeout : 50000
 })
 //请求拦截
