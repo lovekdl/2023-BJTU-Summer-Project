@@ -33,21 +33,20 @@ def sign(request, auto_create_account: bool):
         return Tools.toErrorResponse('Password is none.')
     password = data['password']
 
-    users = Player.objects.filter(username=username)
+    users = User.objects.filter(username=username)
 
     if users.count() == 0:
         if auto_create_account == False:
             return Tools.toErrorResponse('Username doesn\'t exist.')
-        user = Player(username=username, password=password)
+        user = User(username=username, password=password)
         user.save()
     else:
         if auto_create_account == True:
             return Tools.toErrorResponse('Username exists.')
         user = users.first()
 
-    with user.lock:
-        if user.password != password:
-            return Tools.toErrorResponse('Password is incorrect.')
+    if user.password != password:
+        return Tools.toErrorResponse('Password is incorrect.')
 
     result['state'] = 'success'
     result['token'] = Tools.encode(username, password)
