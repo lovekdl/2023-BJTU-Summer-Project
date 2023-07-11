@@ -26,11 +26,11 @@
 2. 使用`LabelEncoder` 将类别型数据转换为数值标签，以便后续在机器学习模型中使用
 3. 相关性分析和绘制相关性热力图，热力图可以帮助我们快速了解变量之间的相关性程度，从而在特征选择或数据探索中提供有用的信息。
 
-![](D:\LiqisPode\school\BlueSpace\2023-BJTU-Summer-Project\model\model-junior\IMAGE\heatmap.png)
+![](.\IMAGE\heatmap.png)
 
 4. 在给定的数据集中绘制所选特征列之间的散点图。散点图矩阵可用于可视化多个特征之间的关系，以便观察它们之间的相关性、分布情况和可能的趋势。
 
-![](D:\LiqisPode\school\BlueSpace\2023-BJTU-Summer-Project\model\model-junior\IMAGE\ScatterPlots.png)
+![](.\IMAGE\ScatterPlots.png)
 
 5. 分析并出去相关度不高的列，最终剩余7列所需数据
 
@@ -52,19 +52,19 @@
 
 逻辑回归基于对数几率函数（logit function），将线性回归的预测结果通过sigmoid函数映射到[0,1]之间，可以理解为预测结果属于某个类别的概率。然后通过设定阈值，将概率转化为具体的类别预测。
 
-![](D:\LiqisPode\school\BlueSpace\2023-BJTU-Summer-Project\model\model-junior\IMAGE\逻辑回归结果.png)
+![](.\IMAGE\逻辑回归结果.png)
 
 ### 3.2 SVM模型
 
 SVC (Support Vector Classifier) 是一种基于支持向量机（Support Vector Machine, SVM）的分类模型。SVM 是一种二元线性分类模型，其基本思想是寻找一个最优超平面，使得这个超平面能够最大化正负样本间的间隔。SVC 则是基于 SVM，通过引入核函数（Kernel Function）使得 SVM 能够解决非线性分类问题。
 
-![](D:\LiqisPode\school\BlueSpace\2023-BJTU-Summer-Project\model\model-junior\IMAGE\SVM结果.png)
+![](.\IMAGE\SVM结果.png)
 
 ### 3.3 随机森林模型
 
 RandomForestClassifier 是一个基于随机森林的分类模型。随机森林是一个包含多个决策树的分类器，而且其输出的类别由个别树输出的类别的众数来决定。
 
-![](D:\LiqisPode\school\BlueSpace\2023-BJTU-Summer-Project\model\model-junior\IMAGE\随机森林模型.png)
+![](.\IMAGE\随机森林模型.png)
 
 ### 3.4 朴素贝叶斯
 
@@ -74,7 +74,7 @@ GaussianNB 是一个朴素贝叶斯分类器，它假设每个特征在每个类
 
 朴素贝叶斯分类器是一种简单但很强大的算法，尤其适用于文本分类等场景。然而，朴素贝叶斯的“朴素”假设（即特征之间相互独立）在某些情况下可能会导致其性能不如其他更复杂的模型。
 
-![](D:\LiqisPode\school\BlueSpace\2023-BJTU-Summer-Project\model\model-junior\IMAGE\朴素贝叶斯结果.png)
+![](.\IMAGE\朴素贝叶斯结果.png)
 
 ## 4. 如何使用
 

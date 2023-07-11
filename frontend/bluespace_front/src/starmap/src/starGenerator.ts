@@ -65,6 +65,7 @@ class StarGenerator {
             {x:0, y:0, z:0},
             {x:0, y:0, z:0},
             Planet.STAR_SHADER_TYPE_BLACKHOLE,
+            Planet.PLANET_TEXTURE_MARS,
         )
         idx++
 
@@ -73,6 +74,7 @@ class StarGenerator {
             {x:0, y:0, z:0},
             {x:0, y:0, z:0},
             Planet.STAR_SHADER_TYPE_PLANET,
+            Planet.PLANET_TEXTURE_EARTH,
         )
         idx++
 
@@ -112,10 +114,9 @@ class StarGenerator {
                     (type <= 0.060) ? (Planet.STAR_SHADER_TYPE_F) :
                     (type <= 0.143) ? (Planet.STAR_SHADER_TYPE_G) :
                     (type <= 0.242) ? (Planet.STAR_SHADER_TYPE_K) :
-                    (Planet.STAR_SHADER_TYPE_M)
+                    (Planet.STAR_SHADER_TYPE_M),
+                    Math.floor(Math.random() * (Planet.PLANET_TEXTURE_MAX + 1))
                 )
-                
-
             }
         }
 

@@ -11,6 +11,8 @@
 @group(1) @binding(4) var<uniform> ka:               vec3<f32>; // Ambient Coefficient
 @group(1) @binding(5) var<uniform> kd:               vec3<f32>; // Diffuse Coefficient
 @group(1) @binding(6) var<uniform> ks:               vec3<f32>; // Specular Coefficient
+@group(1) @binding(7) var<uniform> lightPosition:    vec3<f32>; // Light Position
+@group(1) @binding(8) var<uniform> runningTime:      f32;       // Running Time
 
 
 struct VertexOutput {
@@ -55,6 +57,7 @@ fn fragment_main(
     var Ka = ka;
     var Kd = kd;
     var Ks = ks;
+    var LightPosition = lightPosition;
     var tmp = environmentArray[0];
     var texColor: vec3<f32> = textureSample(myTexture, mySampler, uv).rgb;
     var color: vec3<f32>;
@@ -79,7 +82,13 @@ fn fragment_main(
     } else {
         color = STAR_M();
     }
-    return vec4(color, 1.0);
+    var startingBlack: f32;
+    if(runningTime >= 4000) {
+        startingBlack = 1.0;
+    } else {
+        startingBlack = (runningTime - 500) / 3500;
+    }
+    return vec4(color, 1.0) * startingBlack;
     // return vec4(1.0);
 }
 
@@ -87,7 +96,24 @@ fn fragment_main(
 
 // ===== Planet =====
 fn planet(position: vec3<f32>, normal: vec3<f32>, texColor: vec3<f32>) -> vec3<f32> {
-    return vec3(texColor) * 0.2;
+
+    // ambient
+    var ambient = vec3(texColor) * ka; // modified
+
+    // diffuse
+    var lightDir = normalize(lightPosition - position);
+    var diffuse = vec3(texColor) * max(dot(normal, lightDir) + 0.2, 0.0) * kd;
+
+    // specular (have no test/debug)
+    var viewDir = normalize(cameraPosition - position);
+    // - phong
+    // var reflectDir = reflect(-lightDir, normal);
+    // var specular = pow(max(dot(viewDir, reflectDir), 0.0), 32) * ks;
+    // - blinnphong
+    var halfwayDir = normalize(lightDir + viewDir);
+    var specular = pow(max(dot(normal, halfwayDir), 0), 3) * ks; // There should be a bug here, because the exponent is too small.
+    
+    return ambient + diffuse + specular;
 }
 
 
@@ -105,7 +131,7 @@ fn STAR_O(position: vec3<f32>, normal: vec3<f32>) -> vec3<f32> {
     return vec3(0.3, 0.9, 1.0) * CENTER_BLACK(position, normal, 0.8);
 }
 fn STAR_B(position: vec3<f32>, normal: vec3<f32>) -> vec3<f32> {
-    return vec3(1.0, 0.0, 0.0) * CENTER_BLACK(position, normal, 0.8);
+    return vec3(0.6, 0.15, 0.05) * CENTER_BLACK(position, normal, 0.8);
 }
 fn STAR_A() -> vec3<f32> {
     return vec3(1.0, 1.0, 1.0);
