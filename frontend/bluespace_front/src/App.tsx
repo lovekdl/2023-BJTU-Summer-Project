@@ -10,7 +10,7 @@ import "./App.css"
 import {Prediction} from "./forecast/index";
 import { Profile } from "./userprofile/index";
 import { AuthComponent } from "./route_auth/AuthComponent";
-
+import InnerPrediction from "./forecast/innerprediction";
 
 
 
@@ -41,6 +41,8 @@ export default function App() {
           <ButtonAppBar></ButtonAppBar>
           <Profile></Profile>
         </div>} />
+
+        <Route path = "/test" element = {<InnerPrediction></InnerPrediction>}></Route>
       </Routes>
 
       

@@ -34,8 +34,8 @@ function InnerProfile() {
     reader.onload=function(){
       var fileurl = reader.result
       ProfileStore.setAvatar(fileurl)
-      console.log('fileurl is ' + fileurl);
-      console.log('type is '+typeof fileurl)
+      console.log('fileurl is ' + fileurl); 
+      console.log('type is '+typeof fileurl) // string
     }
     reader.readAsDataURL(imgfile)
 
