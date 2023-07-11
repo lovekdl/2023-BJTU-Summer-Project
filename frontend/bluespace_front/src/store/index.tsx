@@ -5,15 +5,18 @@
 import LoginStore from "./login.store"
 import ProfileStore from "./profile.store"
 import LoadingStore from "./loading.store"
+import PredictionStore from "./prediction.store"
 import React from "react"
 class RootStore {
   loginStore: LoginStore 
 	ProfileStore: ProfileStore
 	LoadingStore : LoadingStore
+	PredictionStore : PredictionStore
 	constructor() {
 		this.loginStore = new LoginStore()
 		this.ProfileStore = new ProfileStore()
 		this.LoadingStore = new LoadingStore()
+		this.PredictionStore = new PredictionStore()
 	}
 }
 
