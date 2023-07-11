@@ -18,6 +18,7 @@ import { StarGenerator } from "./starGenerator"
 
 // planet texture file
 import { planetTextureFileArray  } from './planetTexture'
+import { render } from 'react-dom'
 
 /**
  * 蓝色空间渲染器
@@ -336,10 +337,17 @@ class BlueSpaceRenderer {
     }
 
     /**
-     * 返回canvasSize
+     * 获取canvasSize
      */
     getCanvasSize(): {width:number, height:number} {
         return this.canvasSize
+    }
+
+    /**
+     * 获取renderMode
+     */
+    getRenderMode(): number {
+        return this.renderMode
     }
 
     /**
