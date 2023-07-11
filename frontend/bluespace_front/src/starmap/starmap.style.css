@@ -1,10 +1,28 @@
 .StarMap{
   width: 100vw;
   height: 100vh;
+  display: flex;
+  align-items: right;
+  text-align: left;
+  justify-content: left;
 }
 .StarMapLoading {
   margin-left: 40vw;
   margin-top: 30vh;
   width:20vw;
   color: aliceblue;
+}
+
+.StarMapMessage {
+  position:absolute;
+  margin-top: 20vh;
+  margin-left: 85vw;
+  width: 15vw;
+  height: 30vw;
+  color: white;
+  background-color: rgba(186, 175, 221,0.5);
+  pointer-events: none;
+}
+.SolidOpacity{
+  opacity:1.0;
 }
