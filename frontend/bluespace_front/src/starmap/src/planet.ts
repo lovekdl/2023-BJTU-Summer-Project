@@ -85,6 +85,13 @@ class Planet {
         this.updateModelMatrix()
     }
 
+    // reset planet scale
+    resetScale() {
+        const t = this.starShaderType
+        this.scale = {x: Planet.STAR_SCALE[t], y: Planet.STAR_SCALE[t], z: Planet.STAR_SCALE[t]}
+        this.updateModelMatrix()
+    }
+
     // update model matrix
     updateModelMatrix() {
         this.internalModelMatrix = mat4.create()

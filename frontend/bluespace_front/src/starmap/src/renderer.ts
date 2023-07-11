@@ -223,9 +223,9 @@ class BlueSpaceRenderer {
         if(this.renderMode === targetMode) {
             console.log("TargetMode and CurrentMode are the same.")
         }
+        const that = this
 
         if(this.renderMode === 0 && targetMode === 1 && targetPlanet != undefined && targetPlanet >= 0) {
-            const that = this
             // 1. Stars (Scale)
             const scalueDownCoefficient = 0.3;
             function scaleDown(i: number, k: number) {
@@ -269,11 +269,26 @@ class BlueSpaceRenderer {
             // 4. End
             this.device!.queue.writeBuffer(this.modelMatrixBuffer!, 0, this.modelMatrixArray)
             this.renderMode = 1
-            console.log("Scale down.")
+            console.log("Switched to Planet View.")
         } else if(this.renderMode === 1 && targetMode === 0) {
-
+            // 1. Stars (Scale)
+            for(let i = 0; i < this.numOfPlanets; i++) {
+                this.planets[i].resetScale()
+                that.modelMatrixArray.set((that.planets[i].modelMatrix as Float32Array), 4 * 4 * i)
+            }
+            // 2. Target Planet (ModelMatrix(update per frame), Texture)
+            // nothing
+            // 3. Camera
+            this.camera.target = vec3.fromValues(0, 0, 0)
+            this.camera.theta = this.CAMERA_THETA
+            // this.camera.phi = this.CAMERA_PHI
+            this.camera.radius = this.CAMERA_RADIUS
+            // 4. End
+            this.device!.queue.writeBuffer(this.modelMatrixBuffer!, 0, this.modelMatrixArray)
+            this.renderMode = 0
+            console.log("Switched to Galaxy View.")
         } else {
-            throw new Error("TargetMode is unknown.")
+            throw new Error("SwitchMode error.")
         }
     }
 

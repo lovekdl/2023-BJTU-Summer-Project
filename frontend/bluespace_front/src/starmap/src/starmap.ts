@@ -42,7 +42,8 @@ starmapElement!.addEventListener("mousedown", (e) => {
                 renderMode = 1
             }
         } else if(renderMode === 1) {
-            // TODO
+            renderer.switchMode(0)
+            renderMode = 0
         }
     } else if(e.which === 2) {
         isMouseMiddleDown = true
