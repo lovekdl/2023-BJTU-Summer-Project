@@ -224,7 +224,7 @@ class BlueSpaceRenderer {
             console.log("TargetMode and CurrentMode are the same.")
         }
         const that = this
-
+        
         if(this.renderMode === 0 && targetMode === 1 && targetPlanet != undefined && targetPlanet >= 0) {
             // 1. Stars (Scale)
             const scalueDownCoefficient = 0.3;
@@ -255,7 +255,11 @@ class BlueSpaceRenderer {
                 }
             }
             // 2. Target Planet (ModelMatrix(update per frame), Texture)
-            this.planets[1].position = this.planets[targetPlanet].position
+            this.planets[1].position = {
+                x: this.planets[targetPlanet].position.x,
+                y: this.planets[targetPlanet].position.y,
+                z: this.planets[targetPlanet].position.z,
+            }
             const posDelta = Math.max(10, this.planets[targetPlanet].starRadius)
             this.planets[1].position.x += posDelta
             this.planets[1].position.z += posDelta
