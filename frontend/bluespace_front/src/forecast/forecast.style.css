@@ -1,7 +1,8 @@
 .SliderMenu{
   margin-top: 5vh;
-  height:95vh;
-  padding:5px;
+  height:100%;
+  width: 11vw;
+  padding:7px;
   font-size: 20px;
 }
 
@@ -22,7 +23,7 @@
 .ReorderContent {
   display: flex;
   min-width: 100vw;
-  min-height: 100vh;
+  height: 100vh;
   margin-left: 18vw;
   margin-top: 5vh;
   flex:1;

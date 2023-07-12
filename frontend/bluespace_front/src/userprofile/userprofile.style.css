@@ -1,8 +1,8 @@
 .ProfileContent {
   margin-top : 7vh;
   margin-left: 3vw;
-  display: flex;
   white-space: nowrap;
+  height: 100vh;
 }
 .ProfileBox {
   width: 128px;
@@ -43,7 +43,7 @@
 }
 
 .LogoutButton {
-  width: 16vw;
+  
   height: 40px;
   
   background-color: rgb(128, 106, 196);
@@ -59,6 +59,7 @@
   text-align: center;
   user-select: none;
   margin-bottom: 7px;
+  min-width: 13vw;
 }
 
 .TableDiv {
@@ -81,7 +82,7 @@
 }
 
 .hahaplace {
-  min-width: 12vw;
+  min-width: 13vw;
 }
 .InnerDiv{
   display: flex;

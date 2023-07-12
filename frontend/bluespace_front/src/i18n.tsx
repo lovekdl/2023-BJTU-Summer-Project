@@ -64,6 +64,7 @@ i18n
           'Modify your name' : 'Modify your name',
           'Confirm' : 'Confirm',
           'inputs can not be empty':'input can not be empty',
+          'uploaded' : 'uploaded',
         }
       },
       zh: {
@@ -123,6 +124,7 @@ i18n
           'Modify your name' : '修改用户名',
           'Confirm' : '确认',
           'inputs can not be empty':'输入不能为空',
+          'uploaded' : '上传成功',
         }
       },
       jp: {
@@ -182,6 +184,7 @@ i18n
           'Modify your name' : 'ユーザー名を変更します',
           'Confirm' : '確認します',
           'inputs can not be empty':'入力を空にすることはできません',
+          'uploaded' : 'アップロード成功です',
         }
       }
     },

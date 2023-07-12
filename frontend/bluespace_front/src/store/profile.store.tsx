@@ -100,6 +100,7 @@ class ProfileStore {
 	constructor() {
 		//mobx 设置响应式
 		makeAutoObservable(this)
+		this.getAvatar();
 	}
 	
 	setAvatar = (avatar: any) => {
@@ -109,6 +110,13 @@ class ProfileStore {
 	setToken = (token:string)=> {
 		this.token = token
 		setTokenFromLocalStorage(this.token)
+	}
+
+	getAvatar = async() => {
+		const ret = await http.post('/api/getAvatar', {
+			
+		})
+		this.setAvatar(ret.data.avatar)
 	}
 }
 

@@ -1,6 +1,6 @@
 /*
 	存储模块
-	用于数据管理和响应式更新
+	用于状态管理和响应式更新
 */
 import LoginStore from "./login.store"
 import ProfileStore from "./profile.store"

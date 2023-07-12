@@ -4,6 +4,7 @@ import {motion} from "framer-motion";
 import {Avatar} from 'antd'
 import { UploadOutlined, VideoCameraOutlined } from '@ant-design/icons';
 import { useStore } from '../store';
+import {message} from 'antd'
 import {
   UserOutlined
 } from "@ant-design/icons";
@@ -12,7 +13,7 @@ import PasswordModal from "./password.modal";
 import { useNavigate } from "react-router-dom";
 import '../index.tsx';
 import {useTranslation} from 'react-i18next'
-
+import {getTokenFromLocalStorage, http} from '../utils'
 
 function InnerProfile() {
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -38,9 +39,28 @@ function InnerProfile() {
     var reader = new FileReader();
     reader.onload=function(){
       var fileurl = reader.result
-      ProfileStore.setAvatar(fileurl)
-      console.log('fileurl is ' + fileurl); 
-      console.log('type is '+typeof fileurl) // string
+      // ProfileStore.setAvatar(fileurl)
+      // console.log('fileurl is ' + fileurl); 
+      // console.log('type is '+typeof fileurl)
+      async function SaveAvatar() {
+        try {
+          const ret = await http.post('api/avatar',{
+            avatar : fileurl
+          })
+          if(ret.data.state == 'success') {
+            message.success(t('uploaded'))
+            loginStore.resetWaiting();
+            ProfileStore.getAvatar();
+          }
+          else message.error(ret.data.error_message)
+        }
+        catch(e:any) {
+          console.log('catch : ',e)
+          if(e.response) message.error(e.response.data.error_message)
+          else message.error(e.message)
+        }
+      }
+      SaveAvatar()
     }
     reader.readAsDataURL(imgfile)
 

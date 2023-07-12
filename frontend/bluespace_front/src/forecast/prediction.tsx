@@ -43,6 +43,19 @@ function Prediction() {
       return t("Prediction")
     }
   }
+  // useEffect(() => {
+  //   const handleWheel = (e:any) => {
+  //     e.preventDefault();
+  //   };
+
+  //   // 在组件挂载时添加滚轮事件监听器
+  //   window.addEventListener('wheel', handleWheel, { passive: false });
+
+  //   // 在组件卸载时移除滚轮事件监听器
+  //   return () => {
+  //     window.removeEventListener('wheel', handleWheel);
+  //   };
+  // }, []);
   useEffect(()=>{
     if(nowKey == 1) {//Statistics
       setContent(
