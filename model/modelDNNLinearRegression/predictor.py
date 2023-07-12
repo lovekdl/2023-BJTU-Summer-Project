@@ -1,4 +1,5 @@
 # ----- Import Packages -----
+import os
 # Numerical Operations
 import numpy as np
 
@@ -17,7 +18,8 @@ config = {
     'batch_size': 256, 
     'learning_rate': 1e-5,              
     'early_stop': 400,    # If model has not improved for this many consecutive epochs, stop training.     
-    'save_path': './models/model.ckpt'  # Your model will be saved here.
+    # 'save_path': os.getcwd() + '\\models\\model.ckpt'  # Your model will be saved here.
+    'save_path': os.path.join(os.getcwd(), 'models\\model.ckpt')  # Your model will be saved here.
 }
 
 # ----- Some Utility Functions -----
@@ -83,7 +85,7 @@ class My_Model(nn.Module):
         return x
 
 # ----- API -----
-def Predict8(input):
+def Predict8(input, model_path = config['save_path']):
 
     # Set seed for reproducibility
     same_seed(config['seed'])
@@ -99,7 +101,7 @@ def Predict8(input):
     test_loader = DataLoader(test_dataset, batch_size=1, shuffle=False, pin_memory=True)
 
     model = My_Model(input_dim=x_test.shape[1]).to(device)
-    model.load_state_dict(torch.load(config['save_path']))
+    model.load_state_dict(torch.load(model_path))
     preds = predict(test_loader, model, device) 
 
     for i, p in enumerate(preds):
@@ -107,6 +109,10 @@ def Predict8(input):
 
     return ans
 
-# input = [247.35373, 0.677, 2.19, 5.43, 0.62, 0.6, -0.57, 0.5923999]
-input = [365, 1, 1, 100, 1, 1, 0, 1.0]
-print(Predict8(input))
+def main():
+    # input = [247.35373, 0.677, 2.19, 5.43, 0.62, 0.6, -0.57, 0.5923999]
+    input = [59.87756, 0.24861, 5.27, 2.15, -0.923, 0.64, 0.62, 0.8]
+    print(Predict8(input))
+    
+if __name__ == "__main__":
+    main()

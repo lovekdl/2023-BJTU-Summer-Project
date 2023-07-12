@@ -6,5 +6,6 @@ urlpatterns = [
     path('login', views.login),
     path('junior_predict', views.junior_predict),
     path('senior_predict', views.senior_predict),
+    path('DNN_predict', views.DNN_predict),
     path('send', views.sendVerifyCode),
 ]
