@@ -18,7 +18,9 @@
   display: flex;
   white-space: nowrap;
 }
-
+.buttons{
+  display: flex;
+}
 .ReorderContent {
   display: flex;
   min-width: 100vw;

@@ -14,7 +14,7 @@ import { RegisterForm } from '.';
 import {message} from 'antd'
 import '../index.tsx';
 import {useTranslation} from 'react-i18next'
-
+import MD5 from 'crypto-js/md5'
 interface InputRef {
   value: string;
 }
@@ -45,7 +45,8 @@ function LoginForm  ()  {
       message.error('inputs can not be empty')
       return;
     }
-    
+    console.log(MD5(passwordRef.current.value))
+    console.log(typeof MD5(passwordRef.current.value))
 
 
     try {

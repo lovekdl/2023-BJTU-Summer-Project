@@ -6,7 +6,8 @@ import { motion } from "framer-motion";
 import '../index.tsx';
 import {useTranslation} from 'react-i18next'
 import { http } from "../utils/http.tsx";
-import {message} from 'antd'
+import {message, Popover} from 'antd'
+
 interface Props {
   item: any;
 }
@@ -47,20 +48,45 @@ export const Item = ({ item }: Props) => {
     Save()
 
   }
+
+  const getContent = (item:any) => {
+    return (
+      <div>
+        {t('Habitability')}:{item.habitable}
+        <br></br>
+        {t('ESI')}:{item.esi}
+        <br></br>
+
+      </div>
+    )
+  }
   return (
     <div className = 'ReorderItem'>
       <Reorder.Item value={item} id={item.name} style={{ boxShadow, y }} >
-        <div>{item.name}| ESI:{item.esi} | {item.habitable===true?"Habitable":"NOT Habitable"}</div>
-        <motion.button
-          className="box3" 
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          transition={{ type: "spring", stiffness: 400, damping: 20 }}
-          
-          onClick={handleSaveClicked}
-        >
-          {t("Save")}
-        </motion.button>
+        <Popover content={getContent(item)}>
+        <div>{item.name}</div>
+        </Popover>
+        <div className="buttons">
+          <motion.button
+            className="box3" 
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            transition={{ type: "spring", stiffness: 400, damping: 20 }}
+            onClick={handleSaveClicked}
+          >
+            {t("See in starmap")}
+          </motion.button>
+          <motion.button
+            className="box3" 
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            transition={{ type: "spring", stiffness: 400, damping: 20 }}
+            
+            onClick={handleSaveClicked}
+          >
+            {t("Save in my planets")}
+          </motion.button>
+        </div>
       </Reorder.Item>
       
     </div>

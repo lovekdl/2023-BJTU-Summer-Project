@@ -20,7 +20,7 @@ import Statistics from './statistics';
 import InnerPrediction from './innerprediction';
 import '../index.tsx';
 import {useTranslation} from 'react-i18next'
-
+import ProfilePlanets from '../userprofile/profileplanets.tsx'
 
 const { Content, Sider } = Layout;
 
@@ -33,6 +33,7 @@ function Prediction() {
   const {t,i18n} = useTranslation()
   const {ProfileStore} = useStore();
   function getLabel(x:number) {
+    console.log('x' + x)
     if(x === 1) {
       return t('Statistics')
     }
@@ -41,6 +42,9 @@ function Prediction() {
     }
     if(x === 3) {
       return t("Prediction")
+    }
+    if(x === 4) {
+      return t("My planets")
     }
   }
   // useEffect(() => {
@@ -89,6 +93,11 @@ function Prediction() {
       </div>
       )
     } 
+    if(nowKey == 4) {
+      setContent(<div>
+        <ProfilePlanets></ProfilePlanets>
+      </div>) 
+    }
   },[nowKey])
   const handleUploadClicked = ()=> {
     console.log('hahaha')
@@ -132,7 +141,7 @@ function Prediction() {
           mode="inline"
           defaultSelectedKeys={['1']}
           className='SliderMenu'
-          items={[UserOutlined, VideoCameraOutlined, UploadOutlined].map(
+          items={[UploadOutlined, VideoCameraOutlined, UploadOutlined,UserOutlined].map(
             (icon, index) => ({
               key: String(index + 1),
               icon: React.createElement(icon),

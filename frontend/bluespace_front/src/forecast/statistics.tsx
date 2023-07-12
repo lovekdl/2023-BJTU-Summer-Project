@@ -87,7 +87,7 @@ export default function Statistics() {
       key: 'esi',
     },
     {
-      title: t('Habitable'),
+      title: t('Habitability'),
       dataIndex: 'habitable',
       key: 'habitable',
     },
@@ -102,7 +102,7 @@ export default function Statistics() {
 
   return (
     <div className='ContentLayout'>
-      <Table className="TableDiv" columns={Columns}  dataSource={StatisticsStore.DataSource}></Table>
+      <Table className="TableDiv" columns={Columns} pagination={{ pageSize: 8 }}  dataSource={StatisticsStore.DataSource}></Table>
     </div>
   )
 } 

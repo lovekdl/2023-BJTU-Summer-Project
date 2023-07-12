@@ -10,7 +10,7 @@ import {message} from "antd"
 import '../index.tsx';
 import {useTranslation} from 'react-i18next'
 import { http } from "../utils/http.tsx";
-
+import {Popover} from'antd'
 
 function InnerPrediction() {
   const [count, setCount] = useState(0);
@@ -55,8 +55,10 @@ function InnerPrediction() {
           features : features
 
         })
+        console.log(ret);
         if(ret.data.state == 'success') {
-          PredictionStore.addItem({Planet_name:Planet_name.current?.value,habitable:ret.data.habitable, esi:ret.data.esi,features:features,Orbit_period:Orbit_period.current?.value,
+          console.log(ret.data)
+          PredictionStore.addItem({Planet_name:Planet_name.current?.value,habitable:(ret.data.predict_result === '1' ? t('Habitable') :t('NOT Habitable')), esi:ret.data.esi,features:features,   Orbit_period:Orbit_period.current?.value,
             Semi_major_axis:Semi_major_axis.current?.value,
             Mass:Mass.current?.value,
             Radius:Radius.current?.value,
@@ -64,7 +66,7 @@ function InnerPrediction() {
             Stellar_mass:Stellar_mass.current?.value,
             Stellar_radius:Stellar_radius.current?.value,})
         }
-        else message.error('unknown error.')
+        else message.error(ret.data.error_message)
       }
       catch(e:any) {
         console.log('catch : ',e)
@@ -80,67 +82,84 @@ function InnerPrediction() {
     <div className="InnerPredictionContent"> 
       <div className = 'PredictInputContent'>
         <div className="input-items">
+        <Popover content={t('Planet name message')}>
           <span className="input-tips">
               {t('Planet name')}
           </span>
+          </Popover>
           <br></br>
           <input type="text" className="predictinputs" placeholder= {t("Enter")+ t('Planet name')} ref = {Planet_name} />
           
         </div>
         <div className="input-items">
-          <span className="input-tips">
-            {t('Orbital Period[days]')}
-          </span>
+        <Popover content={t('Orbital Period[days] message')}>
+            <span className="input-tips">
+              {t('Orbital Period[days]')}
+            </span>
+          </Popover>
           <br></br>
           <input type="number" className="predictinputs" placeholder={t("Enter")+ t('Orbital Period[days]')} ref = {Orbit_period} />
           
         </div>
         <div className="input-items">
+        <Popover content={t('Orbit Semi-Major Axis message')}>
           <span className="input-tips">
             {t('Orbit Semi-Major Axis')}
           </span>
+          </Popover>
           <br></br>
           <input type="number" className="predictinputs" placeholder={t("Enter")+ t("Orbit Semi-Major Axis")} ref = {Semi_major_axis}/>
           
         </div>
         
         <div className="input-items">
+          <Popover content={t('Planet Mass message')}>
           <span className="input-tips">
             {t('Planet Mass')}
           </span>
+          </Popover>
           <br></br>
           <input type="number" className="predictinputs" placeholder={t("Enter")+ t("Planet Mass")} ref = {Mass} />
           
         </div>
         <div className="input-items">
+        <Popover content={t('Planet Radius message')}>
           <span className="input-tips">
             {t('Planet Radius')}
           </span>
+          </Popover>
           <br></br>
           <input type="number" className="predictinputs" placeholder={t("Enter")+ t("Planet Radius")} ref={Radius}/>
           
         </div>
         <div className="input-items">
+        <Popover content={t('Stellar Luminosity message')}>
           <span className="input-tips">
             {t('Stellar Luminosity')}
             
           </span>
+          </Popover>
           <br></br>
           <input type="number" className="predictinputs" placeholder={t("Enter")+ t("Stellar Luminosity")} ref = {Stellar_luminosity}/>
           
         </div>
         <div className="input-items">
+        <Popover content={t('Stellar Mass message')}>
           <span className="input-tips">
             {t('Stellar Mass')}
           </span>
+          </Popover>
           <br></br>
           <input type="number" className="predictinputs" placeholder={t("Enter")+ t("Stellar Mass")} ref = {Stellar_mass}/>
         </div>
         <div className="input-items">
-          <span className="input-tips">
-          {t('Stellar Radius')}
+         <Popover content={t('Stellar Radius message')}>
+            <span className="input-tips">
+              
+            {t('Stellar Radius')}
             
-          </span>
+            </span>
+          </Popover>
           <br></br>
           <input type="number" className="predictinputs" placeholder={t("Enter")+ t("Stellar Radius")} ref = {Stellar_radius}/>
         </div>
