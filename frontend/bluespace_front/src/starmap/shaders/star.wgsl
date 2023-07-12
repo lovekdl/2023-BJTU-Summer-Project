@@ -68,19 +68,19 @@ fn fragment_main(
     } else if(starType <= 2.5) {
         color = STAR_B(fPosition.xyz, normal);
     } else if(starType <= 3.5) {
-        color = STAR_A();
+        color = STAR_A(fPosition.xyz, normal);
     } else if(starType <= 4.5) {
-        color = STAR_F();
+        color = STAR_F(fPosition.xyz, normal);
     } else if(starType <= 5.5) {
-        color = STAR_G();
+        color = STAR_G(fPosition.xyz, normal);
     } else if(starType <= 6.5) {
-        color = STAR_K();
+        color = STAR_K(fPosition.xyz, normal);
     } else if(starType <= 7.5) {
-        color = STAR_M();
+        color = STAR_M(fPosition.xyz, normal);
     } else if(starType <= 8.5) {
         color = planet(fPosition.xyz, normal, texColor);
     } else {
-        color = STAR_M();
+        color = STAR_M(fPosition.xyz, normal);
     }
     var startingBlack: f32;
     if(runningTime >= 4200) {
@@ -133,18 +133,18 @@ fn STAR_O(position: vec3<f32>, normal: vec3<f32>) -> vec3<f32> {
 fn STAR_B(position: vec3<f32>, normal: vec3<f32>) -> vec3<f32> {
     return vec3(0.6, 0.15, 0.05) * CENTER_BLACK(position, normal, 0.8);
 }
-fn STAR_A() -> vec3<f32> {
-    return vec3(1.0, 1.0, 1.0);
+fn STAR_A(position: vec3<f32>, normal: vec3<f32>) -> vec3<f32> {
+    return vec3(1.0, 1.0, 1.0) * CENTER_BLACK(position, normal, 0.8);
 }
-fn STAR_F() -> vec3<f32> {
-    return vec3(1.0, 0.89, 0.71);
+fn STAR_F(position: vec3<f32>, normal: vec3<f32>) -> vec3<f32> {
+    return vec3(1.0, 0.89, 0.71) * CENTER_BLACK(position, normal, 0.8);
 }
-fn STAR_G() -> vec3<f32> {
-    return vec3(1.0, 0.9, 0.0);
+fn STAR_G(position: vec3<f32>, normal: vec3<f32>) -> vec3<f32> {
+    return vec3(1.0, 0.9, 0.0) * CENTER_BLACK(position, normal, 0.8);
 }
-fn STAR_K() -> vec3<f32> {
-    return vec3(0.9, 0.8, 0.0);
+fn STAR_K(position: vec3<f32>, normal: vec3<f32>) -> vec3<f32> {
+    return vec3(0.9, 0.8, 0.0) * CENTER_BLACK(position, normal, 0.8);
 }
-fn STAR_M() -> vec3<f32> {
-    return vec3(0.7, 0.9, 1.0);
+fn STAR_M(position: vec3<f32>, normal: vec3<f32>) -> vec3<f32> {
+    return vec3(0.7, 0.9, 1.0) * CENTER_BLACK(position, normal, 0.8);
 }
