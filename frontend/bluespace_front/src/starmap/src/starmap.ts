@@ -1,5 +1,6 @@
 import { BlueSpaceRenderer } from "./renderer"
-import {rootStore} from '../../store/index' // add by lovekdl
+import { rootStore } from '../../store/index' // add by lovekdl
+import { PlanetsDataLoader  } from "./planetsDataLoader";
 
 // ===== Start Renderer =====
 
@@ -36,12 +37,17 @@ starmapElement!.addEventListener("mousedown", (e) => {
             renderMode = -1
             const cx = e.offsetX / renderer.getCanvasSize().width * window.devicePixelRatio
             const cy = e.offsetY / renderer.getCanvasSize().height * window.devicePixelRatio
-            const planetId = renderer.selectPlanet(cx, cy)
+            const {planetId, dataId} = renderer.selectPlanet(cx, cy)
             console.log("Clicked: Planet " + planetId)
             if(planetId != -1) {
                 renderer.switchMode(1, planetId).then(() => {
                     renderMode = 1
                 })
+                console.log(dataId)
+                console.log(PlanetsDataLoader.getInstance().query(dataId))
+                rootStore.StarMapStore.setHeader("Header")
+                rootStore.StarMapStore.setMessage("Content1\nContent2")
+                rootStore.StarMapStore.setShow(true)
             }
         } else if(renderMode === 1) {
             renderMode = -1

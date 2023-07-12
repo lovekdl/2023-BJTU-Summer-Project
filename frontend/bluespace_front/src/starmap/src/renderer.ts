@@ -18,7 +18,6 @@ import { StarGenerator } from "./starGenerator"
 
 // planet texture file
 import { planetTextureFileArray  } from './planetTexture'
-import { render } from 'react-dom'
 
 /**
  * 蓝色空间渲染器
@@ -87,7 +86,7 @@ class BlueSpaceRenderer {
 
     public camera: Camera
     private numOfPlanets: number
-    private planets: Array<Planet>
+    private planets?: Array<Planet>
 
     private projectionMatrix: mat4 = mat4.create()
 
@@ -134,7 +133,6 @@ class BlueSpaceRenderer {
 
         // ===== Load Planets =====
         this.numOfPlanets = 20000
-        this.planets = StarGenerator.randomGalaxyStar(this.numOfPlanets)
     }
 
     /**
@@ -142,6 +140,9 @@ class BlueSpaceRenderer {
      */
     async setup() {
         const that = this
+
+        // Load Planets Data
+        this.planets = await StarGenerator.randomGalaxyStar(this.numOfPlanets)
 
         this.camera.update()
 
@@ -175,10 +176,10 @@ class BlueSpaceRenderer {
 
         
         // ===== Load Planets to GPU =====
-        for(let i = 0; i < that.planets.length; i++) {
-            that.planets[i].update()
-            that.modelMatrixArray.set(that.planets[i].modelMatrix as Float32Array, 4 * 4 * i)
-            that.starShaderTypeArray.set(Float32Array.from([that.planets[i].starShaderType]), i)
+        for(let i = 0; i < that.planets!.length; i++) {
+            that.planets![i].update()
+            that.modelMatrixArray.set(that.planets![i].modelMatrix as Float32Array, 4 * 4 * i)
+            that.starShaderTypeArray.set(Float32Array.from([that.planets![i].starShaderType]), i)
         }
         that.device!.queue.writeBuffer(that.modelMatrixBuffer!, 0, that.modelMatrixArray)
         that.device!.queue.writeBuffer(that.starShaderTypeBuffer!, 0, that.starShaderTypeArray)
@@ -203,8 +204,8 @@ class BlueSpaceRenderer {
         // ===== Animation & Rendering =====
         function frame() {
             // for(let i = 0; i < that.planets.length; i++) {
-            //     that.planets[i].update()
-            //     that.modelMatrixArray.set((that.planets[i].modelMatrix as Float32Array), 4 * 4 * i)
+            //     that.planets![i].update()
+            //     that.modelMatrixArray.set((that.planets![i].modelMatrix as Float32Array), 4 * 4 * i)
             // }
             // that.device!.queue.writeBuffer(that.modelMatrixBuffer!, 0, that.modelMatrixArray)
             
@@ -220,7 +221,7 @@ class BlueSpaceRenderer {
             that.draw()
 
             that.device!.queue.writeBuffer(that.runningTimeBuffer!, 0, Float32Array.from([Date.now() - startTime]))
-            console.log("Running Time: " + (Date.now() - startTime))
+            // console.log("Running Time: " + (Date.now() - startTime))
 
             requestAnimationFrame(frame)
         }
@@ -243,15 +244,15 @@ class BlueSpaceRenderer {
         
         if(this.renderMode === 0 && targetMode === 1 && targetPlanet != undefined && targetPlanet >= 0) {
             // 1. Change Planet Texture
-            await this.loadSpecificPlanetTextureToCurrentRenderer(this.planets[targetPlanet].planetTextureType)
+            await this.loadSpecificPlanetTextureToCurrentRenderer(this.planets![targetPlanet].planetTextureType)
 
             // 2. Stars (Scale)
             function scaleDown(i: number, k: number) {
-                that.planets[i].scale.x *= k
-                that.planets[i].scale.y *= k
-                that.planets[i].scale.z *= k
-                that.planets[i].updateModelMatrix()
-                that.modelMatrixArray.set((that.planets[i].modelMatrix as Float32Array), 4 * 4 * i)
+                that.planets![i].scale.x *= k
+                that.planets![i].scale.y *= k
+                that.planets![i].scale.z *= k
+                that.planets![i].updateModelMatrix()
+                that.modelMatrixArray.set((that.planets![i].modelMatrix as Float32Array), 4 * 4 * i)
             }
             const distance2Limit = 400
             function distance2(a: {x:number,y:number,z:number}, b: {x:number,y:number,z:number}) {
@@ -265,7 +266,7 @@ class BlueSpaceRenderer {
                     continue;
                 } else if(i === targetPlanet) {
                     scaleDown(i, 0.4)
-                } else if(distance2(this.planets[i].position, this.planets[targetPlanet].position) <= distance2Limit) {
+                } else if(distance2(this.planets![i].position, this.planets![targetPlanet].position) <= distance2Limit) {
                     // 不显示一些过近的恒星 
                     scaleDown(i, 0)
                 } else {
@@ -274,24 +275,24 @@ class BlueSpaceRenderer {
             }
 
             // 3. Target Planet (ModelMatrix(update per frame), planetTexture)
-            this.planets[1].position = {
-                x: this.planets[targetPlanet].position.x,
-                y: this.planets[targetPlanet].position.y,
-                z: this.planets[targetPlanet].position.z,
+            this.planets![1].position = {
+                x: this.planets![targetPlanet].position.x,
+                y: this.planets![targetPlanet].position.y,
+                z: this.planets![targetPlanet].position.z,
             }
-            const posDelta = Math.max(10, this.planets[targetPlanet].starRadius)
-            this.planets[1].position.x += posDelta
-            this.planets[1].position.z += posDelta
-            this.planets[1].scale = {x: 0.5, y: 0.5, z: 0.5}
-            this.planets[1].updateModelMatrix()
-            this.modelMatrixArray.set((that.planets[1].modelMatrix as Float32Array), 4 * 4 * 1)
+            const posDelta = Math.max(10, this.planets![targetPlanet].starRadius)
+            this.planets![1].position.x += posDelta
+            this.planets![1].position.z += posDelta
+            this.planets![1].scale = {x: 0.5, y: 0.5, z: 0.5}
+            this.planets![1].updateModelMatrix()
+            this.modelMatrixArray.set((that.planets![1].modelMatrix as Float32Array), 4 * 4 * 1)
 
             // 4. Camera
-            // this.camera.target = vec3.fromValues(this.planets[1].position.x, this.planets[1].position.y, this.planets[1].position.z)
+            // this.camera.target = vec3.fromValues(this.planets![1].position.x, this.planets![1].position.y, this.planets![1].position.z)
             // this.camera.theta = Math.PI / 2
             // this.camera.radius = 7
             this.camera.startAnimation(
-                vec3.fromValues(this.planets[1].position.x, this.planets[1].position.y, this.planets[1].position.z),
+                vec3.fromValues(this.planets![1].position.x, this.planets![1].position.y, this.planets![1].position.z),
                 Math.PI / 2,
                 7,
                 60,
@@ -299,7 +300,7 @@ class BlueSpaceRenderer {
 
             // 5. Shader's argument
             let lightPos = vec3.fromValues(0, 0, 0)
-            vec3.transformMat4(lightPos, lightPos, this.planets[targetPlanet].modelMatrix)
+            vec3.transformMat4(lightPos, lightPos, this.planets![targetPlanet].modelMatrix)
             that.device!.queue.writeBuffer(that.lightPositionBuffer!, 0, lightPos as Float32Array)
 
             // 6. End
@@ -309,8 +310,8 @@ class BlueSpaceRenderer {
         } else if(this.renderMode === 1 && targetMode === 0) {
             // 1. Stars (Scale)
             for(let i = 0; i < this.numOfPlanets; i++) {
-                this.planets[i].resetScale()
-                that.modelMatrixArray.set((that.planets[i].modelMatrix as Float32Array), 4 * 4 * i)
+                this.planets![i].resetScale()
+                that.modelMatrixArray.set((that.planets![i].modelMatrix as Float32Array), 4 * 4 * i)
             }
 
             // 2. Target Planet (ModelMatrix(update per frame), planetTexture)
@@ -357,7 +358,9 @@ class BlueSpaceRenderer {
      * 鼠标相对位置 (tx, ty), tx ty in [-0.5, 0.5]
      */
     private readonly SELECT_PLANET_HIT_COEFFICIENT = 20
-    selectPlanet(cx: number, cy: number): number {
+    selectPlanet(cx: number, cy: number): {planetId: number, dataId: number} {
+        const that = this
+
         let tx = cx - 0.5
         let ty = -(cy - 0.5)
 
@@ -382,7 +385,7 @@ class BlueSpaceRenderer {
         // let mnD = -1
         for(let i = 0; i < this.numOfPlanets; i++) {
             const CA: vec3 = vec3.create()
-            const C: vec3 = vec3.fromValues(this.planets[i].position.x, this.planets[i].position.y, this.planets[i].position.z)
+            const C: vec3 = vec3.fromValues(this.planets![i].position.x, this.planets![i].position.y, this.planets![i].position.z)
             vec3.sub(CA, C, A)
 
             const S: vec3 = vec3.create()
@@ -390,7 +393,7 @@ class BlueSpaceRenderer {
             let d = vec3.len(S) / vec3.len(BA)
             // const depth = vec3.len(CA)
 
-            d = d - this.planets[i].starRadius
+            d = d - this.planets![i].starRadius
 
             // if(i == 0) {
             //     console.log(" - C" + i + ": " + C + "\nd: "+d)
@@ -405,7 +408,7 @@ class BlueSpaceRenderer {
 
         // console.log(mnId + ": " + mnD + ", " + mnDis)
 
-        return mnId
+        return {planetId: mnId, dataId: that.planets![mnId].id}
     }
 
 
