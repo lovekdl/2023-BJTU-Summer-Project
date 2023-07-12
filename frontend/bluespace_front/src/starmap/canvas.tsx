@@ -53,11 +53,17 @@ function StarMap() {
       }
       
       <div id="StarMap" className = 'id="StarMap' style={{ visibility: !LoadingStore.starMapLoading ? 'visible' : 'hidden' }}>
-        <div className = 'StarMapMessage' style={{ visibility: StarMapStore.show? 'visible' : 'hidden' }}>
-          <div className="SolidOpacity" >
+        <div className = 'StarMapMessage' >
+          <div className="SolidOpacity" style={{ visibility: StarMapStore.show? 'visible' : 'hidden' }}>
             <h1>{StarMapStore.header}</h1>
             <div>
-              {StarMapStore.message}
+              {StarMapStore.message.map((item) => {
+                return (
+                <div>
+                  {item}
+                  <br></br>
+                </div>)
+              })}
             </div>
           </div>
         </div>

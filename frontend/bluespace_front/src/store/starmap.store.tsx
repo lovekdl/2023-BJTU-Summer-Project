@@ -3,7 +3,7 @@ import {http, setTokenFromLocalStorage, getTokenFromLocalStorage} from '../utils
 
 class StarMapStore {
 	header = 'aa';
-  message = 'bb';
+  message = ['bb','accc'];
   show = false
 	constructor() {
 		//mobx 设置响应式
@@ -12,8 +12,11 @@ class StarMapStore {
   setHeader(newHeader:string) {
     this.header = newHeader
   }
-  setMessage(newMessage:string) {
-    this.message = newMessage
+  push(newMessage : string) {
+    this.message.push(newMessage);
+  }
+  setMessage(newMessages:any) {
+    this.message = newMessages
   }
 	setShow(newShow :boolean) {
     this.show = newShow
