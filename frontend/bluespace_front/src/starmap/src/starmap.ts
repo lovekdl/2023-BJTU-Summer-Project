@@ -11,14 +11,17 @@ try {
     renderer = new BlueSpaceRenderer()
     renderer.setup().then(() => {
         renderer.run()
-    })
+    })  
+    
     let checkHaveRunInterval = setInterval(() => {
         console.log("haveRun = " +  renderer.getHaveRun())
         if(renderer.getHaveRun() === true) {
-            rootStore.LoadingStore.setStarMapLoading(false);
+            setTimeout(() => {
+                rootStore.LoadingStore.setStarMapLoading(false);
+            }, 1000)
             clearInterval(checkHaveRunInterval)
         }
-    },1000)
+    },100)
 } catch (error) {
     throw new Error("Intializing renderer failed: " + error)
 }
