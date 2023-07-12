@@ -46,7 +46,7 @@ starmapElement!.addEventListener("mousedown", (e) => {
                 console.log(dataId)
                 console.log(PlanetsDataLoader.getInstance().query(dataId))
                 rootStore.StarMapStore.setHeader("Header")
-                rootStore.StarMapStore.setMessage("Content1\nContent2")
+                rootStore.StarMapStore.setMessage("Content1<br>Content2")
                 rootStore.StarMapStore.setShow(true)
             }
         } else if(renderMode === 1) {
