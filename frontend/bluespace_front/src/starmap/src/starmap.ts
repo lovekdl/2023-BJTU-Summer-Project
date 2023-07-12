@@ -26,6 +26,7 @@ export function init() {
     } catch (error) {
         throw new Error("Intializing renderer failed: " + error)
     }
+    
 
     // ===== Mouse Listener =====
 
@@ -166,4 +167,5 @@ export function init() {
     window.oncontextmenu = function () {
         return false;     // cancel default menu
     }
+    return renderer
 }
