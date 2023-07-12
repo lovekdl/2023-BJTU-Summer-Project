@@ -225,9 +225,7 @@ class BlueSpaceRenderer {
 
             that.device!.queue.writeBuffer(that.runningTimeBuffer!, 0, Float32Array.from([Date.now() - startTime]))
 
-            console.log("Running Time: " + (Date.now() - startTime))
-
-
+            // console.log("Running Time: " + (Date.now() - startTime))
 
             that.animationID = requestAnimationFrame(frame)
         }
