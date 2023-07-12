@@ -4,12 +4,8 @@ import {makeAutoObservable} from 'mobx'
 import {http, setTokenFromLocalStorage, getTokenFromLocalStorage} from '../utils'
 import { List } from 'echarts';
 import i18n from '../index.tsx';
-class PredictionStore {
-	constructor() {
-		//mobx 设置响应式
-		makeAutoObservable(this)
-		
-	}
+class StatisticsStore {
+  
 	DataSource = [
 		{
 			key: '1',
@@ -68,25 +64,40 @@ class PredictionStore {
 		},
 		
 	];
-	
-	
-	
-  items = [{name:"11111",esi:0.24,habitable:false}, {name:"222222",esi:0.9,habitable:true}, {name:"333333",esi:0.88,habitable:false}, {name:"4444444",esi:0.27,habitable:true}];
-
-  starMapLoading:boolean = true
-
-	
-	setStarMapLoading = (x : boolean) => {
-    this.starMapLoading = x
+	constructor() {
+		//mobx 设置响应式
+		makeAutoObservable(this)
+	  this.getSource()
+	}
+  setDataSource(data:any) {
+    this.DataSource = data;
   }
-  addItem = (newItem : any)=> {
-    this.items.push(newItem);
+	getSource =async() => {
+      try {
+        const ret = await http.post('api/resource',{
+          
+        })
+        if(ret.data.state == 'success') {
+          const newData = [];
+          console.log(ret.data)
+          for (let key in ret.data) {
+            if (typeof ret.data[key] === 'object' && ret.data[key] !== null) {
+              const item = ret.data[key];
+              item.key = item.UID
+              newData.push(item);
+              console.log(item);
+            }
+          }
+          this.setDataSource(newData);
+        }
+      }
+      catch(e:any) {
+        console.log('catch : ',e)
+        if(e.response) console.log(e.response.data.error_message)
+        else console.log(e.message)
+      }
   }
-  setItems = (newItems : any)=> {
-    this.items = newItems
-  }
-	
 	
 }
 
-export default PredictionStore
+export default StatisticsStore

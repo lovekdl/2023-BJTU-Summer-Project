@@ -10,9 +10,23 @@ import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import IconButton from '@mui/material/IconButton';
 
 const HeartButton = ({ record }:any) => {
-  const [isLiked, setIsLiked] = useState('false');
+  const [isLiked, setIsLiked] = useState('collect');
   const handleClick = () => {
-    setIsLiked(isLiked === 'false'?'true':'false');
+    async function postSub() {
+      const ret = await http.post('api/collect', {
+        id : record.id,
+      })
+      return ret
+    }
+    const ret = postSub()
+    ret.then(res => {
+      console.log(res)
+      if(res.data.state === 'success'){
+        setIsLiked(isLiked === 'false'?'true':'false');
+      }
+    }).catch(e => {
+      console.log(e)
+    })
   };
   
 
@@ -24,7 +38,7 @@ const HeartButton = ({ record }:any) => {
 };
 
 export default function Statistics() {
-  const {PredictionStore} = useStore()
+  const {StatisticsStore} = useStore()
   const {t,i18n} = useTranslation()
   const Columns = [
     {
@@ -88,7 +102,7 @@ export default function Statistics() {
 
   return (
     <div className='ContentLayout'>
-      <Table className="TableDiv" columns={Columns}  dataSource={PredictionStore.DataSource}></Table>
+      <Table className="TableDiv" columns={Columns}  dataSource={StatisticsStore.DataSource}></Table>
     </div>
   )
 } 

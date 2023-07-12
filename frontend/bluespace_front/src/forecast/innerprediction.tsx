@@ -43,10 +43,10 @@ function InnerPrediction() {
     async function Predict() {
       try {
         let features = {
-          Planet_name:Planet_name.current?.value,
           Orbit_period:Orbit_period.current?.value,
           Semi_major_axis:Semi_major_axis.current?.value,
-          Radius:Radius.current?.value,
+          "Mass (EU)":Mass.current?.value,
+          "Radius (EU)":Radius.current?.value,
           Stellar_luminosity:Stellar_luminosity.current?.value,
           Stellar_mass:Stellar_mass.current?.value,
           Stellar_radius:Stellar_radius.current?.value,
@@ -56,7 +56,13 @@ function InnerPrediction() {
 
         })
         if(ret.data.state == 'success') {
-          PredictionStore.addItem({name:Planet_name.current?.value,habitable:ret.data.habitable, esi:ret.data.esi,features:features})
+          PredictionStore.addItem({Planet_name:Planet_name.current?.value,habitable:ret.data.habitable, esi:ret.data.esi,features:features,Orbit_period:Orbit_period.current?.value,
+            Semi_major_axis:Semi_major_axis.current?.value,
+            Mass:Mass.current?.value,
+            Radius:Radius.current?.value,
+            Stellar_luminosity:Stellar_luminosity.current?.value,
+            Stellar_mass:Stellar_mass.current?.value,
+            Stellar_radius:Stellar_radius.current?.value,})
         }
         else message.error('unknown error.')
       }
