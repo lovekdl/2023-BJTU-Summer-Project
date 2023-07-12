@@ -95,7 +95,7 @@ function InnerProfile() {
     </div >
     <div className = 'InnerDiv'>
       <span className = 'ProfileSpan'>{t('Name')} &nbsp;&nbsp;</span>
-      <div className = 'purple-underline'> lovekdl</div>&nbsp;&nbsp;&nbsp;&nbsp;
+      <div className = 'purple-underline'> {ProfileStore.username}</div>&nbsp;&nbsp;&nbsp;&nbsp;
       <motion.button
         className="ProfileChange" 
         whileHover={{ scale: 1.05 }}
@@ -109,7 +109,7 @@ function InnerProfile() {
     </div>
     <div className = 'InnerDiv'>
       <span className = 'ProfileSpan'>{t('Email')} &nbsp;&nbsp;</span>
-      <div className = 'purple-underline'> 2412162744@qq.com</div>&nbsp;&nbsp;&nbsp;&nbsp;
+      <div className = 'purple-underline'> {ProfileStore.email}</div>&nbsp;&nbsp;&nbsp;&nbsp;
       {/* <input type="text" readOnly placeholder="Enter your email"></input> */}
     </div>
     <div className = 'InnerDiv'>

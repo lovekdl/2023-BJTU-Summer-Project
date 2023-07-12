@@ -96,7 +96,8 @@ export default function Statistics() {
   ];
 
   return (
-    <div className='ContentLayout'>
+    <div>
+      <p>{t('My Planets')}</p>
       <Table className="TableDiv" columns={Columns} pagination={{ pageSize: 8 }}  dataSource={StatisticsStore.DataSource}></Table>
     </div>
   )

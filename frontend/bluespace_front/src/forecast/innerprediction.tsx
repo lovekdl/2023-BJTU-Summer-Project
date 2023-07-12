@@ -38,7 +38,7 @@ function InnerPrediction() {
     }
 
 
-
+    //预测
     async function Predict() {
       try {
         let features = {
@@ -57,7 +57,7 @@ function InnerPrediction() {
         console.log(ret);
         if(ret.data.state == 'success') {
           console.log(ret.data)
-          PredictionStore.addItem({Planet_name:Planet_name.current?.value,habitable:(ret.data.predict_result === '1' ? t('Habitable') :t('NOT Habitable')), esi:ret.data.esi,features:features,   Orbit_period:Orbit_period.current?.value,
+          PredictionStore.addItem({Planet_name:Planet_name.current?.value,habitable:(ret.data.predict_result), esi:ret.data.esi,features:features,   Orbit_period:Orbit_period.current?.value,
             Semi_major_axis:Semi_major_axis.current?.value,
             Mass:Mass.current?.value,
             Radius:Radius.current?.value,
@@ -80,7 +80,7 @@ function InnerPrediction() {
   return (
     <div className="InnerPredictionContent"> 
       <div className = 'PredictInputContent'>
-        <div className="input-items">
+        <div className="input-items" style = {{margin:'5px'}}>
           <span className="input-tips">
               {t('Planet name')}
           </span>
@@ -91,7 +91,7 @@ function InnerPrediction() {
           <input type="text" className="predictinputs" placeholder= {t("Enter")+ t('Planet name')} ref = {Planet_name} />
           
         </div>
-        <div className="input-items">
+        <div className="input-items" style = {{margin:'5px'}}>
           <span className="input-tips">
             {t('Orbital Period[days]')}
           </span>
@@ -102,7 +102,7 @@ function InnerPrediction() {
           <input type="number" className="predictinputs" placeholder={t("Enter")+ t('Orbital Period[days]')} ref = {Orbit_period} />
           
         </div>
-        <div className="input-items">
+        <div className="input-items" style = {{margin:'5px'}}>
           <span className="input-tips">
             {t('Orbit Semi-Major Axis')}
           </span>
@@ -114,7 +114,7 @@ function InnerPrediction() {
           
         </div>
         
-        <div className="input-items">
+        <div className="input-items" style = {{margin:'5px'}}>
           <span className="input-tips">
             {t('Planet Mass')}
           </span>
@@ -125,7 +125,7 @@ function InnerPrediction() {
           <input type="number" className="predictinputs" placeholder={t("Enter")+ t("Planet Mass")} ref = {Mass} />
           
         </div>
-        <div className="input-items">
+        <div className="input-items" style = {{margin:'5px'}}>
           <span className="input-tips">
             {t('Planet Radius')}
           </span>
@@ -136,7 +136,7 @@ function InnerPrediction() {
           <input type="number" className="predictinputs" placeholder={t("Enter")+ t("Planet Radius")} ref={Radius}/>
           
         </div>
-        <div className="input-items">
+        <div className="input-items" style = {{margin:'5px'}}>
           <span className="input-tips">
             {t('Stellar Luminosity')}
           </span>
@@ -147,7 +147,7 @@ function InnerPrediction() {
           <input type="number" className="predictinputs" placeholder={t("Enter")+ t("Stellar Luminosity")} ref = {Stellar_luminosity}/>
           
         </div>
-        <div className="input-items">
+        <div className="input-items" style = {{margin:'5px'}}>
           <span className="input-tips">
             {t('Stellar Mass')}
           </span>
@@ -157,7 +157,7 @@ function InnerPrediction() {
           <br></br>
           <input type="number" className="predictinputs" placeholder={t("Enter")+ t("Stellar Mass")} ref = {Stellar_mass}/>
         </div>
-        <div className="input-items">
+        <div className="input-items" style = {{margin:'5px'}}>
             <span className="input-tips">
               
             {t('Stellar Radius')}

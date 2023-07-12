@@ -21,6 +21,7 @@ class PredictionStore {
 			Stellar_mass:50,
 			Stellar_radius:60,
 			following:false,
+			
 		},
 		{
 			key: '2',
@@ -71,7 +72,7 @@ class PredictionStore {
 	
 	
 	
-  items = [{name:"11111",esi:0.24,habitable:false}, {name:"222222",esi:0.9,habitable:true}, {name:"333333",esi:0.88,habitable:false}, {name:"4444444",esi:0.27,habitable:true}];
+  items = [{name:"11111",esi:0.24,habitable: 'NOT Habitable'}, {name:"222222",esi:0.9,habitable:true}, {name:"333333",esi:0.88,habitable:false}, {name:"4444444",esi:0.27,habitable:true}];
 
   starMapLoading:boolean = true
 
