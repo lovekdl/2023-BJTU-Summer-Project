@@ -30,9 +30,8 @@ function RegisterForm  (prop:any)  {
   }
   async function handleRegisterSubmit(event:any) {
     event.preventDefault();
-    const [coordinates, setCoordinates] = useState({ x: 0, y: 0 });
   
-    if(!usernameRef.current || ! passwordRef.current || !emailRef.current || !confirmedPasswordRef.current || !codeRef.current) {
+    if(!usernameRef.current?.value || ! passwordRef.current?.value || !emailRef.current?.value || !confirmedPasswordRef.current?.value || !codeRef.current?.value) {
       message.error(t('inputs can not be empty'))
       return;}
     const username = usernameRef.current.value;
@@ -40,6 +39,9 @@ function RegisterForm  (prop:any)  {
     const password = passwordRef.current.value;
     const confirmedPassword = confirmedPasswordRef.current.value;
     const code = codeRef.current.value;
+    if(passwordRef.current.value != confirmedPasswordRef.current.value) {
+      message.error(t('The two passwords are different'))
+    }
     async function register() {
       try {
         const ret = await http.post('api/send',{
@@ -61,6 +63,9 @@ function RegisterForm  (prop:any)  {
     register()
   }
   const handleSendClicked = () => {
+    if(!usernameRef.current?.value || ! passwordRef.current?.value || !emailRef.current?.value || !confirmedPasswordRef.current?.value || !codeRef.current?.value) {
+      message.error(t('inputs can not be empty'))
+      return;}
     async function send() {
       try {
         const ret = await http.post('api/send',{

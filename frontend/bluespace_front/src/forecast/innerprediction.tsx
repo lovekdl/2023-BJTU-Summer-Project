@@ -9,6 +9,7 @@ import {useStore} from "../store/index"
 import {message} from "antd"
 import '../index.tsx';
 import {useTranslation} from 'react-i18next'
+import { http } from "../utils/http.tsx";
 
 
 function InnerPrediction() {
@@ -23,11 +24,7 @@ function InnerPrediction() {
   const Stellar_mass = useRef<HTMLInputElement>(null);
   const Stellar_radius = useRef<HTMLInputElement>(null);
   const {t,i18n} = useTranslation()
-  const handleAddClicked = () => {
-    console.log('aa')
-    PredictionStore.addItem("newItem" + count)
-    setCount(count + 1);
-  }
+  
   const handlePredictClicked = () => {
     console.log(Planet_name.current?.value)
     if(!Planet_name.current?.value|| !Orbit_period.current?.value|| !Semi_major_axis.current?.value|| !Mass.current?.value||!Radius.current?.value||!Stellar_luminosity.current?.value||!Stellar_mass.current?.value||!Stellar_radius.current?.value) {
@@ -40,7 +37,38 @@ function InnerPrediction() {
         return;
       }
     }
-    PredictionStore.addItem({name:Planet_name.current?.value,habitable:false,esi:0.5})
+
+
+
+    async function Predict() {
+      try {
+        let features = {
+          Planet_name:Planet_name.current?.value,
+          Orbit_period:Orbit_period.current?.value,
+          Semi_major_axis:Semi_major_axis.current?.value,
+          Radius:Radius.current?.value,
+          Stellar_luminosity:Stellar_luminosity.current?.value,
+          Stellar_mass:Stellar_mass.current?.value,
+          Stellar_radius:Stellar_radius.current?.value,
+        }
+        const ret = await http.post('api/predict',{
+          features : features
+
+        })
+        if(ret.data.state == 'success') {
+          PredictionStore.addItem({name:Planet_name.current?.value,habitable:ret.data.habitable, esi:ret.data.esi,features:features})
+        }
+        else message.error('unknown error.')
+      }
+      catch(e:any) {
+        console.log('catch : ',e)
+        if(e.response) message.error(e.response.data.error_message)
+        else message.error(e.message)
+      }
+    }
+    Predict()
+    // PredictionStore.addItem({name:Planet_name.current?.value,habitable:false,esi:0.5})
+
   }
   return (
     <div className="InnerPredictionContent"> 
@@ -130,7 +158,7 @@ function InnerPrediction() {
           <Item key={item.name} item={item} />
         ))}
         </Reorder.Group>
-        {/* <button onClick={handleAddClicked}> add </button> */}
+
       </div>
       
     </div>

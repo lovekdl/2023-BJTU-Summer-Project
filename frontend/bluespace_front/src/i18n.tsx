@@ -65,6 +65,8 @@ i18n
           'Confirm' : 'Confirm',
           'inputs can not be empty':'input can not be empty',
           'uploaded' : 'uploaded',
+          'The two passwords are different':'The two passwords are different',
+          'collect' :'collect',
         }
       },
       zh: {
@@ -125,6 +127,8 @@ i18n
           'Confirm' : '确认',
           'inputs can not be empty':'输入不能为空',
           'uploaded' : '上传成功',
+          'The two passwords are different':'两次输入的密码不同',
+          'collect' :'收藏',
         }
       },
       jp: {
@@ -185,6 +189,8 @@ i18n
           'Confirm' : '確認します',
           'inputs can not be empty':'入力を空にすることはできません',
           'uploaded' : 'アップロード成功です',
+          'The two passwords are different':'2回で入力したパスワードが違います',
+          'collect' :'収集',
         }
       }
     },

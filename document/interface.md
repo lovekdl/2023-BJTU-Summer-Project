@@ -75,7 +75,7 @@
   * 一个JSON数组planets
     * id：行星的id，要求互不相同
     * name：行星的名称
-    * 行星7个维度的特征（Orbit_period，Semi_major_axis，Mass，Radius，Stellar_luminosity，Stellar_mass，Stellar_radius）
+    * features：行星7个维度的特征（Orbit_period，Semi_major_axis，Mass，Radius，Stellar_luminosity，Stellar_mass，Stellar_radius）
     * esi：行星与地球的相似度
     * habitable：是否宜居（true or false）
 
@@ -94,7 +94,7 @@
 * /api/predict
 * 前端to后端
   * token
-  * 行星7个维度的特征（Orbit_period，Semi_major_axis，Mass，Radius，Stellar_luminosity，Stellar_mass，Stellar_radius）
+  * features：行星7个维度的特征（Orbit_period，Semi_major_axis，Mass，Radius，Stellar_luminosity，Stellar_mass，Stellar_radius）
 * 后端to前端
   * esi：行星与地球的相似度
   * habitable：是否宜居（true or false）
@@ -105,7 +105,7 @@
 * /api/save
 * 前端to后端
   * token
-  * 行星7个维度的特征（Orbit_period，Semi_major_axis，Mass，Radius，Stellar_luminosity，Stellar_mass，Stellar_radius）
+  * features：行星7个维度的特征（Orbit_period，Semi_major_axis，Mass，Radius，Stellar_luminosity，Stellar_mass，Stellar_radius）
   * esi：行星与地球的相似度
   * habitable：是否宜居（true or false）
 * 后端to前端
@@ -119,7 +119,7 @@
   * token
 * 后端to前端
   * id：行星id（互不相同）
-  * 行星7个维度的特征（Orbit_period，Semi_major_axis，Mass，Radius，Stellar_luminosity，Stellar_mass，Stellar_radius）
+  * features：行星7个维度的特征（Orbit_period，Semi_major_axis，Mass，Radius，Stellar_luminosity，Stellar_mass，Stellar_radius）
   * esi：行星与地球的相似度
   * habitable：是否宜居（true or false）
 
@@ -130,6 +130,6 @@
   * token
 * 后端to前端
   * id：行星id（互不相同）
-  * 行星7个维度的特征（Orbit_period，Semi_major_axis，Mass，Radius，Stellar_luminosity，Stellar_mass，Stellar_radius）
+  * features：行星7个维度的特征（Orbit_period，Semi_major_axis，Mass，Radius，Stellar_luminosity，Stellar_mass，Stellar_radius）
   * esi：行星与地球的相似度
   * habitable：是否宜居（true or false）

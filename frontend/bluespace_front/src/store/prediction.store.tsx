@@ -20,6 +20,7 @@ class PredictionStore {
 			Stellar_luminosity:50,
 			Stellar_mass:50,
 			Stellar_radius:60,
+			following:false,
 		},
 		{
 			key: '2',
@@ -30,6 +31,7 @@ class PredictionStore {
 			Stellar_luminosity:50,
 			Stellar_mass:50,
 			Stellar_radius:60,
+			following:false,
 		},
 		{
 			key: '3',
@@ -40,6 +42,7 @@ class PredictionStore {
 			Stellar_luminosity:50,
 			Stellar_mass:50,
 			Stellar_radius:60,
+			following:false,
 		},
 		{
 			key: '4',
@@ -50,6 +53,7 @@ class PredictionStore {
 			Stellar_luminosity:50,
 			Stellar_mass:50,
 			Stellar_radius:60,
+			following:false,
 		},
 		{
 			key: '5',
@@ -60,6 +64,7 @@ class PredictionStore {
 			Stellar_luminosity:50,
 			Stellar_mass:50,
 			Stellar_radius:60,
+			following:false,
 		},
 		
 	];

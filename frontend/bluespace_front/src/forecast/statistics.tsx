@@ -1,8 +1,27 @@
+import { useState } from 'react';
+import { http } from '../utils/http.tsx';
+import { getTokenFromLocalStorage } from '../utils/token.tsx';
 import {Table} from 'antd'
 import { useStore } from '../store/index'
 import '../index.tsx';
 import {useTranslation} from 'react-i18next'
+import FavoriteIcon from '@mui/icons-material/Favorite';
+import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
+import IconButton from '@mui/material/IconButton';
 
+const HeartButton = ({ record }:any) => {
+  const [isLiked, setIsLiked] = useState('false');
+  const handleClick = () => {
+    setIsLiked(isLiked === 'false'?'true':'false');
+  };
+  
+
+  return (
+    <IconButton onClick={handleClick} color={isLiked==='true' ? 'error' : 'default'}>
+      {isLiked==='true' ? <FavoriteIcon /> : <FavoriteBorderIcon />}
+    </IconButton>
+  );
+};
 
 export default function Statistics() {
   const {PredictionStore} = useStore()
@@ -58,6 +77,13 @@ export default function Statistics() {
       dataIndex: 'habitable',
       key: 'habitable',
     },
+    {
+      title: '关注',
+      dataIndex: 'subscribe',
+      key: 'subscribe',
+      render: (text:any, record:any) => <HeartButton record={record} />,
+    },
+    
   ];
 
   return (

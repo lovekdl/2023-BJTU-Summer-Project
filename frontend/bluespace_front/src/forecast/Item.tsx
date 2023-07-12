@@ -16,7 +16,7 @@ export const Item = ({ item }: Props) => {
   return (
     <div className = 'ReorderItem'>
       <Reorder.Item value={item} id={item.name} style={{ boxShadow, y }} >
-        <div>{item.name}| ESI:{item.esi} | {item.habitable===true?"Habitable    ":"NOT Habitable"}</div>
+        <div>{item.name}| ESI:{item.esi} | {item.habitable===true?"Habitable":"NOT Habitable"}</div>
         <motion.button
           className="box3" 
           whileHover={{ scale: 1.05 }}

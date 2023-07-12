@@ -42,7 +42,7 @@ function LoginForm  ()  {
   async function handleLoginSubmit(event:any) {
     event.preventDefault();
     if(!usernameRef.current?.value || !passwordRef.current?.value) {
-      
+      message.error('inputs can not be empty')
       return;
     }
     
