@@ -83,10 +83,10 @@ fn fragment_main(
         color = STAR_M();
     }
     var startingBlack: f32;
-    if(runningTime >= 4000) {
+    if(runningTime >= 4200) {
         startingBlack = 1.0;
     } else {
-        startingBlack = (runningTime - 500) / 3500;
+        startingBlack = (runningTime - 1200) / 3000;
     }
     return vec4(color, 1.0) * startingBlack;
     // return vec4(1.0);
@@ -102,7 +102,7 @@ fn planet(position: vec3<f32>, normal: vec3<f32>, texColor: vec3<f32>) -> vec3<f
 
     // diffuse
     var lightDir = normalize(lightPosition - position);
-    var diffuse = vec3(texColor) * max(dot(normal, lightDir) + 0.2, 0.0) * kd;
+    var diffuse = vec3(texColor) * max(dot(normal, lightDir) + 0.1, 0.0) * kd;
 
     // specular (have no test/debug)
     var viewDir = normalize(cameraPosition - position);
