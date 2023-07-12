@@ -24,19 +24,14 @@ function StarMap() {
 
   useEffect(() => {
     const script = document.createElement("script")
-
+    const canvas = document.createElement("canvas")
     script.src = "/src/starmap/src/starmap.ts"
     script.async = true
     script.type = "module"
-
-    const canvas = document.createElement("canvas")
     canvas.style.width = '100vw'
     canvas.style.height = '100vh'
-
-
     document.getElementById("StarMap")?.appendChild(script)
     document.getElementById("StarMap")?.appendChild(canvas)
-
     return () => {
       document.getElementById("StarMap")?.removeChild(script)
       document.getElementById("StarMap")?.removeChild(canvas)

@@ -12,7 +12,8 @@ import {
   UserOutlined
 } from "@ant-design/icons";
 import Innerprofile from './innerprofile';
-
+import '../index.tsx';
+import {useTranslation} from 'react-i18next'
 
 
 const { Content, Sider } = Layout;
@@ -21,31 +22,44 @@ function Profile() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [nowKey, setNowKey] = useState(1);
   const [content, setContent] = useState(<div></div>);
-
+  const {t,i18n} = useTranslation()
   const {ProfileStore} = useStore();
   function getLabel(x:number) {
     if(x === 1) {
-      return "profile"
+      return t("profile")
     }
-    if(x === 2) {
-      return "planets"
-    }
+    // if(x === 2) {
+    //   return t("planets")
+    // }
     
   }
+  useEffect(() => {
+    const handleWheel = (e:any) => {
+      e.preventDefault();
+    };
+
+    // 在组件挂载时添加滚轮事件监听器
+    window.addEventListener('wheel', handleWheel, { passive: false });
+
+    // 在组件卸载时移除滚轮事件监听器
+    return () => {
+      window.removeEventListener('wheel', handleWheel);
+    };
+  }, []);
   useEffect(()=>{
     if(nowKey == 1) {
       setContent(
         <Innerprofile></Innerprofile>
       )
     } 
-    else if(nowKey == 2) {
-      setContent(
-        <ProfilePlanets></ProfilePlanets>
-      )
-    }
-    else {
-      setContent(<div></div>);
-    } 
+    // else if(nowKey == 2) {
+    //   setContent(
+    //     <ProfilePlanets></ProfilePlanets>
+    //   )
+    // }
+    // else {
+    //   setContent(<div></div>);
+    // } 
   },[nowKey])
   
   
@@ -73,7 +87,7 @@ function Profile() {
           mode="inline"
           defaultSelectedKeys={['1']}
           className='SliderMenu'
-          items={[UserOutlined, UploadOutlined].map(
+          items={[UserOutlined].map(
             (icon, index) => ({
               key: String(index + 1),
               icon: React.createElement(icon),

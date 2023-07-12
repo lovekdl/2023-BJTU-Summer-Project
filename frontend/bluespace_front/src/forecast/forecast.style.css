@@ -1,7 +1,7 @@
 .SliderMenu{
   margin-top: 5vh;
-  height:95vh;
-  padding:5px;
+  height:100%;
+  padding:7px;
   font-size: 20px;
 }
 
@@ -18,7 +18,95 @@
   display: flex;
   white-space: nowrap;
 }
-.ContentLayout {
+.buttons{
   display: flex;
-  white-space: nowrap;
+}
+.ReorderContent {
+  display: flex;
+  min-width: 100vw;
+  height: 100vh;
+  margin-left: 18vw;
+  margin-top: 5vh;
+  flex:1;
+}
+.MiddleButtonContent{
+  margin-left: 20vw;
+  margin-top: 40vh;
+}
+.ReorderItem {
+  width: 32vw;
+}
+.ReorderContent ul,
+.ReorderContent li {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  font-family: "Poppins", sans-serif;
+  font-weight: 500;
+  font-size: 24px;
+}
+.ReorderContent ul {
+  position: relative;
+  width: 300px;
+}
+
+.ReorderContent li {
+  border-radius: 10px;
+  margin-bottom: 10px;
+  width: 100%;
+  padding: 15px 18px;
+  position: relative;
+  background: #F8E4FE;
+  border-radius: 5px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-shrink: 0;
+  cursor: grab;
+}
+
+.ReorderContent svg {
+  width: 18px;
+  height: 18px;
+  cursor: grab;
+}
+
+nav {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 300px;
+}
+
+.background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 300px;
+  background: #fff;
+}
+
+.refresh {
+  padding: 10px;
+  position: absolute;
+  background: rgba(0, 0, 0, 0.4);
+  border-radius: 10px;
+  width: 20px;
+  height: 20px;
+  top: 10px;
+  right: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+}
+
+.PredictInputContent{
+  width: 100px;
+  flex:1;
+}
+.InnerPredictionContent {
+  display: flex;
 }

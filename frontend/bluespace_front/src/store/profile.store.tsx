@@ -4,7 +4,8 @@ import {http, setTokenFromLocalStorage, getTokenFromLocalStorage} from '../utils
 class ProfileStore {
 	token = getTokenFromLocalStorage()||''
   avatar:any = '';
-
+	username:any = '';
+	email : any = '';
 	likesDataSource = [
 		{
 			key: '1',
@@ -59,47 +60,12 @@ class ProfileStore {
 		
 	];
 	
-	likesColumns = [
-		{
-			title: 'Planet name',
-			dataIndex: 'Planet_name',
-			key: 'Planet_name',
-		},
-		{
-			title: 'Orbit Semi-Major Axis',
-			dataIndex: 'Semi_major_axis',
-			key: 'Semi_major_axis',
-		},
-		{
-			title: 'Planet Mass',
-			dataIndex: 'Mass',
-			key: 'Mass',
-		},
-		{
-			title: 'Planet Radius',
-			dataIndex: 'Radius',
-			key: 'Radius',
-		},
-		{
-			title: 'Stellar Luminosity',
-			dataIndex: 'Stellar_luminosity',
-			key: 'Stellar_luminosity',
-		},
-		{
-			title: 'Stellar Mass',
-			dataIndex: 'Stellar_mass',
-			key: 'Stellar_mass',
-		},
-		{
-			title: 'Stellar Radius',
-			dataIndex: 'Stellar_radius',
-			key: 'Stellar_radius',
-		},
-	];
 
 	constructor() {
 		//mobx 设置响应式
 		makeAutoObservable(this)
+		this.getProfile();
+		this.getAvatar();
 	}
 	
 	setAvatar = (avatar: any) => {
@@ -109,6 +75,32 @@ class ProfileStore {
 	setToken = (token:string)=> {
 		this.token = token
 		setTokenFromLocalStorage(this.token)
+	}
+	setUsername = (username:any) => {
+		this.username=username
+	}
+	setEmail = (email:any) => {
+		this.email=email
+	}
+
+
+	getAvatar = async() => {
+		const ret = await http.post('/api/getAvatar', {
+			
+		})
+		this.setAvatar(ret.data.avatar)
+	}
+	getProfile = async() => {
+		try{
+			const ret = await http.post('/api/getProfile', {
+				
+			})
+			this.setEmail(ret.data.email)
+			this.setUsername(ret.data.username)
+		}
+		catch (e:any) {
+			console.log(e);
+		}
 	}
 }
 

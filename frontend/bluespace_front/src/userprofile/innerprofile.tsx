@@ -4,17 +4,23 @@ import {motion} from "framer-motion";
 import {Avatar} from 'antd'
 import { UploadOutlined, VideoCameraOutlined } from '@ant-design/icons';
 import { useStore } from '../store';
+import {message} from 'antd'
 import {
   UserOutlined
 } from "@ant-design/icons";
 import NameModal from "./name.modal";
 import PasswordModal from "./password.modal";
 import { useNavigate } from "react-router-dom";
+import '../index.tsx';
+import {useTranslation} from 'react-i18next'
+import {getTokenFromLocalStorage, http} from '../utils'
+
 function InnerProfile() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [nameVisible, setNameVisible] = useState(false);
   const [passwordVisible, setPasswordVisible] = useState(false);
   const {ProfileStore,loginStore} = useStore();
+  const {t,i18n} = useTranslation()
   const navigate = useNavigate();
   const handleUploadClicked = ()=> {
     console.log('hahaha')
@@ -33,9 +39,28 @@ function InnerProfile() {
     var reader = new FileReader();
     reader.onload=function(){
       var fileurl = reader.result
-      ProfileStore.setAvatar(fileurl)
-      console.log('fileurl is ' + fileurl);
-      console.log('type is '+typeof fileurl)
+      // ProfileStore.setAvatar(fileurl)
+      // console.log('fileurl is ' + fileurl); 
+      // console.log('type is '+typeof fileurl)
+      async function SaveAvatar() {
+        try {
+          const ret = await http.post('api/avatar',{
+            avatar : fileurl
+          })
+          if(ret.data.state == 'success') {
+            message.success(t('uploaded'))
+            loginStore.resetWaiting();
+            ProfileStore.getAvatar();
+          }
+          else message.error(ret.data.error_message)
+        }
+        catch(e:any) {
+          console.log('catch : ',e)
+          if(e.response) message.error(e.response.data.error_message)
+          else message.error(e.message)
+        }
+      }
+      SaveAvatar()
     }
     reader.readAsDataURL(imgfile)
 
@@ -50,6 +75,7 @@ function InnerProfile() {
     <PasswordModal visible = {passwordVisible} setVisible={setPasswordVisible}></PasswordModal>
     <div className = 'HeadPicture'>
       {ProfileStore.avatar===''? <Avatar size={128} icon={<UserOutlined />} /> : <Avatar size={128} src={<img src={ProfileStore.avatar}  alt="avatar" />} />}
+      
       <input
         type="file"
         accept="image/*"
@@ -64,11 +90,11 @@ function InnerProfile() {
         transition={{ type: "spring", stiffness: 400, damping: 20 }}
         onClick={handleUploadClicked}
       >
-        Upload
+        {t("Upload")}
       </motion.button>
     </div >
     <div className = 'InnerDiv'>
-      <span className = 'ProfileSpan'>Name &nbsp;&nbsp;</span>
+      <span className = 'ProfileSpan'>{t('Name')} &nbsp;&nbsp;</span>
       <div className = 'purple-underline'> lovekdl</div>&nbsp;&nbsp;&nbsp;&nbsp;
       <motion.button
         className="ProfileChange" 
@@ -77,17 +103,17 @@ function InnerProfile() {
         transition={{ type: "spring", stiffness: 400, damping: 20 }}
         onClick={handleModifyName}
       >
-        Modify
+        {t('Modify')}
       </motion.button>
       {/* <input type="text" readOnly placeholder="Enter your email"></input> */}
     </div>
     <div className = 'InnerDiv'>
-      <span className = 'ProfileSpan'>Email &nbsp;&nbsp;</span>
+      <span className = 'ProfileSpan'>{t('Email')} &nbsp;&nbsp;</span>
       <div className = 'purple-underline'> 2412162744@qq.com</div>&nbsp;&nbsp;&nbsp;&nbsp;
       {/* <input type="text" readOnly placeholder="Enter your email"></input> */}
     </div>
     <div className = 'InnerDiv'>
-      <span className = 'ProfileSpan'>Password &nbsp;&nbsp;</span>
+      <span className = 'ProfileSpan'>{t('Password')} &nbsp;&nbsp;</span>
       <div className = 'purple-underline'> ********</div>&nbsp;&nbsp;&nbsp;&nbsp;
       <motion.button
         className="ProfileChange" 
@@ -96,7 +122,7 @@ function InnerProfile() {
         transition={{ type: "spring", stiffness: 400, damping: 20 }}
         onClick={handleModifyPassword}
       >
-        Modify
+        {t('Modify')}
       </motion.button>
       {/* <input type="text" readOnly placeholder="Enter your email"></input> */}
     </div>
@@ -111,7 +137,7 @@ function InnerProfile() {
         transition={{ type: "spring", stiffness: 400, damping: 20 }}
         onClick={handleLogoutClicked}
       >
-        Log Out
+        {t('Log out')}
       </motion.button>
     </div>
     {/* <div className = 'InnerDiv'>

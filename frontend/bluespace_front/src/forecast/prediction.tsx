@@ -18,28 +18,48 @@ import {
 import {quat2} from "gl-matrix";
 import Statistics from './statistics';
 import InnerPrediction from './innerprediction';
-
-
+import '../index.tsx';
+import {useTranslation} from 'react-i18next'
+import ProfilePlanets from '../userprofile/profileplanets.tsx'
 
 const { Content, Sider } = Layout;
+
+
 function Prediction() {
   
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [nowKey, setNowKey] = useState(1);
   const [content, setContent] = useState(<div></div>);
-
+  const {t,i18n} = useTranslation()
   const {ProfileStore} = useStore();
   function getLabel(x:number) {
+    console.log('x' + x)
     if(x === 1) {
-      return "Statistics"
+      return t('Statistics')
     }
     if(x === 2) {
-      return "Analysis"
+      return t("Analysis")
     }
     if(x === 3) {
-      return "Prediction"
+      return t("Prediction")
+    }
+    if(x === 4) {
+      return t("My planets")
     }
   }
+  // useEffect(() => {
+  //   const handleWheel = (e:any) => {
+  //     e.preventDefault();
+  //   };
+
+  //   // 在组件挂载时添加滚轮事件监听器
+  //   window.addEventListener('wheel', handleWheel, { passive: false });
+
+  //   // 在组件卸载时移除滚轮事件监听器
+  //   return () => {
+  //     window.removeEventListener('wheel', handleWheel);
+  //   };
+  // }, []);
   useEffect(()=>{
     if(nowKey == 1) {//Statistics
       setContent(
@@ -73,6 +93,11 @@ function Prediction() {
       </div>
       )
     } 
+    if(nowKey == 4) {
+      setContent(<div>
+        <ProfilePlanets></ProfilePlanets>
+      </div>) 
+    }
   },[nowKey])
   const handleUploadClicked = ()=> {
     console.log('hahaha')
@@ -116,7 +141,7 @@ function Prediction() {
           mode="inline"
           defaultSelectedKeys={['1']}
           className='SliderMenu'
-          items={[UserOutlined, VideoCameraOutlined, UploadOutlined].map(
+          items={[UploadOutlined, VideoCameraOutlined, UploadOutlined,UserOutlined].map(
             (icon, index) => ({
               key: String(index + 1),
               icon: React.createElement(icon),

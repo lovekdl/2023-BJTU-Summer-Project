@@ -7,9 +7,19 @@
 .menuScroll {
   
   filter: drop-shadow(1px 1px 1px #5116a9);
-  width: 45%;
+  width: 100%;
+  
 }
-
+.Dropdown {
+  z-index: 999;
+  margin-left: 5vw;
+  color: aliceblue;
+}
+.Dropdown:hover {
+  z-index: 999;
+  margin-left: 5vw;
+  color: aliceblue;
+}
 .ul1 {
   display: flex;
   flex-direction: column;
@@ -37,6 +47,10 @@
   padding: 10px;
 }
 
+.ant-dropdown {
+  padding-top: 1vh;
+}
+
 .MenuButton {
   -webkit-appearance: button;
   appearance: button;
@@ -49,12 +63,13 @@
   font-size: 18px;
   font-weight: 700;
   cursor: pointer;
-  
-  text-align: cebter;
   display: flex;
+  text-align: center;
   justify-content: center;
   align-items: center;
-  outline: none;
+  margin-top: 1vh;
+  margin-left : 0.4vw;
+  
 }
 .subMenu{
   
@@ -63,6 +78,7 @@
   left: 0;
   z-index: 999; 
   pointer-events:none;
+  
 
 }
 
@@ -70,4 +86,5 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  text-align: center;
 }

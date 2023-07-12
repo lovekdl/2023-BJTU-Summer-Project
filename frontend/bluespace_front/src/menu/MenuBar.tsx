@@ -13,9 +13,14 @@ import MenuScroll from './MenuScroll';
 import {useStore} from '../store/index'
 import {Avatar} from 'antd'
 import { observer } from 'mobx-react-lite'
+import { Dropdown, message, Space } from 'antd';
+import '../index.tsx';
+import {useTranslation} from 'react-i18next'
+import {setLanguageFromLocalStorage} from "../utils/token"
 import {
-  UserOutlined
+  UserOutlined,DownOutlined 
 } from "@ant-design/icons";
+import type { MenuProps } from 'antd';
 const styles = createStyles({
   root: {
     flexGrow: 1,
@@ -31,6 +36,9 @@ const styles = createStyles({
 
 export interface Props extends WithStyles<typeof styles> {}
 
+
+
+
 function ButtonAppBar(props: Props) {
   const { classes } = props;
   const navigate = useNavigate()
@@ -43,6 +51,41 @@ function ButtonAppBar(props: Props) {
   const handleAvatarOnClicked = ()=> {
     navigate("/profile", {replace:false});
   }
+  const {t,i18n} = useTranslation()
+
+  const items: MenuProps['items'] = [
+    {
+      label: 'English',
+      key: '1',
+    },
+    {
+      label: '中文',
+      key: '2',
+    },
+    {
+      label: '日本語',
+      key: '3',
+    },
+  ];
+  const onClick: MenuProps['onClick'] = ({ key }) => {
+    
+    if(key === '1') {
+      setLanguageFromLocalStorage('en')
+      i18n.changeLanguage('en')
+      message.success('change language to english')
+    }
+    if(key === '2') {
+      setLanguageFromLocalStorage('zh')
+      i18n.changeLanguage('zh')
+      message.success('已切换至中文')
+    }
+    if(key === '3') {
+      setLanguageFromLocalStorage('jp')
+      i18n.changeLanguage('jp')
+      message.success('日本語に切り替えました')
+    }
+  };
+  
 
   return (
     
@@ -53,7 +96,14 @@ function ButtonAppBar(props: Props) {
         
           
           <MenuScroll></MenuScroll>
-
+          <Dropdown menu={{ items, onClick }} className='Dropdown'>
+            <a onClick={(e) => e.preventDefault()}>
+                <Space>
+                  {t('lang')}
+                <DownOutlined />
+              </Space>
+            </a>
+          </Dropdown>
 
           <Typography variant="h6" color="inherit" className={classes.grow}>
             BLUE SPACE

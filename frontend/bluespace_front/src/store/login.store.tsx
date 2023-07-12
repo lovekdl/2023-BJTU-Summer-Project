@@ -24,6 +24,7 @@ class LoginStore {
 		this.setToken(ret.data.token)
 			
 	}
+	
 	getTokenByRegister = async ({username, password} : { username: string; password: string }) => {
 		//调用注册接口
 		const ret = await http.post('/api/register', {

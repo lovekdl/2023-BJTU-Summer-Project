@@ -1,13 +1,13 @@
 
 
-.content {
+.content{
   width: 100vw;
   height: 100vh;
   background-color: rgb(186, 175, 221);
   position: relative;
   
 }
-.content .login-wrapper {
+.login-wrapper {
   width: 70vw;
   height: 80vh;
   background-color: #fff;
@@ -18,14 +18,14 @@
   transform: translate(-50%, -50%);
   display: flex;
 }
-.content .login-wrapper .left-img {
+.login-wrapper .left-img {
   border-radius: 40px;
   flex: 1;
   background: url(../assets/bg.jpg) no-repeat;
   background-size: cover;
   position: relative;
 }
-.content .login-wrapper .left-img .glass {
+.login-wrapper .left-img .glass {
   width: 60%;
   padding: 20px;
   color: #fff;
@@ -40,7 +40,7 @@
   border-radius: 15px;
   border: 1px solid rgba(255, 255, 255, 0.48);
 }
-.content .login-wrapper .left-img .glass .tips .title {
+.login-wrapper .left-img .glass .tips .title {
   width: 25%;
   font-weight: 600;
   font-size: 15px;
@@ -55,17 +55,17 @@
   border: 1px solid rgba(255, 255, 255, 0.48);
   color:black
 }
-.content .login-wrapper .left-img .glass .tips h1 {
+.login-wrapper .left-img .glass .tips h1 {
   margin: 15px 0;
   color:black
 }
-.content .login-wrapper .left-img .glass .tips span {
+.login-wrapper .left-img .glass .tips span {
   margin: 5px 0;
   display: block;
   font-weight: 100;
   color:black
 }
-.content .login-wrapper .right-login-form {
+.login-wrapper .right-login-form {
   flex: 1;
   position: relative;
   margin-bottom: 10vh;
@@ -74,28 +74,29 @@
 .down-margin-div {
   margin-bottom: 65px;
 }
-.content .login-wrapper .right-login-form .form-wrapper {
+.login-wrapper .right-login-form .form-wrapper {
   position: absolute;
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
   
 }
-.content .login-wrapper .right-login-form .form-wrapper h1 {
+.form-wrapper h1 {
   font-size: 30px;
   text-align: center;
 }
-.content .login-wrapper .right-login-form .form-wrapper .input-items {
+.input-items {
   margin: 20px 0;
 }
-.content .login-wrapper .right-login-form .form-wrapper .input-items .input-tips {
+.input-items .input-tips {
   /* display: flex; */
   display: inline-block;
   font-weight: 600;
   font-size: 20px;
   margin: 10px 0;
 }
-.content .login-wrapper .right-login-form .form-wrapper .input-items .inputs {
+.input-items .inputs {
+  width: 15vw;
   min-width: 100%;
   height: 50px;
   border-radius: 10px;
@@ -116,11 +117,25 @@
   box-sizing: border-box;
   outline: none;
   transition: 0.5s;
-  
 }
 .inputs2:focus {
   border: 1px solid rgb(128, 106, 196);
 }
+
+.predictinputs {
+  min-width: 15vw;
+  height: 50px;
+  border-radius: 10px;
+  border: 1px solid rgb(227, 227, 227);
+  padding: 20px;
+  box-sizing: border-box;
+  outline: none;
+  transition: 0.5s;
+}
+.predictinputs:focus {
+  border: 1px solid rgb(128, 106, 196);
+}
+
 
 .vertification {
   display: flex;
@@ -128,10 +143,10 @@
   width: 100%;
 }
 
-.content .login-wrapper .right-login-form .form-wrapper .input-items .inputs:focus {
+.input-items .inputs:focus {
   border: 1px solid rgb(128, 106, 196);
 }
-.content .login-wrapper .right-login-form .form-wrapper .input-items .forgot {
+.input-items .forgot {
   float: right;
   font-weight: 600;
   text-align: right;
@@ -140,7 +155,7 @@
   cursor: pointer;
   user-select: none;
 }
-.content .login-wrapper .right-login-form .form-wrapper .btn {
+.btn {
   width: 100%;
   height: 50px;
   background-color: rgb(128, 106, 196);
@@ -170,7 +185,6 @@
   user-select: none;
 }
 .box3 {
-  width: 7vw;
   height: 50px;
   background-color: rgb(128, 106, 196);
   border: 0;
@@ -203,16 +217,16 @@
   margin-left: 2px ;
 }
 
-.content .login-wrapper .right-login-form .form-wrapper .siginup-tips {
+.login-wrapper .right-login-form .form-wrapper .siginup-tips {
   text-align: center;
   font-weight: 600;
   margin: 10px 0;
 }
-.content .login-wrapper .right-login-form .form-wrapper .siginup-tips span:last-child {
+.login-wrapper .right-login-form .form-wrapper .siginup-tips span:last-child {
   color: rgb(110, 87, 179);
   cursor: pointer;
 }
-.content .login-wrapper .right-login-form .form-wrapper .other-login .divider {
+.login-wrapper .right-login-form .form-wrapper .other-login .divider {
   width: 100%;
   margin: 20px 0;
   text-align: center;
@@ -220,7 +234,7 @@
   align-items: center;
   justify-content: space-between;
 }
-.content .login-wrapper .right-login-form .form-wrapper .other-login .divider .line {
+.login-wrapper .right-login-form .form-wrapper .other-login .divider .line {
   display: inline-block;
   max-width: 35%;
   width: 35%;
@@ -228,20 +242,20 @@
   height: 1px;
   background-color: rgb(162, 172, 185);
 }
-.content .login-wrapper .right-login-form .form-wrapper .other-login .divider .divider-text {
+.login-wrapper .right-login-form .form-wrapper .other-login .divider .divider-text {
   vertical-align: middle;
   margin: 0 20px; 
   display: inline-block;
   color: rgb(162, 172, 185);
   white-space: normal;
 }
-.content .login-wrapper .right-login-form .form-wrapper .other-login .other-login-wrapper {
+.login-wrapper .right-login-form .form-wrapper .other-login .other-login-wrapper {
   width: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
 }
-.content .login-wrapper .right-login-form .form-wrapper .other-login .other-login-wrapper .other-login-item {
+.login-wrapper .right-login-form .form-wrapper .other-login .other-login-wrapper .other-login-item {
   width: 70px;
   padding: 10px;
   text-align: center;
@@ -252,15 +266,15 @@
   margin: 0 10px;
   transition: 0.4s;
 }
-.content .login-wrapper .right-login-form .form-wrapper .other-login .other-login-wrapper .other-login-item img {
+.login-wrapper .right-login-form .form-wrapper .other-login .other-login-wrapper .other-login-item img {
   width: 40px;
   height: 40px;
   vertical-align: middle;
 }
-.content .login-wrapper .right-login-form .form-wrapper .other-login .other-login-wrapper .other-login-item span {
+.login-wrapper .right-login-form .form-wrapper .other-login .other-login-wrapper .other-login-item span {
   vertical-align: middle;
 }
-.content .login-wrapper .right-login-form .form-wrapper .other-login .other-login-wrapper .other-login-item:hover {
+.login-wrapper .right-login-form .form-wrapper .other-login .other-login-wrapper .other-login-item:hover {
   width: 80px;
   height: 50%;
   background-color: #fff;
