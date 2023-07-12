@@ -60,10 +60,7 @@ export default function ProfilePlanets() {
   ];
   return (
     <div>
-      <p>{t('Likes')}</p>
-      <div>
-        <Table className="TableDiv" columns={Columns}  dataSource={ProfileStore.likesDataSource}></Table>
-      </div>
+      
       <p>{t('My Planets')}</p>
       <div>
         <Table className="TableDiv" columns={Columns}  dataSource={ProfileStore.likesDataSource}></Table>

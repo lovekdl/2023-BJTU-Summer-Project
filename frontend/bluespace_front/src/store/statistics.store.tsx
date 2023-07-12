@@ -5,7 +5,8 @@ import {http, setTokenFromLocalStorage, getTokenFromLocalStorage} from '../utils
 import { List } from 'echarts';
 import i18n from '../index.tsx';
 class StatisticsStore {
-  
+
+
 	DataSource = [
 		{
 			key: '1',
@@ -16,7 +17,6 @@ class StatisticsStore {
 			Stellar_luminosity:50,
 			Stellar_mass:50,
 			Stellar_radius:60,
-			following:false,
 		},
 		{
 			key: '2',
@@ -27,7 +27,6 @@ class StatisticsStore {
 			Stellar_luminosity:50,
 			Stellar_mass:50,
 			Stellar_radius:60,
-			following:false,
 		},
 		{
 			key: '3',
@@ -38,7 +37,6 @@ class StatisticsStore {
 			Stellar_luminosity:50,
 			Stellar_mass:50,
 			Stellar_radius:60,
-			following:false,
 		},
 		{
 			key: '4',
@@ -49,7 +47,6 @@ class StatisticsStore {
 			Stellar_luminosity:50,
 			Stellar_mass:50,
 			Stellar_radius:60,
-			following:false,
 		},
 		{
 			key: '5',
@@ -60,7 +57,6 @@ class StatisticsStore {
 			Stellar_luminosity:50,
 			Stellar_mass:50,
 			Stellar_radius:60,
-			following:false,
 		},
 		
 	];

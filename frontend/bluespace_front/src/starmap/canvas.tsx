@@ -54,7 +54,7 @@ function StarMap() {
             <div>
               {StarMapStore.message.map((item,index) => {
                 return (
-                <div key = {index}>
+                <div key = {index} className="NormalFont" style={{margin:'10px'}}>
                   {item}
                   <br></br>
                 </div>)

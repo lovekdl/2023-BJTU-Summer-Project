@@ -14,13 +14,35 @@
 .StarMapMessage {
   position:absolute;
   margin-top: 20vh;
-  margin-left: 85vw;
-  width: 15vw;
+  margin-left: 80vw;
+  width: 20vw;
   height: 30vw;
   color: white;
-  background-color: rgba(186, 175, 221, 0);
   pointer-events: none;
+
+  background: rgba(255, 255, 255, 0.1);
+  
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(10px);
+  border-radius: 15px;
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.2);
+  /* border: 1px solid rgba(255, 255, 255, 0.48); */
+  
 }
 .SolidOpacity{
   opacity:1.0;
+}
+input {
+  /* Firefox */
+  -moz-appearance: textfield;
+
+  /* Webkit/Blink */
+  appearance: textfield;
+
+  /* 隐藏上下按钮 */
+  &::-webkit-inner-spin-button,
+  &::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
 }
