@@ -5,7 +5,7 @@ import { observer } from 'mobx-react-lite';
 
 import Lottie from 'react-lottie';
 import animationData from '../StarMapLoading.json';
-
+import {init} from'./src/starmap'
 
 function StarMap() {
   const {LoadingStore,StarMapStore} = useStore()
@@ -23,17 +23,18 @@ function StarMap() {
   };
 
   useEffect(() => {
-    const script = document.createElement("script")
+    // const script = document.createElement("script")
     const canvas = document.createElement("canvas")
-    script.src = "/src/starmap/src/starmap.ts"
-    script.async = true
-    script.type = "module"
+    // script.src = "/src/starmap/src/starmap.ts"
+    // script.async = true
+    // script.type = "module"
     canvas.style.width = '100vw'
     canvas.style.height = '100vh'
-    document.getElementById("StarMap")?.appendChild(script)
+    // document.getElementById("StarMap")?.appendChild(script)
     document.getElementById("StarMap")?.appendChild(canvas)
+    init()
     return () => {
-      document.getElementById("StarMap")?.removeChild(script)
+      // document.getElementById("StarMap")?.removeChild(script)
       document.getElementById("StarMap")?.removeChild(canvas)
     }
   }, [])

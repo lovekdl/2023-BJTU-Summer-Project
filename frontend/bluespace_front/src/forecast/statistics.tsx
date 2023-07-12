@@ -91,12 +91,7 @@ export default function Statistics() {
       dataIndex: 'habitable',
       key: 'habitable',
     },
-    {
-      title: '关注',
-      dataIndex: 'subscribe',
-      key: 'subscribe',
-      render: (text:any, record:any) => <HeartButton record={record} />,
-    },
+    
     
   ];
 
