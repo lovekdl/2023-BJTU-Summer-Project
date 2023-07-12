@@ -151,6 +151,27 @@ class StarGenerator {
         let idx = 0;
         let loaderIdx = 0;
 
+        function generateStarShaderType(i: number): number {
+            let type = StarGenerator.randomRange(0, 1)
+            return (type <= 0.002) ? (Planet.STAR_SHADER_TYPE_O) :
+                   (type <= 0.004) ? (Planet.STAR_SHADER_TYPE_B) :
+                   (type <= 0.012) ? (Planet.STAR_SHADER_TYPE_A) :
+                   (type <= 0.060) ? (Planet.STAR_SHADER_TYPE_F) :
+                   (type <= 0.143) ? (Planet.STAR_SHADER_TYPE_G) :
+                   (type <= 0.242) ? (Planet.STAR_SHADER_TYPE_K) :
+                   (Planet.STAR_SHADER_TYPE_M)
+        }
+
+        function generatePlanetTexture(i: number): number {
+            const esi = PlanetsDataLoader.getInstance().query(i).ESI
+            if(esi >= 0.6) {
+                return Planet.PLANET_TEXTURE_EARTH
+            } else {
+                // earth0, other1~max, so i need to generate a value between [1, max]
+                return Math.floor(Math.random() * (Planet.PLANET_TEXTURE_MAX) + 1)
+            }
+        }
+
         planets[idx] = Planet.createPlanet(
             {x:0, y:0, z:0},
             {x:0, y:0, z:0},
@@ -190,8 +211,6 @@ class StarGenerator {
                     z: origin.y + delta.z,
                 }
 
-                let type = StarGenerator.randomRange(0, 1)
-
                 planets[idx] = Planet.createPlanet(
                     position, {
                         x: StarGenerator.randomRange(-3.14, 3.14),
@@ -202,14 +221,8 @@ class StarGenerator {
                         y: StarGenerator.randomRange(-1.0, 1.0) * StarGenerator.COMMON_SPEED,
                         z: StarGenerator.randomRange(-1.0, 1.0) * StarGenerator.COMMON_SPEED,
                     },
-                    (type <= 0.002) ? (Planet.STAR_SHADER_TYPE_O) :
-                    (type <= 0.004) ? (Planet.STAR_SHADER_TYPE_B) :
-                    (type <= 0.012) ? (Planet.STAR_SHADER_TYPE_A) :
-                    (type <= 0.060) ? (Planet.STAR_SHADER_TYPE_F) :
-                    (type <= 0.143) ? (Planet.STAR_SHADER_TYPE_G) :
-                    (type <= 0.242) ? (Planet.STAR_SHADER_TYPE_K) :
-                    (Planet.STAR_SHADER_TYPE_M),
-                    Math.floor(Math.random() * (Planet.PLANET_TEXTURE_MAX + 1)),
+                    generateStarShaderType(loaderIdx),
+                    generatePlanetTexture(loaderIdx),
                     loaderIdx,
                 )
                 loaderIdx = (loaderIdx + 1) % PlanetsDataLoader.getInstance().length()

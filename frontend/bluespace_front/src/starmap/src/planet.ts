@@ -24,6 +24,8 @@ class Planet {
      * Star Shader Types
      * 
      * 恒星共有7种，分别为OBAFGKM
+     * 除了恒星，还有黑洞和公用行星
+     * 因为行星只需要行星视图下渲染一个，所以我们不需要多个行星
      */
     static readonly STAR_SHADER_TYPE_MIN:       number = 0
     static readonly STAR_SHADER_TYPE_MAX:       number = 8

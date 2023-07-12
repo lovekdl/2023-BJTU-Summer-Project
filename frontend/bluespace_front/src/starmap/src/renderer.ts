@@ -142,7 +142,7 @@ class BlueSpaceRenderer {
         const that = this
 
         // Load Planets Data
-        this.planets = await StarGenerator.randomGalaxyStar(this.numOfPlanets)
+        this.planets = await StarGenerator.trueRandomGalaxyStar(this.numOfPlanets)
 
         this.camera.update()
 
@@ -230,6 +230,13 @@ class BlueSpaceRenderer {
         this.haveRun = true;
     }
 
+    /**
+     * 切换渲染模式（切换视图）
+     * 0：银河系视图
+     * 1：行星视图
+     * @param targetMode 目标模式
+     * @param targetPlanet 目标行星（如果是行星视图，需要有这个参数）
+     */
     async switchMode(targetMode: number, targetPlanet?: number) {
         if(!this.haveRun) {
             throw new Error("Renderer not run.") 
@@ -881,6 +888,7 @@ class BlueSpaceRenderer {
     }
 
     // ===== ===== ===== Post-process ===== ===== =====
+
     /**
      * 后处理相关组件的初始化
      */

@@ -52,11 +52,20 @@
 
 * 恒星数据需要展示
   * 恒星有效温度：st_teff K
-  * 恒星半径：st_raf SolarRadius
+  * 恒星半径：st_rad SolarRadius
   * 恒星质量：st_mass SolarMass
   * 恒星亮度：st_lum log10(Solar)
 
 ## 3. 2D Visualization
+
+### 3.0 所有系外行星中的ESI
+
+* 饼状图
+  * 共分为10组，按ESI分就行了
+  * [0.9, 1.0]
+  * [0.8, 0.9)
+  * [0.7, 0.8)
+  * etc
 
 ### 3.1 宜居星球与不宜居星球比例
 

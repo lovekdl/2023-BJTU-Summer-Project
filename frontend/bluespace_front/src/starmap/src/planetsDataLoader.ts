@@ -6,7 +6,7 @@ class PlanetsDataLoader {
     private constructor() {}
     private static instance: PlanetsDataLoader = new PlanetsDataLoader()
     private haveSetup: boolean = false
-    
+
     public static getInstance() {
         return this.instance
     }
