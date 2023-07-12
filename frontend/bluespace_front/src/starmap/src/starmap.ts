@@ -7,6 +7,7 @@ import { PlanetsDataLoader  } from "./planetsDataLoader";
 let renderer: BlueSpaceRenderer
 try {
     rootStore.LoadingStore.setStarMapLoading(true);
+    rootStore.StarMapStore.setShow(false)
     
     renderer = new BlueSpaceRenderer()
     renderer.setup().then(() => {
@@ -36,6 +37,7 @@ let last = {x: 0, y: 0}
 let renderMode: number = 0
 starmapElement!.addEventListener("mousedown", (e) => {
     if(e.which === 1) {
+        console.log("renderMode: " + renderMode)
         if(renderMode === 0) {
             renderMode = -1
             const cx = e.offsetX / renderer.getCanvasSize().width * window.devicePixelRatio
@@ -49,14 +51,17 @@ starmapElement!.addEventListener("mousedown", (e) => {
                 console.log(dataId)
                 console.log(PlanetsDataLoader.getInstance().query(dataId))
                 rootStore.StarMapStore.setHeader("Header")
-                rootStore.StarMapStore.setMessage("Content1<br>Content2")
+                rootStore.StarMapStore.setMessage(["Content1", "Content2"])
                 rootStore.StarMapStore.setShow(true)
+            } else {
+                renderMode = 0
             }
         } else if(renderMode === 1) {
             renderMode = -1
             renderer.switchMode(0).then(() => {
                 renderMode = 0
             })
+            rootStore.StarMapStore.setShow(false)
         }
     } else if(e.which === 2) {
         isMouseMiddleDown = true

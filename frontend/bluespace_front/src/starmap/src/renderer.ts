@@ -294,7 +294,7 @@ class BlueSpaceRenderer {
             this.camera.startAnimation(
                 vec3.fromValues(this.planets![1].position.x, this.planets![1].position.y, this.planets![1].position.z),
                 Math.PI / 2,
-                7,
+                1.5,
                 60,
             )
 
@@ -407,8 +407,12 @@ class BlueSpaceRenderer {
         }
 
         // console.log(mnId + ": " + mnD + ", " + mnDis)
-
-        return {planetId: mnId, dataId: that.planets![mnId].id}
+        
+        if(mnId == -1) {
+            return {planetId: mnId, dataId: 0}
+        } else {
+            return {planetId: mnId, dataId: that.planets![mnId].id}        
+        }
     }
 
 
