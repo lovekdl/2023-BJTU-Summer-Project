@@ -107,11 +107,11 @@ starmapElement!.addEventListener("mouseup", (e) => {
 
 // Mouse Wheel
 starmapElement!.addEventListener("mousewheel", (e) => {
-    if(renderMode === 1) return;
+    // if(renderMode === 1) return;
     if((e as WheelEvent).deltaY > 0) {
-        renderer.camera.zoom(1)
+        renderer.camera.zoom(1, renderMode)
     } else if((e as WheelEvent).deltaY < 0) {
-        renderer.camera.zoom(-1)
+        renderer.camera.zoom(-1, renderMode)
     }
 })
 

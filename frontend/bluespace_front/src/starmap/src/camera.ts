@@ -68,9 +68,17 @@ class Camera {
     private readonly CAMERA_ZOOM_SPEED = 200
     private readonly CAMERA_RADIUS_MIN = 100
     private readonly CAMERA_RADIUS_MAX = 2500
-    zoom(delta: number) {
-        this.radius += delta * this.CAMERA_ZOOM_SPEED
-        this.radius = Math.max(this.CAMERA_RADIUS_MIN, Math.min(this.CAMERA_RADIUS_MAX, this.radius))
+    private readonly CAMERA_ZOOM_SPEED_PLANET_VIEW = 0.5
+    private readonly CAMERA_RADIUS_MIN_PLANET_VIEW = 1
+    private readonly CAMERA_RADIUS_MAX_PLANET_VIEW = 10
+    zoom(delta: number, renderMode?: number) {
+        if(renderMode === undefined || renderMode === 0) {
+            this.radius += delta * this.CAMERA_ZOOM_SPEED
+            this.radius = Math.max(this.CAMERA_RADIUS_MIN, Math.min(this.CAMERA_RADIUS_MAX, this.radius))
+        } else if(renderMode === 1) {
+            this.radius += delta * this.CAMERA_ZOOM_SPEED_PLANET_VIEW
+            this.radius = Math.max(this.CAMERA_RADIUS_MIN_PLANET_VIEW, Math.min(this.CAMERA_RADIUS_MAX_PLANET_VIEW, this.radius))
+        }
     }
 
     /**
