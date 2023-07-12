@@ -50,8 +50,25 @@ starmapElement!.addEventListener("mousedown", (e) => {
                 })
                 console.log(dataId)
                 console.log(PlanetsDataLoader.getInstance().query(dataId))
-                rootStore.StarMapStore.setHeader("Header")
-                rootStore.StarMapStore.setMessage(["Content1", "Content2"])
+                const p = PlanetsDataLoader.getInstance().query(dataId)
+                function out(a: number, n: number): string {
+                    return Number(a).toFixed(n)
+                }
+                rootStore.StarMapStore.setHeader(p.pl_name)
+                rootStore.StarMapStore.setMessage([
+                    "宜居情况：" + (p.ESI === 1 ? "宜居！" : "不宜居"),
+                    "=== 行星 ===",
+                    "轨道周期: " + out(p.pl_orbper, 2) + " Day(s)",
+                    "轨道长度: " + out(p.pl_orbsmax, 2) + " AU",
+                    "半径：" + out(p.pl_rade, 2) + " EarthRadius",
+                    "质量：" + out(p.pl_bmasse, 2) + " EarthMass",
+                    "地球相似度：" + out(p.ESI * 100, 2) + " %",
+                    "=== 星系 ===",
+                    "有效温度：" + out(p.st_teff, 2) + " K",
+                    "半径：" + out(p.st_rad, 2) + " SolarRadius",
+                    "质量：" + out(p.st_mass, 2) + " SolarMass",
+                    "亮度：" + out(p.st_lum, 2) + " log10(Solar)",
+                ])
                 rootStore.StarMapStore.setShow(true)
             } else {
                 renderMode = 0

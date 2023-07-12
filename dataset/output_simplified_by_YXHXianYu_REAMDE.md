@@ -8,7 +8,7 @@
 * pl_rade：行星半径 [Earth Radius]
 * pl_bmasse：行星质量 [Earth Mass]
 * st_teff：恒星有效温度 [K]
-* st_raf：恒星半径 [Solar Radius]
+* st_rad：恒星半径 [Solar Radius]
 * st_mass：恒星质量 [Solar Mass]
 * st_lum：恒星亮度 [log10(Solar)]
 * st_logg：恒星表面引力 [log10(cm/s**2)]
