@@ -28,9 +28,9 @@ function Profile() {
     if(x === 1) {
       return t("profile")
     }
-    if(x === 2) {
-      return t("planets")
-    }
+    // if(x === 2) {
+    //   return t("planets")
+    // }
     
   }
   useEffect(() => {
@@ -52,14 +52,14 @@ function Profile() {
         <Innerprofile></Innerprofile>
       )
     } 
-    else if(nowKey == 2) {
-      setContent(
-        <ProfilePlanets></ProfilePlanets>
-      )
-    }
-    else {
-      setContent(<div></div>);
-    } 
+    // else if(nowKey == 2) {
+    //   setContent(
+    //     <ProfilePlanets></ProfilePlanets>
+    //   )
+    // }
+    // else {
+    //   setContent(<div></div>);
+    // } 
   },[nowKey])
   
   
@@ -87,7 +87,7 @@ function Profile() {
           mode="inline"
           defaultSelectedKeys={['1']}
           className='SliderMenu'
-          items={[UserOutlined, UploadOutlined].map(
+          items={[UserOutlined].map(
             (icon, index) => ({
               key: String(index + 1),
               icon: React.createElement(icon),

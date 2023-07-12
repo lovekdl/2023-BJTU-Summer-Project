@@ -67,6 +67,8 @@ i18n
           'uploaded' : 'uploaded',
           'The two passwords are different':'The two passwords are different',
           'collect' :'collect',
+          'My planets' :'My planets',
+          'See in starmap':'See in starmap',
         }
       },
       zh: {
@@ -83,12 +85,12 @@ i18n
           'Stellar Luminosity' : '所属恒星光度',
           'Stellar Mass' : '所属恒星质量',
           'Stellar Radius' : '所属恒星半径',
-          'ESI' : '相似度',
-          'Habitable' : '是否宜居',
+          'ESI' : '地球相似度',
+          'Habitability' : '宜居情况',
           'Enter':'输入',
           'Predict' : '预测',
           'Save' : '保存',
-          'profile' : "信息",
+          'profile' : "个人信息",
           'planets' : '行星',
           'Upload' : '上传',
           'Name' : "用户名",
@@ -129,6 +131,19 @@ i18n
           'uploaded' : '上传成功',
           'The two passwords are different':'两次输入的密码不同',
           'collect' :'收藏',
+          'My planets' :'我的星球',
+          'Planet name message':'自定义星球的名称',
+          'Orbital Period[days] message':'行星轨道周期,以天数为单位,表示行星绕恒星运动的周期,如地球为365',
+          'Orbit Semi-Major Axis message':'行星绕恒星旋转平面的半长轴长度,输入地球的倍数,为1时表示与地球的轨道半长轴长度相同',
+          'Planet Mass message' : '行星质量,以1个地球质量为单位,为1时表示与地球质量相同',
+          'Planet Radius message' : '行星半径,以1个地球半径为单位,为1时表示与地球半径相同',
+          'Stellar Luminosity message' : '所属恒星光度,为0时表示和太阳照射地球的光度相同',
+          'Stellar Mass message' : '所属恒星质量,以一个太阳质量为单位,为1时表示和太阳质量相同',
+          'Stellar Radius message' : '所属恒星半径,以1个太阳半径为单位,为1时表示与太阳半径相同',
+          'Habitable' : '宜居的',
+          'NOT Habitable' :'不宜居的',
+          'See in starmap':'驾驶飞船前往',
+          'Save in my planets':'保存到我的星球'
         }
       },
       jp: {
@@ -191,6 +206,7 @@ i18n
           'uploaded' : 'アップロード成功です',
           'The two passwords are different':'2回で入力したパスワードが違います',
           'collect' :'収集',
+          'My planets' :'私の星です',
         }
       }
     },

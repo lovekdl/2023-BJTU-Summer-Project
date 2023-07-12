@@ -13,6 +13,9 @@ import '../index.tsx';
 import {useTranslation} from 'react-i18next'
 import {http} from '../utils'
 import {message} from 'antd'
+
+import MD5 from 'crypto-js/md5'
+
 interface InputRef {
   value: string;
 }
@@ -47,6 +50,7 @@ function RegisterForm  (prop:any)  {
           const ret = await http.post('api/send',{
           username : usernameRef.current?.value,
           email : emailRef.current?.value,
+          password: passwordRef.current?.value,
         })
         if(ret.data.state == 'success') {
           message.success('email has been sent.')

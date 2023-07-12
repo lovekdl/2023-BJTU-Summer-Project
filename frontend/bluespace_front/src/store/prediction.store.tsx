@@ -85,6 +85,8 @@ class PredictionStore {
   setItems = (newItems : any)=> {
     this.items = newItems
   }
+	
+	
 }
 
 export default PredictionStore
