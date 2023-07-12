@@ -1,15 +1,24 @@
+// libs
+import { mat4, vec4, vec3 } from 'gl-matrix'
+
+// shaders
 import starShader from "../shaders/star.wgsl?raw"
 import composite1Shader from "../shaders/composite1.wgsl?raw"
 import composite2Shader from "../shaders/composite2.wgsl?raw"
 import finalShader from "../shaders/final.wgsl?raw"
+
+// model files
 import * as sphere from "../util/sphere"
 import * as rectangle from "../util/rectangle"
-import earthPicture from "../../assets/2k_earth_daymap.jpg"
-import { mat4, vec4, vec3 } from 'gl-matrix'
 
+// my other class
 import { Camera } from './camera'
 import { Planet } from './planet'
 import { StarGenerator } from "./starGenerator"
+
+// planet texture file
+import { planetTextureFileArray  } from './planetTexture'
+
 /**
  * 蓝色空间渲染器
  * 
@@ -20,13 +29,13 @@ class BlueSpaceRenderer {
     // ===== ===== ===== Renderer Properties ===== ===== =====
 
     private haveSetup: boolean = false
-    public  haveRun:   boolean = false
+    private haveRun:   boolean = false
     private renderMode: number = 0 // 0 银河系视图; 1 行星视图;
     // created when initWebGPU
     private device?: GPUDevice = undefined
     private context?: GPUCanvasContext = undefined
     private format: GPUTextureFormat = "rgba8unorm"
-    public canvasSize: {width: number, height: number} = {width: 0, height: 0}
+    private canvasSize: {width: number, height: number} = {width: 0, height: 0}
 
     // created when initPipeline
     private pipeline?: GPURenderPipeline = undefined
@@ -41,15 +50,19 @@ class BlueSpaceRenderer {
     private modelMatrixArray: Float32Array = new Float32Array()
     private starShaderTypeArray: Float32Array = new Float32Array()
 
-    private environmentBuffer?: GPUBuffer = undefined
-    private cameraPositionBuffer?: GPUBuffer = undefined
-    private kaBuffer?: GPUBuffer = undefined
-    private kdBuffer?: GPUBuffer = undefined
-    private ksBuffer?: GPUBuffer = undefined
+    private environmentBuffer    ?: GPUBuffer = undefined
+    private cameraPositionBuffer ?: GPUBuffer = undefined
+    private kaBuffer             ?: GPUBuffer = undefined
+    private kdBuffer             ?: GPUBuffer = undefined
+    private ksBuffer             ?: GPUBuffer = undefined
+    private lightPositionBuffer  ?: GPUBuffer = undefined
+    private runningTimeBuffer    ?: GPUBuffer = undefined
 
     // created when initTexture
     private depthTexture?: GPUTexture = undefined
-    private texture?: GPUTexture = undefined
+    private planetTexture?: GPUTexture = undefined
+    private planetTextureBitmapArray: Array<ImageBitmap> = new Array<ImageBitmap>(Planet.PLANET_TEXTURE_MAX + 1)
+    private planetTextureSize: Array<number> = new Array<number>(2)
 
     // created when initSampler
     private sampler?: GPUSampler = undefined
@@ -57,15 +70,6 @@ class BlueSpaceRenderer {
     // created when initGroup
     private transformGroup?: GPUBindGroup = undefined
     private textureGroup?: GPUBindGroup = undefined
-
-    // About Planet View
-    private isPlanetMode: boolean = false
-    private lightPositionBuffer?: GPUBuffer = undefined
-    private phongCoefficientBuffer?: GPUBuffer = undefined
-    private planetModelMatrixBuffer?: GPUBuffer = undefined
-
-    private planetTexture?: GPUTexture = undefined
-    
 
     // ===== Post-process =====
     private intermediateTextures?: Array<GPUTexture> = undefined
@@ -82,7 +86,7 @@ class BlueSpaceRenderer {
 
     public camera: Camera
     private numOfPlanets: number
-    private planets: Array<Planet>
+    private planets?: Array<Planet>
 
     private projectionMatrix: mat4 = mat4.create()
 
@@ -129,7 +133,6 @@ class BlueSpaceRenderer {
 
         // ===== Load Planets =====
         this.numOfPlanets = 20000
-        this.planets = StarGenerator.randomGalaxyStar(this.numOfPlanets)
     }
 
     /**
@@ -137,6 +140,9 @@ class BlueSpaceRenderer {
      */
     async setup() {
         const that = this
+
+        // Load Planets Data
+        this.planets = await StarGenerator.trueRandomGalaxyStar(this.numOfPlanets)
 
         this.camera.update()
 
@@ -167,12 +173,13 @@ class BlueSpaceRenderer {
         
         // console.log("viewMatrix: " + this.camera.viewMatrix)
         // console.log("projectionMatrix: " + this.projectionMatrix)
+
         
         // ===== Load Planets to GPU =====
-        for(let i = 0; i < that.planets.length; i++) {
-            that.planets[i].update()
-            that.modelMatrixArray.set(that.planets[i].modelMatrix as Float32Array, 4 * 4 * i)
-            that.starShaderTypeArray.set(Float32Array.from([that.planets[i].starShaderType]), i)
+        for(let i = 0; i < that.planets!.length; i++) {
+            that.planets![i].update()
+            that.modelMatrixArray.set(that.planets![i].modelMatrix as Float32Array, 4 * 4 * i)
+            that.starShaderTypeArray.set(Float32Array.from([that.planets![i].starShaderType]), i)
         }
         that.device!.queue.writeBuffer(that.modelMatrixBuffer!, 0, that.modelMatrixArray)
         that.device!.queue.writeBuffer(that.starShaderTypeBuffer!, 0, that.starShaderTypeArray)
@@ -192,22 +199,29 @@ class BlueSpaceRenderer {
         }
         const that = this
 
+        const startTime = Date.now();
+
         // ===== Animation & Rendering =====
         function frame() {
             // for(let i = 0; i < that.planets.length; i++) {
-            //     that.planets[i].update()
-            //     that.modelMatrixArray.set((that.planets[i].modelMatrix as Float32Array), 4 * 4 * i)
+            //     that.planets![i].update()
+            //     that.modelMatrixArray.set((that.planets![i].modelMatrix as Float32Array), 4 * 4 * i)
             // }
             // that.device!.queue.writeBuffer(that.modelMatrixBuffer!, 0, that.modelMatrixArray)
             
-            console.log(that.renderMode, Math.floor(that.renderMode+0.5) === 1)
-            if(Math.floor(that.renderMode+0.5) === 1)
-                that.camera.update(false, true)
-            that.camera.update(true)
+            that.camera.updateAnimation()
+            // if(Math.floor(that.renderMode+0.5) === 1)
+            //     that.camera.update(false, true)
+            that.camera.update(true, true)
             that.device!.queue.writeBuffer(that.viewMatrixBuffer!, 0, (that.camera.viewMatrix) as Float32Array)
             that.device!.queue.writeBuffer(that.cameraPositionBuffer!, 0, that.camera.position as Float32Array)
 
+            // console.log(that.camera.position[0] + ", " + that.camera.position[1] + ", " + that.camera.position[2])
+
             that.draw()
+
+            that.device!.queue.writeBuffer(that.runningTimeBuffer!, 0, Float32Array.from([Date.now() - startTime]))
+            // console.log("Running Time: " + (Date.now() - startTime))
 
             requestAnimationFrame(frame)
         }
@@ -216,24 +230,36 @@ class BlueSpaceRenderer {
         this.haveRun = true;
     }
 
+    /**
+     * 切换渲染模式（切换视图）
+     * 0：银河系视图
+     * 1：行星视图
+     * @param targetMode 目标模式
+     * @param targetPlanet 目标行星（如果是行星视图，需要有这个参数）
+     */
     async switchMode(targetMode: number, targetPlanet?: number) {
         if(!this.haveRun) {
             throw new Error("Renderer not run.") 
         }
+        if(targetMode < 0) {
+            console.log("Switching mode isn't end.")
+        }
         if(this.renderMode === targetMode) {
             console.log("TargetMode and CurrentMode are the same.")
         }
-
+        const that = this
+        
         if(this.renderMode === 0 && targetMode === 1 && targetPlanet != undefined && targetPlanet >= 0) {
-            const that = this
-            // 1. Stars (Scale)
-            const scalueDownCoefficient = 0.3;
+            // 1. Change Planet Texture
+            await this.loadSpecificPlanetTextureToCurrentRenderer(this.planets![targetPlanet].planetTextureType)
+
+            // 2. Stars (Scale)
             function scaleDown(i: number, k: number) {
-                that.planets[i].scale.x *= k
-                that.planets[i].scale.y *= k
-                that.planets[i].scale.z *= k
-                that.planets[i].updateModelMatrix()
-                that.modelMatrixArray.set((that.planets[i].modelMatrix as Float32Array), 4 * 4 * i)
+                that.planets![i].scale.x *= k
+                that.planets![i].scale.y *= k
+                that.planets![i].scale.z *= k
+                that.planets![i].updateModelMatrix()
+                that.modelMatrixArray.set((that.planets![i].modelMatrix as Float32Array), 4 * 4 * i)
             }
             const distance2Limit = 400
             function distance2(a: {x:number,y:number,z:number}, b: {x:number,y:number,z:number}) {
@@ -247,40 +273,90 @@ class BlueSpaceRenderer {
                     continue;
                 } else if(i === targetPlanet) {
                     scaleDown(i, 0.4)
-                } else if(distance2(this.planets[i].position, this.planets[targetPlanet].position) <= distance2Limit) {
+                } else if(distance2(this.planets![i].position, this.planets![targetPlanet].position) <= distance2Limit) {
                     // 不显示一些过近的恒星 
                     scaleDown(i, 0)
                 } else {
                     scaleDown(i, 0.2)
                 }
             }
-            // 2. Target Planet (ModelMatrix(update per frame), Texture)
-            this.planets[1].position = this.planets[targetPlanet].position
-            const posDelta = Math.max(10, this.planets[targetPlanet].starRadius)
-            this.planets[1].position.x += posDelta
-            this.planets[1].position.z += posDelta
-            this.planets[1].scale = {x: 0.5, y: 0.5, z: 0.5}
-            this.planets[1].updateModelMatrix()
-            this.modelMatrixArray.set((that.planets[1].modelMatrix as Float32Array), 4 * 4 * 1)
-            // 3. Camera
-            this.camera.target = vec3.fromValues(this.planets[1].position.x, this.planets[1].position.y, this.planets[1].position.z)
-            this.camera.theta = Math.PI / 2
-            this.camera.radius = 7
-            // 4. End
+
+            // 3. Target Planet (ModelMatrix(update per frame), planetTexture)
+            this.planets![1].position = {
+                x: this.planets![targetPlanet].position.x,
+                y: this.planets![targetPlanet].position.y,
+                z: this.planets![targetPlanet].position.z,
+            }
+            const posDelta = Math.max(10, this.planets![targetPlanet].starRadius)
+            this.planets![1].position.x += posDelta
+            this.planets![1].position.z += posDelta
+            this.planets![1].scale = {x: 0.5, y: 0.5, z: 0.5}
+            this.planets![1].updateModelMatrix()
+            this.modelMatrixArray.set((that.planets![1].modelMatrix as Float32Array), 4 * 4 * 1)
+
+            // 4. Camera
+            // this.camera.target = vec3.fromValues(this.planets![1].position.x, this.planets![1].position.y, this.planets![1].position.z)
+            // this.camera.theta = Math.PI / 2
+            // this.camera.radius = 7
+            this.camera.startAnimation(
+                vec3.fromValues(this.planets![1].position.x, this.planets![1].position.y, this.planets![1].position.z),
+                Math.PI / 2,
+                1.5,
+                120,
+            )
+
+            // 5. Shader's argument
+            let lightPos = vec3.fromValues(0, 0, 0)
+            vec3.transformMat4(lightPos, lightPos, this.planets![targetPlanet].modelMatrix)
+            that.device!.queue.writeBuffer(that.lightPositionBuffer!, 0, lightPos as Float32Array)
+
+            // 6. End
             this.device!.queue.writeBuffer(this.modelMatrixBuffer!, 0, this.modelMatrixArray)
             this.renderMode = 1
-            console.log("Scale down.")
+            console.log("Switched to Planet View.")
         } else if(this.renderMode === 1 && targetMode === 0) {
+            // 1. Stars (Scale)
+            for(let i = 0; i < this.numOfPlanets; i++) {
+                this.planets![i].resetScale()
+                that.modelMatrixArray.set((that.planets![i].modelMatrix as Float32Array), 4 * 4 * i)
+            }
 
+            // 2. Target Planet (ModelMatrix(update per frame), planetTexture)
+            // nothing
+
+            // 3. Camera
+            // this.camera.target = vec3.fromValues(0, 0, 0)
+            // this.camera.theta = this.CAMERA_THETA
+            // this.camera.radius = this.CAMERA_RADIUS
+            this.camera.startAnimation(
+                vec3.fromValues(0, 0, 0),
+                this.CAMERA_THETA,
+                this.CAMERA_RADIUS,
+                120,
+            )
+           
+            // 4. End
+            this.device!.queue.writeBuffer(this.modelMatrixBuffer!, 0, this.modelMatrixArray)
+            this.renderMode = 0
+            console.log("Switched to Galaxy View.")
         } else {
-            throw new Error("TargetMode is unknown.")
+            throw new Error("SwitchMode error.")
         }
     }
 
     /**
-     * 返回canvasSize
+     * 获取canvasSize
      */
-    // TODO
+    getCanvasSize(): {width:number, height:number} {
+        return this.canvasSize
+    }
+
+    /**
+     * 获取renderMode
+     */
+    getRenderMode(): number {
+        return this.renderMode
+    }
 
     /**
      * 判断鼠标点击到哪个行星系
@@ -289,7 +365,9 @@ class BlueSpaceRenderer {
      * 鼠标相对位置 (tx, ty), tx ty in [-0.5, 0.5]
      */
     private readonly SELECT_PLANET_HIT_COEFFICIENT = 20
-    selectPlanet(cx: number, cy: number): number {
+    selectPlanet(cx: number, cy: number): {planetId: number, dataId: number} {
+        const that = this
+
         let tx = cx - 0.5
         let ty = -(cy - 0.5)
 
@@ -311,18 +389,18 @@ class BlueSpaceRenderer {
         
         let mnDis = -1
         let mnId = -1
-        let mnD = -1
+        // let mnD = -1
         for(let i = 0; i < this.numOfPlanets; i++) {
             const CA: vec3 = vec3.create()
-            const C: vec3 = vec3.fromValues(this.planets[i].position.x, this.planets[i].position.y, this.planets[i].position.z)
+            const C: vec3 = vec3.fromValues(this.planets![i].position.x, this.planets![i].position.y, this.planets![i].position.z)
             vec3.sub(CA, C, A)
 
             const S: vec3 = vec3.create()
             vec3.cross(S, BA, CA)
             let d = vec3.len(S) / vec3.len(BA)
-            const depth = vec3.len(CA)
+            // const depth = vec3.len(CA)
 
-            d = d - this.planets[i].starRadius
+            d = d - this.planets![i].starRadius
 
             // if(i == 0) {
             //     console.log(" - C" + i + ": " + C + "\nd: "+d)
@@ -331,13 +409,17 @@ class BlueSpaceRenderer {
             if(d <= this.SELECT_PLANET_HIT_COEFFICIENT && (mnId == -1 || d < mnDis)) {
                 mnId = i
                 mnDis = d
-                mnD = d
+                // mnD = d
             }
         }
 
         // console.log(mnId + ": " + mnD + ", " + mnDis)
-
-        return mnId
+        
+        if(mnId == -1) {
+            return {planetId: mnId, dataId: 0}
+        } else {
+            return {planetId: mnId, dataId: that.planets![mnId].id}        
+        }
     }
 
 
@@ -624,28 +706,46 @@ class BlueSpaceRenderer {
         this.device!.queue.writeBuffer(that.cameraPositionBuffer!, 0, that.camera.position as Float32Array)
 
         // ===== Phong Coefficient Buffer =====
+
         // ambient
         this.kaBuffer = that.device!.createBuffer({
             size: 3 * 4,
             usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
         })
-        this.device!.queue.writeBuffer(that.kaBuffer!, 0, Float32Array.from([0.1, 0.1, 0.1]))
+        this.device!.queue.writeBuffer(that.kaBuffer!, 0, Float32Array.from(new Array(3).fill(0.05)))
+        
         // diffuse
         this.kdBuffer = that.device!.createBuffer({
             size: 3 * 4,
             usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
         })
-        this.device!.queue.writeBuffer(that.kdBuffer!, 0, Float32Array.from([0.1, 0.1, 0.1]))
+        this.device!.queue.writeBuffer(that.kdBuffer!, 0, Float32Array.from(new Array(3).fill(0.5)))
+
         // specular
         this.ksBuffer = that.device!.createBuffer({
             size: 3 * 4,
             usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
         })
-        this.device!.queue.writeBuffer(that.ksBuffer!, 0, Float32Array.from([0.1, 0.1, 0.1]))
+        this.device!.queue.writeBuffer(that.ksBuffer!, 0, Float32Array.from(new Array(3).fill(0.25)))
+
+        // light position
+        this.lightPositionBuffer = that.device!.createBuffer({
+            size: 3 * 4,
+            usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
+        })
+        // no need to write buffer at this time
+        // that.device!.queue.writeBuffer(that.lightPositionBuffer!, 0, Float32Array.from([0, 0, 0]))
+
+        // running time
+        this.runningTimeBuffer = that.device!.createBuffer({
+            size: 4,
+            usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
+        })
+        // write every frame since renderer runs
     }
 
     /**
-     * 初始化Texture
+     * 初始化planetTexture
      */
     private async initTexture() {
         const that = this
@@ -657,37 +757,46 @@ class BlueSpaceRenderer {
             usage: GPUTextureUsage.RENDER_ATTACHMENT,
         })
         
-        // ===== Texture =====
+        // ===== planetTexture =====
         // 小知识： 在浏览器中，webp包含了jpeg/png/gif等格式的优点，所以在开发中，应该优先使用webp格式
         // 小知识2：视频格式，推荐VP8/9
         // 获取图片
         // const textureUrl = "https://raw.githubusercontent.com/YXHXianYu/WebGPU-Learning/main/resource/XingHui.jpg"
         // const textureUrl = "./resource/2k_earth_daymap.jpg"
         // const res = await fetch(textureUrl)
-        const bitmapPromise: Promise<ImageBitmap> = new Promise((resolve) => {
-            const img = new Image()
-            img.src = earthPicture
-            img.onload = async() => {
-                const bitmap = await createImageBitmap(img)
-                resolve(bitmap)
-            }
-        })
-        const bitmap: ImageBitmap = await bitmapPromise
-        // 创建texture
-        const textureSize = [bitmap.width, bitmap.height]
-        that.texture = that.device!.createTexture({
-            size: textureSize,
+        for(let i = 0; i < planetTextureFileArray.length; i++) {
+            const bitmapPromise: Promise<ImageBitmap> = new Promise((resolve) => {
+                const img = new Image()
+                img.src = planetTextureFileArray[i]
+                img.onload = async() => {
+                    const bitmap = await createImageBitmap(img)
+                    resolve(bitmap)
+                }
+            })
+            that.planetTextureBitmapArray[i] = await bitmapPromise
+        }
+        that.planetTextureSize = [that.planetTextureBitmapArray[0].width, that.planetTextureBitmapArray[0].height]
+        that.planetTexture = that.device!.createTexture({
+            size: that.planetTextureSize,
             format: 'rgba8unorm',
             usage:
                 GPUTextureUsage.TEXTURE_BINDING |
                 GPUTextureUsage.COPY_DST |
                 GPUTextureUsage.RENDER_ATTACHMENT,
         })
-        // 写入texture
+        await this.loadSpecificPlanetTextureToCurrentRenderer(0)
+    }
+
+    private async loadSpecificPlanetTextureToCurrentRenderer(index: number) {
+        const that = this
+
+        console.log(`Loading Planet${index}'s Texture`)
+        const bitmap = that.planetTextureBitmapArray[index]
+        // 写入planetTexture
         that.device!.queue.copyExternalImageToTexture(
             { source: bitmap },
-            { texture: that.texture! },
-            textureSize,
+            { texture: that.planetTexture! },
+            that.planetTextureSize,
         )
     }
 
@@ -708,7 +817,7 @@ class BlueSpaceRenderer {
      * 初始化Group
      * 
      * Group的作用是传入Shader中的全局变量，
-     * 可以传入Buffer、Texture、Sampler
+     * 可以传入Buffer、planetTexture、Sampler
      */
     public getHaveRun() {
         return this.haveRun
@@ -745,11 +854,11 @@ class BlueSpaceRenderer {
 
         // 绑定纹理的Group
         this.textureGroup = this.device!.createBindGroup({
-            label: 'Texture Group with Texture and Sampler',
+            label: 'planetTexture Group with Texture and Sampler',
             layout: that.pipeline!.getBindGroupLayout(1),
             entries: [{
                 binding: 0,
-                resource: that.texture!.createView(),
+                resource: that.planetTexture!.createView(),
             }, {
                 binding: 1,
                 resource: that.sampler!,
@@ -768,11 +877,18 @@ class BlueSpaceRenderer {
             }, {
                 binding: 6,
                 resource: { buffer: that.ksBuffer! }
+            }, {
+                binding: 7,
+                resource: { buffer: that.lightPositionBuffer! }
+            }, {
+                binding: 8,
+                resource: { buffer: that.runningTimeBuffer! }
             }],
         })
     }
 
     // ===== ===== ===== Post-process ===== ===== =====
+
     /**
      * 后处理相关组件的初始化
      */
@@ -792,7 +908,7 @@ class BlueSpaceRenderer {
 
         this.postprocess = new Array(this.POSTPROCESS_NUM)
 
-        // texture[0] => texture[1]
+        // planetTexture[0] => texture[1]
         this.postprocess[0] = await this.createSimplePipeline(
             "Composite1",
             composite1Shader,
@@ -809,7 +925,7 @@ class BlueSpaceRenderer {
             that.intermediateTextures![1].createView()
         )
 
-        // texture[1] => texture[2]
+        // planetTexture[1] => texture[2]
         this.postprocess[1] = await this.createSimplePipeline(
             "Composite2",
             composite2Shader,
@@ -826,7 +942,7 @@ class BlueSpaceRenderer {
             that.intermediateTextures![2].createView()
         )
 
-        // texture[0] & texture[2] => Final
+        // planetTexture[0] & texture[2] => Final
         this.postprocess[2] = await this.createSimplePipeline(
             "Final",
             finalShader,

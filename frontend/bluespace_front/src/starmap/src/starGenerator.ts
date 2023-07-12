@@ -1,4 +1,5 @@
 import { Planet } from "./planet";
+import { PlanetsDataLoader } from "./planetsDataLoader";
 
 class StarGenerator {
 
@@ -48,24 +49,30 @@ class StarGenerator {
 
     /**
      * 在银河系4条旋臂的基础上，随机出n个位置
-     * 
-     * public方法
      */
-    static randomGalaxyStar(num: number): Array<Planet> {
+    static async randomGalaxyStar(num: number): Promise<Array<Planet>> {
         const L = StarGenerator.SPIRAL_L
         const R = StarGenerator.SPIRAL_R
         const deltaSpiral = Math.floor(num / 4)
         const deltaStar = (R - L) / deltaSpiral
 
+        await PlanetsDataLoader.getInstance().setup()
+        console.log(PlanetsDataLoader.getInstance().length())
+        console.log(PlanetsDataLoader.getInstance().query(1))
+        
         let planets = new Array(num)
         let idx = 0;
-        
+        let loaderIdx = 0;
+
         planets[idx] = Planet.createPlanet(
             {x:0, y:0, z:0},
             {x:0, y:0, z:0},
             {x:0, y:0, z:0},
             Planet.STAR_SHADER_TYPE_BLACKHOLE,
+            Planet.PLANET_TEXTURE_MARS,
+            loaderIdx,
         )
+        loaderIdx = (loaderIdx + 1) % PlanetsDataLoader.getInstance().length()
         idx++
 
         planets[idx] = Planet.createPlanet(
@@ -73,6 +80,8 @@ class StarGenerator {
             {x:0, y:0, z:0},
             {x:0, y:0, z:0},
             Planet.STAR_SHADER_TYPE_PLANET,
+            Planet.PLANET_TEXTURE_EARTH,
+            -1,
         )
         idx++
 
@@ -112,10 +121,111 @@ class StarGenerator {
                     (type <= 0.060) ? (Planet.STAR_SHADER_TYPE_F) :
                     (type <= 0.143) ? (Planet.STAR_SHADER_TYPE_G) :
                     (type <= 0.242) ? (Planet.STAR_SHADER_TYPE_K) :
-                    (Planet.STAR_SHADER_TYPE_M)
+                    (Planet.STAR_SHADER_TYPE_M),
+                    Math.floor(Math.random() * (Planet.PLANET_TEXTURE_MAX + 1)),
+                    loaderIdx,
                 )
-                
+                loaderIdx = (loaderIdx + 1) % PlanetsDataLoader.getInstance().length()
+            }
+        }
 
+        return planets
+    }
+
+    /**
+     * 在银河系4条旋臂的基础上，随机出n个位置
+     * 
+     * 星球数据根据真实数据生成
+     */
+    static async trueRandomGalaxyStar(num: number): Promise<Array<Planet>> {
+        const L = StarGenerator.SPIRAL_L
+        const R = StarGenerator.SPIRAL_R
+        const deltaSpiral = Math.floor(num / 4)
+        const deltaStar = (R - L) / deltaSpiral
+
+        await PlanetsDataLoader.getInstance().setup()
+        console.log(PlanetsDataLoader.getInstance().length())
+        console.log(PlanetsDataLoader.getInstance().query(1))
+        
+        let planets = new Array(num)
+        let idx = 0;
+        let loaderIdx = 0;
+
+        function generateStarShaderType(i: number): number {
+            let type = StarGenerator.randomRange(0, 1)
+            return (type <= 0.002) ? (Planet.STAR_SHADER_TYPE_O) :
+                   (type <= 0.004) ? (Planet.STAR_SHADER_TYPE_B) :
+                   (type <= 0.012) ? (Planet.STAR_SHADER_TYPE_A) :
+                   (type <= 0.060) ? (Planet.STAR_SHADER_TYPE_F) :
+                   (type <= 0.143) ? (Planet.STAR_SHADER_TYPE_G) :
+                   (type <= 0.242) ? (Planet.STAR_SHADER_TYPE_K) :
+                   (Planet.STAR_SHADER_TYPE_M)
+        }
+
+        function generatePlanetTexture(i: number): number {
+            const esi = PlanetsDataLoader.getInstance().query(i).ESI
+            if(esi >= 0.6) {
+                return Planet.PLANET_TEXTURE_EARTH
+            } else {
+                // earth0, other1~max, so i need to generate a value between [1, max]
+                return Math.floor(Math.random() * (Planet.PLANET_TEXTURE_MAX) + 1)
+            }
+        }
+
+        planets[idx] = Planet.createPlanet(
+            {x:0, y:0, z:0},
+            {x:0, y:0, z:0},
+            {x:0, y:0, z:0},
+            Planet.STAR_SHADER_TYPE_BLACKHOLE,
+            Planet.PLANET_TEXTURE_MARS,
+            loaderIdx,
+        )
+        loaderIdx = (loaderIdx + 1) % PlanetsDataLoader.getInstance().length()
+        idx++
+
+        planets[idx] = Planet.createPlanet(
+            {x:0, y:0, z:0},
+            {x:0, y:0, z:0},
+            {x:0, y:0, z:0},
+            Planet.STAR_SHADER_TYPE_PLANET,
+            Planet.PLANET_TEXTURE_EARTH,
+            -1,
+        )
+        idx++
+
+        for(let i = 0; i <= 3; i++) { // 枚举每条旋臂
+            let t = L
+            const angle = i * Math.PI / 2.0
+            for(let j = 0; (i != 3 && j < deltaSpiral) || (i == 3 && idx < num); j++, idx++, t += deltaStar) { // 枚举旋臂上的每个位置
+                
+                const origin = StarGenerator.equaiangularSpiral(angle, t, StarGenerator.SPIRAL_SIZE, 0.4)
+                const delta = {
+                    x: StarGenerator.randomNormalDist(0, StarGenerator.NORMAL_DIST_VARIANCE).x,
+                    y: StarGenerator.randomNormalDist(0, StarGenerator.NORMAL_DIST_VARIANCE).x,
+                    z: StarGenerator.randomNormalDist(0, StarGenerator.NORMAL_DIST_VARIANCE).x,
+                }
+
+                let position = {
+                    x: origin.x + delta.x,
+                    y: 0        + delta.y,
+                    z: origin.y + delta.z,
+                }
+
+                planets[idx] = Planet.createPlanet(
+                    position, {
+                        x: StarGenerator.randomRange(-3.14, 3.14),
+                        y: StarGenerator.randomRange(-3.14, 3.14),
+                        z: StarGenerator.randomRange(-3.14, 3.14),
+                    }, {
+                        x: StarGenerator.randomRange(-1.0, 1.0) * StarGenerator.COMMON_SPEED,
+                        y: StarGenerator.randomRange(-1.0, 1.0) * StarGenerator.COMMON_SPEED,
+                        z: StarGenerator.randomRange(-1.0, 1.0) * StarGenerator.COMMON_SPEED,
+                    },
+                    generateStarShaderType(loaderIdx),
+                    generatePlanetTexture(loaderIdx),
+                    loaderIdx,
+                )
+                loaderIdx = (loaderIdx + 1) % PlanetsDataLoader.getInstance().length()
             }
         }
 
