@@ -142,7 +142,7 @@ i18n
           'Stellar Radius message' : '所属恒星半径,以1个太阳半径为单位,为1时表示与太阳半径相同',
           'Habitable' : '宜居的',
           'NOT Habitable' :'不宜居的',
-          'See in starmap':'在星图中查看',
+          'See in starmap':'驾驶飞船前往',
           'Save in my planets':'保存到我的星球'
         }
       },
