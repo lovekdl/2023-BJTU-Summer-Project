@@ -78,6 +78,9 @@ def sign(request, auto_create_account: bool):
 
 # === Prediction === #
 def junior_predict(request):
+    '''
+    初级模型预测接口
+    '''
     result = {}
     if request.method != 'POST':
         return Tools.toErrorResponse('Request method is not POST.')
@@ -99,6 +102,9 @@ def junior_predict(request):
 
 
 def senior_predict(request):
+    '''
+    高级模型预测接口
+    '''
     result = {}
     if request.method != 'POST':
         return Tools.toErrorResponse('Request method is not POST.')
@@ -112,6 +118,30 @@ def senior_predict(request):
     predictor = Predictor()
 
     result = predictor.predict(1, request.body)
+
+    if result == -1:
+        return Tools.toErrorResponse('Prediction incorrect.')
+
+    return Tools.toResponse(result, 200)
+
+
+def DNN_predict(request):
+    '''
+    DNN模型预测接口
+    '''
+    result = {}
+    if request.method != 'POST':
+        return Tools.toErrorResponse('Request method is not POST.')
+
+    data = json.loads(request.body)
+
+    if 'token' not in data or data['token'] is None:
+        return Tools.toErrorResponse('Token is none.')
+    token = data['token']
+
+    predictor = Predictor()
+
+    result = predictor.predict(3, request.body)
 
     if result == -1:
         return Tools.toErrorResponse('Prediction incorrect.')

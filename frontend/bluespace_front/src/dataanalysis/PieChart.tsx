@@ -1,53 +1,8 @@
 import React, { Component } from 'react';
 import * as eCharts from 'echarts';
+import { Card } from 'antd'; // 假设使用了antd的Card组件
 
-// 测试数据
-const data = [
-    { name: '苹果', value: 335 },
-    { name: '香蕉', value: 310 },
-    { name: '橘子', value: 234 },
-    { name: '梨子', value: 135 },
-    { name: '葡萄', value: 1548 }
-];
-
-class PieChart extends Component {
-    // 获取饼状图的配置项
-    getOption = () => {
-        return {
-            title: {
-                text: '水果销量',
-                subtext: '测试数据',
-                left: 'center'
-            },
-            tooltip: {
-                trigger: 'item'
-            },
-            legend: {
-                orient: 'vertical',
-                left: 'left'
-            },
-            grid: {
-                show: 'true',
-                borderWidth: '0'
-            },
-            series: [
-                {
-                    name: '水果',
-                    type: 'pie',
-                    radius: '50%',
-                    data,
-                    emphasis: {
-                        itemStyle: {
-                            shadowBlur: 10,
-                            shadowOffsetX: 0,
-                            shadowColor: 'rgba(0, 0, 0, 0.5)'
-                        }
-                    }
-                }
-            ]
-        };
-    };
-
+export default class PieChart extends Component {
     // 创建echarts实例
     componentDidMount() {
         this.chart = eCharts.init(this.chartRef);
@@ -64,9 +19,60 @@ class PieChart extends Component {
         this.chart.dispose();
     }
 
+    // 获取饼状图的配置项
+    getOption = () => {
+        const { title, dataName, chartData } = this.props;
+
+        return {
+            title: {
+                text: title,
+                left: 'center',
+            },
+            tooltip: {
+                trigger: 'item',
+            },
+            legend: {
+                orient: 'vertical',
+                left: 'left',
+            },
+            grid: {
+                show: 'true',
+                borderWidth: '0',
+            },
+            series: [
+                {
+                    name: dataName,
+                    type: 'pie',
+                    radius: '50%',
+                    data: chartData,
+                    emphasis: {
+                        itemStyle: {
+                            shadowBlur: 10,
+                            shadowOffsetX: 0,
+                            shadowColor: 'rgba(0, 0, 0, 0.5)',
+                        },
+                    },
+                },
+            ],
+        };
+    };
+
     render() {
-        return <div ref={(ref) => (this.chartRef = ref)} style={{ width: '600px', height: '400px' }} />;
+        const { title, dataName, chartData, description } = this.props; // 获取传递的属性
+
+        return (
+            <Card>
+                <div style={{ display: 'flex' }}>
+                    <div
+                        ref={(ref) => (this.chartRef = ref)}
+                        style={{ width: '600px', height: '400px' }}
+                    ></div>
+                    <div style={{ marginLeft: '20px' }}>
+                        <h2>{title}</h2>
+                        <p>{description}</p> {/* 显示图表的说明 */}
+                    </div>
+                </div>
+            </Card>
+        );
     }
 }
-
-export default PieChart;

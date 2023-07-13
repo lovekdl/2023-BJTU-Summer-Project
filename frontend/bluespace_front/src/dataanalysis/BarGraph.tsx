@@ -10,25 +10,29 @@ export default class BarGraph extends PureComponent {
 
         let option = {
             title: {
-                text: "星球数据",
+                text: "Planet Data",
             },
             tooltip: {},
             legend: {
-                data: ["销量"],
+                data: ["Value"],
             },
             grid: {
                 show: 'true',
                 borderWidth: '0'
             },
             xAxis: {
-                data: ["衬衫", "羊毛衫", "雪纺衫", "裤子", "高跟鞋", "袜子"],
+                data: ["Orbit_period", "Semi_major_axis", "Mass", "Radius", "Stellar_luminosity", "Stellar_Radius", "Stellar_Mass"],
+                axisLabel:{
+                    rotate: -20,
+                }
+
             },
             yAxis: {},
             series: [
                 {
-                    name: "销量",
+                    name: "Value",
                     type: "bar",
-                    data: [5, 20, 36, 10, 10, 20],
+                    data: [5, 20, 36, 10, 10, 20, 10],
                 },
             ],
         };
@@ -38,9 +42,9 @@ export default class BarGraph extends PureComponent {
 
     render() {
         return <div ref={this.eChartsRef} style={{
-            width: 600,
-            height: 400,
-            margin: 100
+            width: 900,
+            height: 600,
+            //margin: 100
         }}></div>;
     }
 }

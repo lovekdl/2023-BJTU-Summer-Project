@@ -98,7 +98,7 @@ export default function Statistics() {
   return (
     <div>
       <p>{t('My Planets')}</p>
-      <Table className="TableDiv" columns={Columns} pagination={{ pageSize: 8 }}  dataSource={StatisticsStore.DataSource}></Table>
+      <Table className="TableDiv" columns={Columns} pagination={{ pageSize: 10 }}  dataSource={StatisticsStore.DataSource}></Table>
     </div>
   )
 } 

@@ -118,3 +118,10 @@ nav {
 .InnerPredictionContent {
   display: flex;
 }
+
+.PageContainer {
+  display: flex;
+
+  align-items: center;
+  background-color: white;
+}

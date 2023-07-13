@@ -73,7 +73,6 @@ class StatisticsStore {
         const ret = await http.post('api/resource',{
           
         })
-        if(ret.data.state == 'success') {
           const newData = [];
           console.log(ret.data)
           for (let key in ret.data) {
@@ -85,7 +84,7 @@ class StatisticsStore {
             }
           }
           this.setDataSource(newData);
-        }
+
       }
       catch(e:any) {
         console.log('catch : ',e)

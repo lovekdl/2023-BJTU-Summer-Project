@@ -7,3 +7,4 @@ BlueSpace/main/__pycache__/
 BlueSpace/main/migrations/
 BlueSpace/main/minecraft_llm_support_backend/__pycache__/
 /__pycache__/
+.idea

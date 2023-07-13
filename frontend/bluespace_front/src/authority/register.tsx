@@ -47,7 +47,7 @@ function RegisterForm  (prop:any)  {
     }
     async function register() {
       try {
-        const ret = await http.post('api/send',{
+          const ret = await http.post('api/send',{
           username : usernameRef.current?.value,
           email : emailRef.current?.value,
           password: passwordRef.current?.value,
