@@ -69,6 +69,7 @@ i18n
           'collect' :'collect',
           'My planets' :'My planets',
           'See in starmap':'See in starmap',
+          'Picture message' :'Picture',
         }
       },
       zh: {
@@ -146,7 +147,8 @@ i18n
           'Save in my planets':'保存到我的星球',
           "Predict result":' 预测结果',
           'Predict result message' : '点击预测后预测结果将在下方展示,鼠标悬浮在预测结果上可以查看预测结果,当预测数量较多时,可以拖动预测框任意调换顺序。',
-          
+          'Picture' :'图表展示',
+          'Picture message' :'点击左侧结果，可以查看图表信息',
         }
       },
       jp: {

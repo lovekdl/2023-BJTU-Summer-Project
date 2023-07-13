@@ -62,6 +62,7 @@ const AnalysisPage = () => {
                 total={totalPages}
                 pageSize={pageSize}
                 onChange={handlePageChange}
+                className="LeftMargin30"
             />
         </div>
     );
