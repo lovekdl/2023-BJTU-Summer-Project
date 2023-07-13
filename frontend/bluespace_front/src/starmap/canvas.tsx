@@ -34,8 +34,6 @@ function StarMap() {
     document.getElementById("StarMap")?.appendChild(canvas)
     renderer = init()
     
-    
-
     return () => {
       // document.getElementById("StarMap")?.removeChild(script)
       renderer.stop()

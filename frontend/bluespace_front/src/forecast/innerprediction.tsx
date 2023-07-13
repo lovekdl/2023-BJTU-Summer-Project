@@ -79,96 +79,101 @@ function InnerPrediction() {
   }
   return (
     <div className="InnerPredictionContent"> 
-      <div className = 'PredictInputContent'>
-        <div className="input-items" style = {{margin:'5px'}}>
-          <span className="input-tips">
-              {t('Planet name')}
-          </span>
-          <Popover content = {t('Planet name message')}>
-            <QuestionCircleTwoTone />
-          </Popover>
-          <br></br>
-          <input type="text" className="predictinputs" placeholder= {t("Enter")+ t('Planet name')} ref = {Planet_name} />
-          
-        </div>
-        <div className="input-items" style = {{margin:'5px'}}>
-          <span className="input-tips">
-            {t('Orbital Period[days]')}
-          </span>
-          <Popover content = {t('Orbital Period[days] message')}>
-            <QuestionCircleTwoTone />
-          </Popover>
-          <br></br>
-          <input type="number" className="predictinputs" placeholder={t("Enter")+ t('Orbital Period[days]')} ref = {Orbit_period} />
-          
-        </div>
-        <div className="input-items" style = {{margin:'5px'}}>
-          <span className="input-tips">
-            {t('Orbit Semi-Major Axis')}
-          </span>
-          <Popover content = {t('Orbit Semi-Major Axis message')}>
-            <QuestionCircleTwoTone />
-          </Popover>
-          <br></br>
-          <input type="number" className="predictinputs" placeholder={t("Enter")+ t("Orbit Semi-Major Axis")} ref = {Semi_major_axis}/>
-          
-        </div>
-        
-        <div className="input-items" style = {{margin:'5px'}}>
-          <span className="input-tips">
-            {t('Planet Mass')}
-          </span>
-          <Popover content = {t('Planet Mass message')}>
-            <QuestionCircleTwoTone />
-          </Popover>
-          <br></br>
-          <input type="number" className="predictinputs" placeholder={t("Enter")+ t("Planet Mass")} ref = {Mass} />
-          
-        </div>
-        <div className="input-items" style = {{margin:'5px'}}>
-          <span className="input-tips">
-            {t('Planet Radius')}
-          </span>
-          <Popover content = {t('Planet Radius message')}>
-            <QuestionCircleTwoTone />
-          </Popover>
-          <br></br>
-          <input type="number" className="predictinputs" placeholder={t("Enter")+ t("Planet Radius")} ref={Radius}/>
-          
-        </div>
-        <div className="input-items" style = {{margin:'5px'}}>
-          <span className="input-tips">
-            {t('Stellar Luminosity')}
-          </span>
-          <Popover content = {t('Stellar Luminosity message')}>
-            <QuestionCircleTwoTone />
-          </Popover>
-          <br></br>
-          <input type="number" className="predictinputs" placeholder={t("Enter")+ t("Stellar Luminosity")} ref = {Stellar_luminosity}/>
-          
-        </div>
-        <div className="input-items" style = {{margin:'5px'}}>
-          <span className="input-tips">
-            {t('Stellar Mass')}
-          </span>
-          <Popover content = {t('Stellar Mass message')}>
-            <QuestionCircleTwoTone />
-          </Popover>
-          <br></br>
-          <input type="number" className="predictinputs" placeholder={t("Enter")+ t("Stellar Mass")} ref = {Stellar_mass}/>
-        </div>
-        <div className="input-items" style = {{margin:'5px'}}>
+      <div>
+        <div className = 'InputsAlign4' >
+          <div className="input-items" style = {{margin:'5px'}}>
             <span className="input-tips">
-              
-            {t('Stellar Radius')}
+                {t('Planet name')}
             </span>
-          <Popover content = {t('Stellar Radius message')}>
-            <QuestionCircleTwoTone />
-          </Popover>
-          <br></br>
-          <input type="number" className="predictinputs" placeholder={t("Enter")+ t("Stellar Radius")} ref = {Stellar_radius}/>
+            <Popover content = {t('Planet name message')}>
+              <QuestionCircleTwoTone />
+            </Popover>
+            <br></br>
+            <input type="text" className="predictinputs" placeholder= {t("Enter")+ t('Planet name')} ref = {Planet_name} />
+            
+          </div>
+          <div className="input-items" style = {{margin:'5px'}}>
+            <span className="input-tips">
+              {t('Orbital Period[days]')}
+            </span>
+            <Popover content = {t('Orbital Period[days] message')}>
+              <QuestionCircleTwoTone />
+            </Popover>
+            <br></br>
+            <input type="number" className="predictinputs" placeholder={t("Enter")+ t('Orbital Period[days]')} ref = {Orbit_period} />
+            
+          </div>
+          
+          <div className="input-items" style = {{margin:'5px'}}>
+            <span className="input-tips">
+              {t('Orbit Semi-Major Axis')}
+            </span>
+            <Popover content = {t('Orbit Semi-Major Axis message')}>
+              <QuestionCircleTwoTone />
+            </Popover>
+            <br></br>
+            <input type="number" className="predictinputs" placeholder={t("Enter")+ t("Orbit Semi-Major Axis")} ref = {Semi_major_axis}/>
+            
+          </div>
+        
+          <div className="input-items" style = {{margin:'5px'}}>
+            <span className="input-tips">
+              {t('Planet Mass')}
+            </span>
+            <Popover content = {t('Planet Mass message')}>
+              <QuestionCircleTwoTone />
+            </Popover>
+            <br></br>
+            <input type="number" className="predictinputs" placeholder={t("Enter")+ t("Planet Mass")} ref = {Mass} />
+          </div>
         </div>
-      </div>
+        <div className = 'InputsAlign4' >
+          <div className="input-items" style = {{margin:'5px'}}>
+            <span className="input-tips">
+              {t('Planet Radius')}
+            </span>
+            <Popover content = {t('Planet Radius message')}>
+              <QuestionCircleTwoTone />
+            </Popover>
+            <br></br>
+            <input type="number" className="predictinputs" placeholder={t("Enter")+ t("Planet Radius")} ref={Radius}/>
+            
+          </div>
+          <div className="input-items" style = {{margin:'5px'}}>
+            <span className="input-tips">
+              {t('Stellar Luminosity')}
+            </span>
+            <Popover content = {t('Stellar Luminosity message')}>
+              <QuestionCircleTwoTone />
+            </Popover>
+            <br></br>
+            <input type="number" className="predictinputs" placeholder={t("Enter")+ t("Stellar Luminosity")} ref = {Stellar_luminosity}/>
+            
+          </div>
+          <div className="input-items" style = {{margin:'5px'}}>
+            <span className="input-tips">
+              {t('Stellar Mass')}
+            </span>
+            <Popover content = {t('Stellar Mass message')}>
+              <QuestionCircleTwoTone />
+            </Popover>
+            <br></br>
+            <input type="number" className="predictinputs" placeholder={t("Enter")+ t("Stellar Mass")} ref = {Stellar_mass}/>
+          </div>
+          <div className="input-items" style = {{margin:'5px'}}>
+              <span className="input-tips">
+                
+              {t('Stellar Radius')}
+              </span>
+            <Popover content = {t('Stellar Radius message')}>
+              <QuestionCircleTwoTone />
+            </Popover>
+            <br></br>
+            <input type="number" className="predictinputs" placeholder={t("Enter")+ t("Stellar Radius")} ref = {Stellar_radius}/>
+          
+          </div>
+          </div >
+        </div>
       <div className="MiddleButtonContent">
         <motion.button
           className="box" 
@@ -178,24 +183,58 @@ function InnerPrediction() {
           onClick={handlePredictClicked}
           type = 'submit'
         >
-          {t('Predict')} →
+          {t('Predict')} 
         </motion.button>
       </div>
-      
-      <div className='ReorderContent'>
-        <div>
-            <div className="NormalFont">{t('Predict result')}
-            <Popover content = {t('Predict result message')}>
-             <QuestionCircleTwoTone />
-            </Popover>  
+      <div className="ResultContent">
+        <div className='ReorderContent'>
+          <div>
+              <div className="NormalFont">{t('Predict result')}
+              <Popover content = {t('Predict result message')}>
+              <QuestionCircleTwoTone />
+              </Popover>  
+            </div>
           </div>
-        </div>
-        <Reorder.Group  axis="y" onReorder={PredictionStore.setItems} values={PredictionStore.items}>
-        {PredictionStore.items.map((item) => (
-          <Item key={item.name} item={item} />
-        ))}
-        </Reorder.Group>
+          <Reorder.Group  axis="y" onReorder={PredictionStore.setItems} values={PredictionStore.items} style={{
+              height: 600,
+              width: 580,
+              border: "3px solid rgb(128, 106, 196)",
+              borderRadius : "10px",
+              overflowY: "auto",
+              padding: "20px"
+            }}
+            layoutScroll >
+            {PredictionStore.items.map((item) => (
+              <Item key={item.name} item={item} />
+            ))}
+          </Reorder.Group>
 
+        </div>
+        <div className='ReorderContent2'>
+          <div>
+              <div className="NormalFont">{t('Picture')}
+              <Popover content = {t('Picture message')}>
+              <QuestionCircleTwoTone />
+              </Popover>  
+            </div>
+          </div>
+          <div style={{
+              height: 600,
+              width: 580,
+              border: "3px solid rgb(128, 106, 196)",
+              borderRadius : "10px",
+              overflowY: "auto",
+              padding: "20px"
+            }}
+              
+            >
+              <div>
+                tubiao
+              </div>
+          </div>
+          
+
+        </div>
       </div>
       
     </div>

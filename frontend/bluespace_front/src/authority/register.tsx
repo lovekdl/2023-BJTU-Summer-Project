@@ -34,14 +34,14 @@ function RegisterForm  (prop:any)  {
   async function handleRegisterSubmit(event:any) {
     event.preventDefault();
   
-    if(!usernameRef.current?.value || ! passwordRef.current?.value || !emailRef.current?.value || !confirmedPasswordRef.current?.value || !codeRef.current?.value) {
+    if(!usernameRef.current?.value || ! passwordRef.current?.value || !emailRef.current?.value || !confirmedPasswordRef.current?.value ) {
       message.error(t('inputs can not be empty'))
       return;}
     const username = usernameRef.current.value;
     const email = emailRef.current.value;
     const password = passwordRef.current.value;
     const confirmedPassword = confirmedPasswordRef.current.value;
-    const code = codeRef.current.value;
+    const code = codeRef.current?.value;
     if(passwordRef.current.value != confirmedPasswordRef.current.value) {
       message.error(t('The two passwords are different'))
     }
@@ -67,7 +67,7 @@ function RegisterForm  (prop:any)  {
     register()
   }
   const handleSendClicked = () => {
-    if(!usernameRef.current?.value || ! passwordRef.current?.value || !emailRef.current?.value || !confirmedPasswordRef.current?.value || !codeRef.current?.value) {
+    if(!usernameRef.current?.value || ! passwordRef.current?.value || !emailRef.current?.value || !confirmedPasswordRef.current?.value  ) {
       message.error(t('inputs can not be empty'))
       return;}
     async function send() {

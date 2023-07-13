@@ -26,9 +26,11 @@
   white-space: nowrap;
 }
 .ReorderContent {
-  min-width: 100vw;
-  height: 100vh;
-  margin-left: 18vw;
+  margin-left: 6vw;
+  margin-top: 5vh;
+}
+.ReorderContent2 {
+  margin-left: 8vw;
   margin-top: 5vh;
 }
 .NormalFont {
@@ -36,13 +38,26 @@
   font-size: 20px;
 }
 .MiddleButtonContent{
-  margin-left: 20vw;
-  margin-top: 40vh;
+  margin-left: 35vw;
+  width: 6vw;
+}
+.ResultContent {
+  display: flex;
 }
 .ReorderItem {
   width: 520px;
   
 }
+.RightPredictionResult {
+  margin-left: 20px;
+}
+.ReorderGroup {
+  height: 55vh;
+  width: 30vw;
+  border : 3px solid rgb(128, 106, 196);
+  border-radius: 3%;
+}
+
 .ReorderContent ul,
 .ReorderContent li {
   list-style: none;
@@ -54,7 +69,6 @@
 }
 .ReorderContent ul {
   position: relative;
-  width: 300px;
 }
 
 .ReorderContent li {
@@ -114,14 +128,29 @@ nav {
 .PredictInputContent{
   width: 100px;
   flex:1;
+  
+}
+
+.InputsAlign4{
+  display: flex;
+  margin-left: 7vw;
+}
+.InputsAlign3{
+  display: flex;
+  margin-left: 9vw;
 }
 .InnerPredictionContent {
-  display: flex;
+  display: block;
+  
+  
 }
 
 .PageContainer {
-  display: flex;
-
-  align-items: center;
+  display: block;
+  margin-left:10vw;
+  white-space: nowrap;
   background-color: white;
+}
+.LeftMargin30{
+  margin-left: 20vw;
 }
