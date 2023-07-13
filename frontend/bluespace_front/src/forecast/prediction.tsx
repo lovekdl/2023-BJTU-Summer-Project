@@ -12,6 +12,7 @@ import BarGraph from "../dataanalysis/BarGraph";
 import PieChart from "../dataanalysis/PieChart";
 import LineChart from "../dataanalysis/LineChart";
 import DataTable from "../dataanalysis/DataTable";
+import AnalysisPage from "./analysispage";
 import {
   UserOutlined
 } from "@ant-design/icons";
@@ -69,20 +70,21 @@ function Prediction() {
     if(nowKey == 2) {//Analysis
       setContent(
       <Layout >
-        <div className='ContentLayout'>
-          <BarGraph></BarGraph>
-          <div style={{marginTop: 150}}>
-            <PieChart></PieChart>
-          </div>
-        </div>
-        <div className='ContentLayout'>
-          <div  style={{marginLeft: 100}}>
-            <LineChart></LineChart>
-          </div>
-          <div>
-            <Gauge></Gauge>
-          </div>
-        </div>
+        {/*<div className='ContentLayout'>*/}
+        {/*  <BarGraph></BarGraph>*/}
+        {/*  <div style={{marginTop: 150}}>*/}
+        {/*    <PieChart></PieChart>*/}
+        {/*  </div>*/}
+        {/*</div>*/}
+        {/*<div className='ContentLayout'>*/}
+        {/*  <div  style={{marginLeft: 100}}>*/}
+        {/*    <LineChart></LineChart>*/}
+        {/*  </div>*/}
+        {/*  <div>*/}
+        {/*    <Gauge></Gauge>*/}
+        {/*  </div>*/}
+        {/*</div>*/}
+        <AnalysisPage></AnalysisPage>
       </Layout>
       )
     } 

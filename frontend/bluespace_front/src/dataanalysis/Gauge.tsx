@@ -9,7 +9,6 @@ export default class Gauge extends PureComponent {
 
     async componentDidMount() {
         const myChart = eCharts.init(this.eChartsRef.current);
-
         // 发送异步请求获取数据
         try {
             const ret = await http.post('api/linear_predict', {
@@ -93,7 +92,7 @@ export default class Gauge extends PureComponent {
             style={{
                 width: 600,
                 height: 400,
-                margin: 100
+                //margin: 100
             }}
         ></div>;
     }
