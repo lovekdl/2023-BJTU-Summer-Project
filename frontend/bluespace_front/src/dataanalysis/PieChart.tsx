@@ -21,11 +21,12 @@ export default class PieChart extends Component {
 
     // 获取饼状图的配置项
     getOption = () => {
-        const { title, dataName, chartData } = this.props;
+        const { title, subtitle, dataName, chartData } = this.props;
 
         return {
             title: {
                 text: title,
+                subtext: subtitle,
                 left: 'center',
             },
             tooltip: {
@@ -58,7 +59,7 @@ export default class PieChart extends Component {
     };
 
     render() {
-        const { title, dataName, chartData, description } = this.props; // 获取传递的属性
+        const { title,subtitle, dataName, chartData, description } = this.props; // 获取传递的属性
 
         return (
             <Card>

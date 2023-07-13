@@ -20,23 +20,60 @@ const AnalysisPage = () => {
     const renderChartComponent = (pageNumber) => {
         switch (pageNumber) {
             case 1:
-                let title = '宜居度比例';
-                let dataName = '宜居度';
-                let chartData = [
-                    {name: '宜居', value: 335},
-                    {name: '不宜居', value: 310},
+                let title1 = '宜居度比例';
+                let subtitle1 = '';
+                let dataName1 = '宜居度';
+                let chartData1 = [
+                    {name: '宜居', value: 64},
+                    {name: '不宜居', value: 3752},
                 ];
-                let description = '这是关于图表的说明文本';
+                let description1 = (
+                    <div>
+                    <span>
+                        3816条数据中，共有64个星球是宜居的，<br />
+                        其余的3752个星球均不适合人类生存。
+                    </span>
+                    <br/>
+                        <br/>
+                        <br/>
+                        <br/>
+                        <div style={{fontSize: '40px'}}><b>珍惜我们唯一的家园。</b></div>
+                    </div>
+                );
                 return (
                     <Layout>
-                        <PieChart title={title} dataName={dataName} chartData={chartData} description={description}/>
+                        <PieChart title={title1} subtitle={subtitle1} dataName={dataName1} chartData={chartData1} description={description1}/>
                     </Layout>
                 );
             case 2:
                 // 第二页的图表组件
+                let title2 = '宜居与不宜居星球的ESI分布';
+                let dataName2 = 'ESI';
+                let subtitle2 = 'ESI:地球相似度 低: 0-0.5 中: 0.5-0.8 高: 0.8-1.0'
+                let chartData2 = [
+                    {name: '高ESI宜居星球', value: 14},
+                    {name: '高ESI不宜居星球', value: 11},
+                    {name: '中ESI不宜居星球', value: 198},
+                    {name: '中ESI宜居星球', value: 48},
+                    {name: '低ESI不宜居星球', value: 3543},
+                    {name: '低ESI宜居星球', value: 2},
+                ];
+                let description2 = (
+                    <div>
+                    <span>
+                        中高相似度(ESI{'>'}0.5)的行星中，宜居星球占比较高;<br />
+                        而低相似度(ESI{'<'}0.5)的行星中，不宜居星球占比较高。<br />
+                    </span>
+                        <br/>
+                        <br/>
+                        <div style={{fontSize: '40px'}}><b>
+                            但高ESI不代表一定宜居，<br />
+                            还存在着液态行星等情况。</b></div>
+                    </div>
+                );
                 return (
                     <Layout>
-                        {<Gauge></Gauge>}
+                        <PieChart title={title2} subtitle={subtitle2} dataName={dataName2} chartData={chartData2} description={description2}/>
                     </Layout>
                 );
             case 3:
@@ -52,7 +89,7 @@ const AnalysisPage = () => {
         }
     };
 
-    const totalPages = 3; // 总页数，根据实际需求设置
+    const totalPages = 10; // 总页数，根据实际需求设置
 
     return (
         <div className='PageContainer'>
