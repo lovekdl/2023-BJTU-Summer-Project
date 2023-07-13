@@ -2,8 +2,11 @@ import numpy as np
 import pandas as pd
 import joblib
 import json
+import os
 import pickle
 from xgboost import XGBClassifier
+from modelDNNLinearRegression.predictor import Predict8
+# from model.model-DNN-LinearRegression.predictor import Predict8
 
 class Predictor:
     '''
@@ -35,9 +38,12 @@ class Predictor:
                              'st_wise4', 'st_wise4lim', 'st_jmh2', 'st_jmh2err', 'st_jmh2lim',
                              'st_hmk2', 'st_hmk2err', 'st_hmk2lim', 'st_jmk2', 'st_jmk2err',
                              'st_jmk2lim', 'habitable']
-        self.imputer = joblib.load('./model-senior/model/imputer.joblib')
-        self.scaler = joblib.load('./model-senior/model/scaler.joblib')
-        with open('./model-senior/model/NumericCols.pkl', 'rb') as f:
+        self.dnn_needs = ["Orbit_period", "Semi_major_axis", "Mass (EU)", "Radius (EU)", 
+                             "Stellar_luminosity", "Stellar_mass", "Stellar_radius", "ESI"]
+        self.imputer = joblib.load('./modelsenior/model/imputer.joblib')
+        self.scaler = joblib.load('./modelsenior/model/scaler.joblib')
+        self.dnn_path = os.path.join(os.getcwd(), 'modelDNNLinearRegression\\models\\model.ckpt')
+        with open('./modelsenior/model/NumericCols.pkl', 'rb') as f:
             self.NumericCols = pickle.load(f)
     
     def set_data(self, data):
@@ -46,13 +52,15 @@ class Predictor:
     def load_model(self, model_type : int):
         '''
         加载模型
-        model_type : int 模型类型，1为高级模型，2为初级模型
+        model_type : int 模型类型，1为高级模型，2为初级模型，3为DNN模型
         '''
         if model_type == 1:
             self.model_senior = XGBClassifier()
-            self.model_senior.load_model('./model-senior/model/xgb.model')
+            self.model_senior.load_model('./modelsenior/model/xgb.model')
+        elif model_type == 2:
+            self.model_junior = joblib.load('./modeljunior/rf_model.pkl')
         else:
-            self.model_junior = joblib.load('./model-junior/rf_model.pkl')
+            pass
     
     def check(self, model_type : int):
         '''
@@ -63,11 +71,18 @@ class Predictor:
             return 0
         if model_type == 1:
             return 1
-        for field in self.junior_needs:
-            if field not in self.data.columns:
-                return 0
-            if self.data[field].isnull().any():
-                return 0
+        elif model_type == 2:
+            for field in self.junior_needs:
+                if field not in self.data.columns:
+                    return 0
+                if self.data[field].isnull().any():
+                    return 0
+        else:
+            for field in self.dnn_needs:
+                if field not in self.data.columns:
+                    return 0
+                if self.data[field].isnull().any():
+                    return 0
         return 1   
         
     def clearify(self, model_type : int):
@@ -97,10 +112,17 @@ class Predictor:
             self.data = self.data.drop("habitable", axis = 1)
             
             
-        else:
+        elif model_type == 2:
             for field in self.data.columns:
                 # print(field)
                 if field not in self.junior_needs:
+                    print("drop", field)
+                    self.data = self.data.drop(field, axis=1)
+                    
+        else:
+            for field in self.data.columns:
+                # print(field)
+                if field not in self.dnn_needs:
                     print("drop", field)
                     self.data = self.data.drop(field, axis=1)
           
@@ -110,7 +132,7 @@ class Predictor:
         model_type : int 模型类型，1为高级模型，2为初级模型
         json_data : json 数据
         返回值：
-        ret : int 预测结果，1为可居住，0为不可居住, -1为错误
+        ret : 预测结果，1为可居住，0为不可居住, -1为错误, (0, 1)为可宜居概率
         '''
         self.data = json.loads(json_data)
         self.data = pd.DataFrame([self.data])
@@ -124,12 +146,16 @@ class Predictor:
             self.data = np.array(self.data).reshape(1, -1)
             y_preds = self.model_senior.predict(self.data)
             return y_preds[0]
-        else:
+        elif model_type == 2:
             if(self.model_junior is None):
                 self.load_model(2)
             print(self.data)
             y_preds = self.model_junior.predict(self.data)
             return y_preds[0]
+        else:
+            self.data = list(self.data.values[0])
+            print(self.data)
+            return Predict8(self.data, self.dnn_path)
         
 def main():
     '''
@@ -138,18 +164,30 @@ def main():
     predector = Predictor()
     
     junior_data = {
-        "Planet_name": "Kepler-10 b",
-        "Orbit_period": 59.877560,
-        "Semi_major_axis": 0.248610,
-        "Mass (EU)": 5.27,
-        "Radius (EU)":  2.150,
-        "Stellar_luminosity": -0.923, 
-        "Stellar_mass": 0.64,
-        "Stellar_radius": 0.62
+        "Planet_name": "Kepler-62 f",
+        "Orbit_period": 267.291,
+        "Semi_major_axis": 0.718,
+        "Mass (EU)": 35,
+        "Radius (EU)":  1.41,
+        "Stellar_luminosity": -0.678, 
+        "Stellar_mass": 0.69,
+        "Stellar_radius": 0.64,
     }
     
     senior_data = {
         'rowid':1
+    }
+    
+    dnn_data = {
+        "Planet_name": "Kepler-62 f",
+        "Orbit_period": 267.291,
+        "Semi_major_axis": 0.718,
+        "Mass (EU)": 35,
+        "Radius (EU)":  1.41,
+        "Stellar_luminosity": -0.678, 
+        "Stellar_mass": 0.69,
+        "Stellar_radius": 0.64,
+        "ESI": 0.68
     }
     
     ## check功能测试
@@ -159,14 +197,14 @@ def main():
     # print(predector.check(2))
     
     ## json数据测试
-    json_data = json.dumps(senior_data)
+    json_data = json.dumps(dnn_data)
     # print(json_data)
     # data = json.loads(json_data)
     # data = pd.DataFrame([data])
     # print(data)
     
     ## predict功能测试
-    y = predector.predict(1, json_data)
+    y = predector.predict(3, json_data)
     print(y)
         
 if __name__ == '__main__':

@@ -28,9 +28,12 @@ class BlueSpaceRenderer {
 
     // ===== ===== ===== Renderer Properties ===== ===== =====
 
-    private haveSetup: boolean = false
-    private haveRun:   boolean = false
-    private renderMode: number = 0 // 0 银河系视图; 1 行星视图;
+    private haveSetup:  boolean = false
+    private haveRun:    boolean = false
+    private renderMode:  number = 0 // 0 银河系视图; 1 行星视图;
+    private haveStop:   boolean = false
+    private animationID: number = -1
+
     // created when initWebGPU
     private device?: GPUDevice = undefined
     private context?: GPUCanvasContext = undefined
@@ -221,13 +224,19 @@ class BlueSpaceRenderer {
             that.draw()
 
             that.device!.queue.writeBuffer(that.runningTimeBuffer!, 0, Float32Array.from([Date.now() - startTime]))
+
             // console.log("Running Time: " + (Date.now() - startTime))
 
-            requestAnimationFrame(frame)
+            that.animationID = requestAnimationFrame(frame)
         }
-        requestAnimationFrame(frame)
+        that.animationID = requestAnimationFrame(frame)
 
-        this.haveRun = true;
+        this.haveRun = true
+    }
+
+    stop() {
+        this.haveStop = true
+        window.cancelAnimationFrame(this.animationID)
     }
 
     /**

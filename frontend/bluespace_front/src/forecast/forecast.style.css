@@ -21,20 +21,27 @@
 .buttons{
   display: flex;
 }
+.ItemDisplayStyle{
+  text-align: center;
+  white-space: nowrap;
+}
 .ReorderContent {
-  display: flex;
   min-width: 100vw;
   height: 100vh;
   margin-left: 18vw;
   margin-top: 5vh;
-  flex:1;
+}
+.NormalFont {
+  font-weight: 550;
+  font-size: 20px;
 }
 .MiddleButtonContent{
   margin-left: 20vw;
   margin-top: 40vh;
 }
 .ReorderItem {
-  width: 32vw;
+  width: 520px;
+  
 }
 .ReorderContent ul,
 .ReorderContent li {
@@ -57,6 +64,7 @@
   padding: 15px 18px;
   position: relative;
   background: #F8E4FE;
+  border: 2px solid rgb(128, 106, 196);
   border-radius: 5px;
   display: flex;
   justify-content: space-between;

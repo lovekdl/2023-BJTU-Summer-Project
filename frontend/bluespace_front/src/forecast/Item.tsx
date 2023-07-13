@@ -7,7 +7,7 @@ import '../index.tsx';
 import {useTranslation} from 'react-i18next'
 import { http } from "../utils/http.tsx";
 import {message, Popover} from 'antd'
-
+import { useNavigate } from "react-router";
 interface Props {
   item: any;
 }
@@ -15,7 +15,7 @@ interface Props {
 export const Item = ({ item }: Props) => {
   const y = useMotionValue(0);
   const boxShadow = useRaisedShadow(y);
-
+  const navigate = useNavigate();
   const {t,i18n} = useTranslation()
   const handleSaveClicked = () => {
     let features = {
@@ -49,6 +49,9 @@ export const Item = ({ item }: Props) => {
     Save()
 
   }
+  const handleNavigateClicked = () => {
+    navigate('/',{replace:false})
+  }
 
   const getContent = (item:any) => {
     return (
@@ -63,31 +66,36 @@ export const Item = ({ item }: Props) => {
   }
   return (
     <div className = 'ReorderItem'>
+      
       <Reorder.Item value={item} id={item.name} style={{ boxShadow, y }} >
         <Popover content={getContent(item)}>
-        <div>{item.name}</div>
-        </Popover>
-        <div className="buttons">
-          <motion.button
-            className="box3" 
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            transition={{ type: "spring", stiffness: 400, damping: 20 }}
-            onClick={handleSaveClicked}
-          >
-            {t("See in starmap")}
-          </motion.button>
-          <motion.button
-            className="box3" 
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            transition={{ type: "spring", stiffness: 400, damping: 20 }}
+          <div className="ItemDisplayStyle">
+            {item.name}
             
-            onClick={handleSaveClicked}
-          >
-            {t("Save in my planets")}
-          </motion.button>
-        </div>
+            <div className="buttons">
+              
+              <motion.button
+                className="box4" 
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                transition={{ type: "spring", stiffness: 400, damping: 20 }}
+                onClick={handleNavigateClicked}
+              >
+                {t("See in starmap")}
+              </motion.button>
+              <motion.button
+                className="box4" 
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                transition={{ type: "spring", stiffness: 400, damping: 20 }}
+                
+                onClick={handleSaveClicked}
+              >
+                {t("Save in my planets")}
+              </motion.button>
+              </div>
+          </div>
+        </Popover>
       </Reorder.Item>
       
     </div>

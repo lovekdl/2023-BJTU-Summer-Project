@@ -91,17 +91,13 @@ export default function Statistics() {
       dataIndex: 'habitable',
       key: 'habitable',
     },
-    {
-      title: '关注',
-      dataIndex: 'subscribe',
-      key: 'subscribe',
-      render: (text:any, record:any) => <HeartButton record={record} />,
-    },
+    
     
   ];
 
   return (
-    <div className='ContentLayout'>
+    <div>
+      <p>{t('My Planets')}</p>
       <Table className="TableDiv" columns={Columns} pagination={{ pageSize: 8 }}  dataSource={StatisticsStore.DataSource}></Table>
     </div>
   )

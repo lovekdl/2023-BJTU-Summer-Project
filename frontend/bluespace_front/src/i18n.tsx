@@ -102,7 +102,7 @@ i18n
           'Password' : '密码',
           'password' : '密码',
           'Likes' : '收藏的行星',
-          'My Planets':"我创建的行星",
+          'My Planets':"我保存的行星",
           'Log in' :"登录",
           'Username' : "用户名",
           "Don't Have An Account?" : "没有账号?",
@@ -143,7 +143,10 @@ i18n
           'Habitable' : '宜居的',
           'NOT Habitable' :'不宜居的',
           'See in starmap':'驾驶飞船前往',
-          'Save in my planets':'保存到我的星球'
+          'Save in my planets':'保存到我的星球',
+          "Predict result":' 预测结果',
+          'Predict result message' : '点击预测后预测结果将在下方展示,鼠标悬浮在预测结果上可以查看预测结果,当预测数量较多时,可以拖动预测框任意调换顺序。',
+          
         }
       },
       jp: {
