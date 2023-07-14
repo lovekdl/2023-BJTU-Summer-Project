@@ -13,11 +13,11 @@ const AnalysisPage = () => {
 
 
 
-    const handlePageChange = (page) => {
+    const handlePageChange = (page:any) => {
         setCurrentPage(page);
     };
 
-    const renderChartComponent = (pageNumber) => {
+    const renderChartComponent = (pageNumber:any) => {
         switch (pageNumber) {
             case 1:
                 let title1 = '宜居度比例';

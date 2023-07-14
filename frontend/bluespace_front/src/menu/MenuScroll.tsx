@@ -70,14 +70,12 @@ export default function MenuScroll() {
         <ul
           style={{
             pointerEvents: isOpen ? "auto" : "none",
-            clipPath: "inset(10% 50% 90% 50% round 10px)"
+            clipPath: "inset(10% 50% 90% 50% r  ound 10px)"
           }}
           className="ul1"
         >
           <li className="li1" onClick={() => handleOnClicked(1)}>Star Map</li>
           <li className="li1" onClick={() => handleOnClicked(2)}>Prediction</li>
-          <li className="li1" onClick={() => handleOnClicked(3)}>Prediction</li>
-          <li className="li1" onClick={() => handleOnClicked(4)}>Prediction</li>
         </ul>{" "}
       </div>
     </nav>

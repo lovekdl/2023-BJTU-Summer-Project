@@ -72,7 +72,7 @@ class PredictionStore {
 	
 	
 	
-  items = [{name:"11111",esi:0.24,habitable: 'NOT Habitable'}, {name:"222222",esi:0.9,habitable:true}, {name:"333333",esi:0.88,habitable:false}, {name:"4444444",esi:0.27,habitable:true}];
+  items = [{Planet_name:"11111",esi:0.24,habitable: 'NOT Habitable'}, {Planet_name:"222222",esi:0.9,habitable:'NOT Habitable'}, {Planet_name:"333333",esi:0.88,habitable:'NOT Habitable'}, {Planet_name:"4444444",esi:0.27,habitable:'NOT Habitable'},{Planet_name:"4444aaa444",esi:0.27,habitable:'NOT Habitable'}];
 
   starMapLoading:boolean = true
 
@@ -87,6 +87,8 @@ class PredictionStore {
     this.items = newItems
   }
 	
+	
+
 	
 }
 

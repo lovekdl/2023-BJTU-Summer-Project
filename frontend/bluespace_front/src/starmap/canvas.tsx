@@ -37,6 +37,7 @@ function StarMap() {
     return () => {
       // document.getElementById("StarMap")?.removeChild(script)
       renderer.stop()
+      StarMapStore.setGoPlanet(false)
       document.getElementById("StarMap")?.removeChild(canvas)
     }
   }, [])

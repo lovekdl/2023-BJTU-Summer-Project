@@ -53,7 +53,7 @@ export default function ProfilePlanets() {
       key: 'esi',
     },
     {
-      title: t('Habitable'),
+      title: t('Habitability'),
       dataIndex: 'habitable',
       key: 'habitable',
     },
@@ -63,7 +63,7 @@ export default function ProfilePlanets() {
       
       <p>{t('My Planets')}</p>
       <div>
-        <Table className="TableDiv" columns={Columns}  dataSource={ProfileStore.likesDataSource}></Table>
+        <Table className="TableDiv" columns={Columns}  dataSource={ProfileStore.DataSource}></Table>
       </div>
     </div>
   )
