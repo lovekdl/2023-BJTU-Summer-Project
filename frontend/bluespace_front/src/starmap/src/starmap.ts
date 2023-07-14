@@ -5,6 +5,7 @@ import { PlanetsDataLoader  } from "./planetsDataLoader";
 export function init() {
     // ===== Start Renderer =====
     let renderer: BlueSpaceRenderer
+    let renderMode: number = 0
     try {
         rootStore.LoadingStore.setStarMapLoading(true);
         rootStore.StarMapStore.setShow(false)
@@ -12,16 +13,49 @@ export function init() {
         renderer = new BlueSpaceRenderer()
         renderer.setup().then(() => {
             renderer.run()
-        })  
-        
+        })
+        var count = 0
         let checkHaveRunInterval = setInterval(() => {
-            console.log("haveRun = " +  renderer.getHaveRun())
+
+            count++;
             if(renderer.getHaveRun() === true) {
                 setTimeout(() => {
                     rootStore.LoadingStore.setStarMapLoading(false);
+                    
+                    if(rootStore.StarMapStore.goPlanet === true) {
+                        const planetId = Math.floor(Math.random() * 1000) + 10
+                        renderer.switchMode(0, planetId).then(() => {
+                            renderMode = 0
+                        })
+                        renderer.switchMode(1, planetId).then(() => {
+                            renderMode = 1
+                        })
+
+                        function out(a: number, n: number): string {
+                            return Number(a).toFixed(n)
+                        }
+
+                        rootStore.StarMapStore.setHeader(rootStore.StarMapStore.planetFeatures.Planet_name)
+                        rootStore.StarMapStore.setMessage([
+                            "宜居情况：" + rootStore.StarMapStore.planetFeatures.habitable,
+                            "=== 行星 ===",
+                            "轨道周期: " +rootStore.StarMapStore.planetFeatures.Orbit_period + " Day(s)",
+                            "轨道长度: " + rootStore.StarMapStore.planetFeatures.Semi_major_axis + " AU",
+                            "半径：" + rootStore.StarMapStore.planetFeatures.Radius + " EarthRadius",
+                            "质量：" + rootStore.StarMapStore.planetFeatures.Mass + " EarthMass",
+                            "地球相似度：" + parseFloat(rootStore.StarMapStore.planetFeatures.esi)*100 + " %",
+                            "=== 星系 ===",
+                            "半径：" + rootStore.StarMapStore.planetFeatures.Stellar_radius + " SolarRadius",
+                            "质量：" + rootStore.StarMapStore.planetFeatures.Stellar_mass+ " SolarMass",
+                            "亮度：" + rootStore.StarMapStore.planetFeatures.Stellar_luminosity + " log10(Solar)",
+                        ])
+                        rootStore.StarMapStore.setShow(true)
+                    }
                 }, 1000)
                 clearInterval(checkHaveRunInterval)
             }
+            
+            
         },100)
     } catch (error) {
         throw new Error("Intializing renderer failed: " + error)
@@ -35,7 +69,7 @@ export function init() {
     let last = {x: 0, y: 0}
 
     // Mouse Down
-    let renderMode: number = 0
+    
     starmapElement!.addEventListener("mousedown", (e) => {
         if(e.which === 1) {
             console.log("renderMode: " + renderMode)

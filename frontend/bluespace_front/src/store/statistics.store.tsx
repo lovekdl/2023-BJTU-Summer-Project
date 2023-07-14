@@ -74,13 +74,13 @@ class StatisticsStore {
           
         })
           const newData = [];
-          console.log(ret.data)
+          //console.log(ret.data)
           for (let key in ret.data) {
             if (typeof ret.data[key] === 'object' && ret.data[key] !== null) {
               const item = ret.data[key];
               item.key = item.UID
               newData.push(item);
-              console.log(item);
+              // console.log(item);
             }
           }
           this.setDataSource(newData);

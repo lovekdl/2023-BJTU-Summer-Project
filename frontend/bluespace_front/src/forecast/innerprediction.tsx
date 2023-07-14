@@ -11,6 +11,7 @@ import {useTranslation} from 'react-i18next'
 import { http } from "../utils/http.tsx";
 import {Popover} from'antd'
 import {QuestionCircleTwoTone} from "@ant-design/icons"
+import PredictionChart from './prediction.charts.tsx'
 function InnerPrediction() {
   const [count, setCount] = useState(0);
   const {PredictionStore} = useStore();
@@ -31,7 +32,7 @@ function InnerPrediction() {
       return;
     }
     for(const element of PredictionStore.items) {
-      if(element.name == Planet_name.current?.value) {
+      if(element.Planet_name == Planet_name.current?.value) {
         message.error('Repeated name')
         return;
       }
@@ -205,7 +206,7 @@ function InnerPrediction() {
             }}
             layoutScroll >
             {PredictionStore.items.map((item) => (
-              <Item key={item.name} item={item} />
+              <Item key={item.Planet_name} item={item} />
             ))}
           </Reorder.Group>
 
@@ -229,7 +230,7 @@ function InnerPrediction() {
               
             >
               <div>
-                tubiao
+                <PredictionChart></PredictionChart>
               </div>
           </div>
           

@@ -2,8 +2,13 @@
   margin-top : 7vh;
   margin-left: 3vw;
   white-space: nowrap;
-  height: 100vh;
+  top: 0;
+  height: 93vh;
 }
+.divTop {
+  display: block;
+}
+
 .ProfileBox {
   width: 128px;
   height: 40px;
@@ -130,6 +135,7 @@
   height: 0.2vh; /* 调整下划线的高度 */
   background-color: purple;
 }
+
 .ModalSpan {
   font-size: 25px;
   font-weight: 500;

@@ -124,7 +124,7 @@ function Prediction() {
     setNowKey(key)
   }
   return (
-    <div>
+    <div className='divTop'>
       
       <Layout>
         <Sider
@@ -136,7 +136,6 @@ function Prediction() {
         onCollapse={(collapsed, type) => {
           console.log(collapsed, type);
         }}
-        className='Slider'
       >
         <div className="demo-logo-vertical" />
         <Menu
@@ -155,9 +154,12 @@ function Prediction() {
       </Sider>
 
       
-        <Layout style={{ padding: "0 24px 0px" }}>
-          <Content className='ProfileContent' >
+      <Layout style={{ padding: "0 24px 0px" }}>
+          
+          <Content className='ProfileContent'>
+            
             {content}
+
           </Content>
         </Layout>
       </Layout>
