@@ -26,7 +26,6 @@ http.interceptors.request.use((config:any) => {
 //响应拦截
 http.interceptors.response.use((response : any) => {
     //2xx状态码
-    
     return response
 }, (error : any) => {
     //非2xx状态码

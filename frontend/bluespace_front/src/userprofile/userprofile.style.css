@@ -70,6 +70,7 @@
 .TableDiv {
   display: flex;
   white-space: nowrap ;
+  margin-left: 6vw;
 }
 
 .HeadPicture {

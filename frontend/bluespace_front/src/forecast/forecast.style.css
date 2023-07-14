@@ -157,6 +157,7 @@ nav {
   justify-content: flex-end;
   white-space: nowrap;
   background-color: white;
+  margin-top: 3vw;
   height: 40vh;
 }
 .PaginationBottom{

@@ -106,7 +106,7 @@ function ButtonAppBar(props: Props) {
           </Dropdown>
 
           <Typography variant="h6" color="inherit" className={classes.grow}>
-            BLUE SPACE
+            {t('BLUE SPACE')}
           </Typography>
           {loginStore.token===''? <Button color="inherit" onClick={handleClicked}>Login</Button> : (ProfileStore.avatar===''?<Avatar className = 'MenuAvatar' size={50}  onClick ={handleAvatarOnClicked} icon={<UserOutlined />} />:<Avatar className = 'MenuAvatar' size={50} onClick ={handleAvatarOnClicked} src={<img src={ProfileStore.avatar}  alt="avatar" /> } />)}
           

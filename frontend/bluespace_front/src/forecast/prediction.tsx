@@ -1,22 +1,11 @@
 import React,{useRef,useState,useEffect} from 'react';
-import type { MenuProps } from "antd";
+
 import { Breadcrumb, Layout, Menu, theme } from "antd";
 import { UploadOutlined, VideoCameraOutlined } from '@ant-design/icons';
 import "./forecast.style.css"
-import {motion} from "framer-motion";
 import { observer } from 'mobx-react-lite'
-import {Avatar} from 'antd'
 import { useStore } from '../store';
-import Gauge from "../dataanalysis/Gauge";
-import BarGraph from "../dataanalysis/BarGraph";
-import PieChart from "../dataanalysis/PieChart";
-import LineChart from "../dataanalysis/LineChart";
-import DataTable from "../dataanalysis/DataTable";
-import AnalysisPage from "./analysispage";
-import {
-  UserOutlined
-} from "@ant-design/icons";
-import {quat2} from "gl-matrix";
+
 import Statistics from './statistics';
 import InnerPrediction from './innerprediction';
 import '../index.tsx';
@@ -38,13 +27,11 @@ function Prediction() {
     if(x === 1) {
       return t('Statistics')
     }
+    
     if(x === 2) {
-      return t("Analysis")
-    }
-    if(x === 3) {
       return t("Prediction")
     }
-    if(x === 4) {
+    if(x === 3) {
       return t("My planets")
     }
   }
@@ -67,57 +54,20 @@ function Prediction() {
         <Statistics/>
       )
     } 
-    if(nowKey == 2) {//Analysis
-      setContent(
-      <Layout >
-        {/*<div className='ContentLayout'>*/}
-        {/*  <BarGraph></BarGraph>*/}
-        {/*  <div style={{marginTop: 150}}>*/}
-        {/*    <PieChart></PieChart>*/}
-        {/*  </div>*/}
-        {/*</div>*/}
-        {/*<div className='ContentLayout'>*/}
-        {/*  <div  style={{marginLeft: 100}}>*/}
-        {/*    <LineChart></LineChart>*/}
-        {/*  </div>*/}
-        {/*  <div>*/}
-        {/*    <Gauge></Gauge>*/}
-        {/*  </div>*/}
-        {/*</div>*/}
-        <AnalysisPage></AnalysisPage>
-      </Layout>
-      )
-    } 
-    if(nowKey == 3) {//Prediction
+    
+    if(nowKey == 2) {//Prediction
       setContent(
       <div>
         <InnerPrediction></InnerPrediction>
       </div>
       )
     } 
-    if(nowKey == 4) {
+    if(nowKey == 3) {
       setContent(<div>
         <ProfilePlanets></ProfilePlanets>
       </div>) 
     }
   },[nowKey])
-  const handleUploadClicked = ()=> {
-    console.log('hahaha')
-    if(fileInputRef.current)
-    fileInputRef.current.click();
-  }
-  const handleFileChange = (event:any) => {
-    const imgfile = event.target.files[0];
-    console.log(imgfile);
-    var reader = new FileReader();
-    reader.onload=function(){
-      var fileurl = reader.result
-      ProfileStore.setAvatar(fileurl)
-      console.log('fileurl is ' + fileurl);
-    }
-    reader.readAsDataURL(imgfile)
-
-  };
   
   function handleLeftMenuClicked  ({key} : any) {
     console.log(key)
@@ -142,7 +92,7 @@ function Prediction() {
           mode="inline"
           defaultSelectedKeys={['1']}
           className='SliderMenu'
-          items={[UploadOutlined, VideoCameraOutlined, UploadOutlined,UserOutlined].map(
+          items={[UploadOutlined, VideoCameraOutlined, UploadOutlined].map(
             (icon, index) => ({
               key: String(index + 1),
               icon: React.createElement(icon),

@@ -82,7 +82,7 @@ function LoginForm  ()  {
         <div className="left-img">
           <div className="glass">
             <div className="tips">
-              <h1>BLUE SPACE</h1>
+              <h1>{t('BLUE SPACE')}</h1>
               <span>{t('explore the universe.')}</span>
               <span>{t('try to find your planet.')}</span>
             </div>

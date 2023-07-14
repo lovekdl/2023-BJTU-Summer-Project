@@ -5,7 +5,6 @@ import LineChart from "../dataanalysis/LineChart";
 import React, { useState } from 'react';
 import {Layout, message, Pagination} from 'antd';
 import {http} from "../utils";
-const { Content, Sider } = Layout;
 const AnalysisPage = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const pageSize = 1; // 每页显示的图表组件数量

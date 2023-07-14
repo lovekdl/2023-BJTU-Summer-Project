@@ -1,5 +1,5 @@
 import {makeAutoObservable} from 'mobx'
-import {http, setTokenFromLocalStorage, getTokenFromLocalStorage} from '../utils'
+import {http, getFirstMessageKeyFromLocalStorage, setFirstMessageKeyFromLocalStorage} from '../utils'
 
 class StarMapStore {
 	header = 'aa';
@@ -19,10 +19,14 @@ class StarMapStore {
     esi:'0.5',
     habitable: 'NOT Habitable',
   }
+  showFirstMessage = 'NO'
+  
 
 	constructor() {
 		//mobx 设置响应式
 		makeAutoObservable(this)
+    this.showFirstMessage = getFirstMessageKeyFromLocalStorage()||'YES'
+    setFirstMessageKeyFromLocalStorage(this.showFirstMessage)
 	}
   setHeader(newHeader:string) {
     this.header = newHeader
@@ -42,6 +46,10 @@ class StarMapStore {
   setPlanetFeatures(newFeatures:any) {
     this.planetFeatures = newFeatures
   }
+  setShowFirstMessage(x : string) {
+    this.showFirstMessage = x
+    setFirstMessageKeyFromLocalStorage(x)
+  } 
 }
 
 export default StarMapStore

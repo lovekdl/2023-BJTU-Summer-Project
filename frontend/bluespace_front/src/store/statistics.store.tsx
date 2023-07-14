@@ -79,6 +79,7 @@ class StatisticsStore {
             if (typeof ret.data[key] === 'object' && ret.data[key] !== null) {
               const item = ret.data[key];
               item.key = item.UID
+							item.habitable = i18n.t(item.habitable)
               newData.push(item);
               // console.log(item);
             }

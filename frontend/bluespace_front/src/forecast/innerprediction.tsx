@@ -58,7 +58,7 @@ function InnerPrediction() {
         console.log(ret);
         if(ret.data.state == 'success') {
           console.log(ret.data)
-          PredictionStore.addItem({Planet_name:Planet_name.current?.value,habitable:(ret.data.predict_result), esi:ret.data.esi,features:features,   Orbit_period:Orbit_period.current?.value,
+          PredictionStore.addItem({Planet_name:Planet_name.current?.value,habitable:(ret.data.predict_hb), esi:ret.data.esi,features:features,   Orbit_period:Orbit_period.current?.value,
             Semi_major_axis:Semi_major_axis.current?.value,
             Mass:Mass.current?.value,
             Radius:Radius.current?.value,

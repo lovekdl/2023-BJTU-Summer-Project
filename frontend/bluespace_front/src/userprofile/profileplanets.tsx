@@ -61,9 +61,9 @@ export default function ProfilePlanets() {
   return (
     <div>
       
-      <p>{t('My Planets')}</p>
+      <p style={{marginLeft:"5vw"}}>{t('My Planets')}</p>
       <div>
-        <Table className="TableDiv" columns={Columns}  dataSource={ProfileStore.DataSource}></Table>
+        <Table  className="TableDiv" columns={Columns}  dataSource={ProfileStore.DataSource}></Table>
       </div>
     </div>
   )
