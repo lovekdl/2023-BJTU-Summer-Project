@@ -6,7 +6,8 @@ import { motion } from "framer-motion";
 import { useNavigate } from 'react-router-dom';
 import {http} from '../utils'
 import {message} from 'antd'
-export default function ProfilePlanets() {
+import { observer } from 'mobx-react-lite';
+ function ProfilePlanets() {
   const navigate = useNavigate();
   const {ProfileStore,StarMapStore} = useStore()
   const {t,i18n} = useTranslation()
@@ -145,3 +146,5 @@ export default function ProfilePlanets() {
     </div>
   )
 }
+
+export default observer(ProfilePlanets)

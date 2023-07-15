@@ -3,10 +3,15 @@ import Gauge from "../dataanalysis/Gauge"
 import PieChart from "../dataanalysis/PieChart";
 import {Layout, message, Pagination} from 'antd';
 import { useState } from "react";
-export default function PredictionChart() {
-  const [currentPage, setCurrentPage] = useState(1);
+import '../index.tsx';
+import {useTranslation} from 'react-i18next'
+import {useStore} from '../store/index.tsx'
+import { observer } from 'mobx-react-lite';
+ function PredictionChart() {
+    const {t,i18n} = useTranslation()
+    const [currentPage, setCurrentPage] = useState(1);
     const pageSize = 1; // 每页显示的图表组件数量
-
+    const {PredictionStore} = useStore()
 
 
 
@@ -17,9 +22,9 @@ export default function PredictionChart() {
     const renderChartComponent = (pageNumber:any) => {
         switch (pageNumber) {
             case 1:
-                let title1 = '该星球宜居度预测值'
-                let dataName1 = '宜居度'
-                let chartData1 = 0.3
+                let title1 = t('Predicted habitability of the planet')
+                let dataName1 = t('Habitability')
+                let chartData1 = PredictionStore.showEsi
                 return (
                     <div style={{height:"500"}}>
                         {<Gauge title={title1} dataName={dataName1} chartData={chartData1} />}
@@ -27,9 +32,9 @@ export default function PredictionChart() {
                 );
             case 2:
                 // 第二页的图表组件
-                let title2 = '该星球各项数据与地球对比'
+                let title2 = t("The planet's data are compared to Earth's")
                 let dataName2 = '随便填什么都可以'
-                let chartData2 = [0.25, 1.78, 3.82, 0.6, 0.63, -1.16]
+                let chartData2 = PredictionStore.showData
                 return (
                     <div style={{height:"500"}}>
                         {<LineChart title={title2} dataName={dataName2} chartData={chartData2} />}
@@ -55,4 +60,4 @@ export default function PredictionChart() {
             />
         </div>
     );
-}
+}export default observer(PredictionChart)

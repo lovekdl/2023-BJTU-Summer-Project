@@ -5,6 +5,8 @@ import {http, setTokenFromLocalStorage, getTokenFromLocalStorage} from '../utils
 import { List } from 'echarts';
 import i18n from '../index.tsx';
 class PredictionStore {
+	showEsi = 1
+	showData = [1.0,1.0,1.0,0.0,1.0,1.0]
 	constructor() {
 		//mobx 设置响应式
 		makeAutoObservable(this)
@@ -72,11 +74,15 @@ class PredictionStore {
 	
 	
 	
-  items = [{Planet_name:"11111",esi:0.24,habitable: 'NOT Habitable'}, {Planet_name:"222222",esi:0.9,habitable:'NOT Habitable'}, {Planet_name:"333333",esi:0.88,habitable:'NOT Habitable'}, {Planet_name:"4444444",esi:0.27,habitable:'NOT Habitable'},{Planet_name:"4444aaa444",esi:0.27,habitable:'NOT Habitable'}];
+  items: any[] = [];
 
   starMapLoading:boolean = true
-
-	
+	setShowEsi = (x :any) =>{
+		this.showEsi = x;
+	}
+	setShowData = (x :any) => {
+		this.showData = x;
+	}
 	setStarMapLoading = (x : boolean) => {
     this.starMapLoading = x
   }

@@ -7,7 +7,10 @@ import i18n from '../index.tsx';
 import {useTranslation} from 'react-i18next'
 export default class Gauge extends PureComponent {
     eChartsRef: any = React.createRef();
-
+    constructor(props:any) {
+        super(props)
+        
+    }
     componentDidMount() {
         this.chart = eCharts.init(this.chartRef);
 
@@ -28,7 +31,7 @@ export default class Gauge extends PureComponent {
     }
 
     // 更新echarts实例
-    componentDidUpdate() {
+    componentDidUpdate(prevProps :any) {
         this.chart.setOption(this.getOption());
     }
 
@@ -37,7 +40,7 @@ export default class Gauge extends PureComponent {
         this.chart.dispose();
     }
     getOption(data) {
-        const { title, dataName,  chartData } = this.props;
+        const { title, dataName,  chartData } = this.props as any;
         const option = {
             title: {
                 text: title,

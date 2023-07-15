@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import * as eCharts from 'echarts';
 import { Card } from "antd";
-
+import i18n from '..';
 export default class LineChart extends Component {
     // 创建echarts实例
     componentDidMount() {
@@ -10,7 +10,7 @@ export default class LineChart extends Component {
     }
 
     // 更新echarts实例
-    componentDidUpdate() {
+    componentDidUpdate(prevProps :any) {
         this.chart.setOption(this.getOption());
     }
 
@@ -36,7 +36,7 @@ export default class LineChart extends Component {
             },
             xAxis: {
                 type: 'category', // 修改为'category'
-                data: ["Semi_major_axis", "Mass", "Radius", "Stellar_luminosity", "Stellar_Radius", "Stellar_Mass"],
+                data: [i18n.t("Orbit Semi-Major Axis"), i18n.t("Planet Mass"), i18n.t("Planet Radius"), i18n.t("Stellar Luminosity"), i18n.t("Stellar Radius"), i18n.t("Stellar Mass")],
                 axisLabel:{
                     rotate: -25,
                 }

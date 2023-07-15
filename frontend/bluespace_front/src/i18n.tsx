@@ -190,7 +190,9 @@ i18n
           'Planet habitability': '星球宜居度',
           'ESI message' : '与地球的相似度,取值为0到1之间',
           'delete' : '删除',
-          'DataSource: NASA EXOPLANET ARCHIVE': '数据来源：NASA系外行星档案',
+          'DataSource: NASA EXOPLANET ARCHIVE': '数据来源:NASA系外行星档案',
+          'Predicted habitability of the planet' : '该星球宜居度预测值',
+          "The planet's data are compared to Earth's": "该星球各项数据与地球对比",
         }
       },
       jp: {
@@ -294,7 +296,10 @@ i18n
           'ESI message' : '0から1の間の値を取ります',
           'delete' : '削除します',
           'go':'行きます',
-          'DataSource: NASA EXOPLANET ARCHIVE':"データ提供元：NASA系外惑星アーカイブ"
+          'DataSource: NASA EXOPLANET ARCHIVE':"データ提供元：NASA系外惑星アーカイブ",
+          'Habitability':'住みやすさの状況です',
+          'Predicted habitability of the planet' : '地球の居住可能性の予測値です',
+          "The planet's data are compared to Earth's": "地球と比較することができます",
         }
       }
     },

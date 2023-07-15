@@ -18,7 +18,7 @@ export const Item = ({ item }: Props) => {
   const boxShadow = useRaisedShadow(y);
   const navigate = useNavigate();
   const {t,i18n} = useTranslation()
-  const {StarMapStore} = useStore();
+  const {StarMapStore,PredictionStore} = useStore();
   const handleSaveClicked = () => {
     let features = {
       
@@ -83,10 +83,15 @@ export const Item = ({ item }: Props) => {
       </div>
     )
   }
+  const handleItemClicked = (item:any) => {
+    PredictionStore.setShowEsi(item.esi)
+    PredictionStore.setShowData([item.Semi_major_axis,item.Mass,item.Radius,item.Stellar_luminosity,item.Stellar_radius,item.Stellar_mass])
+    console.log(PredictionStore.showData)
+  }
   return (
     <div className = 'ReorderItem'>
       
-      <Reorder.Item value={item} id={item.Planet_name} style={{ boxShadow, y }} >
+      <Reorder.Item value={item} id={item.Planet_name} style={{ boxShadow, y }} onClick={() => handleItemClicked(item)} >
         <Popover content={getContent(item)}>
           <div className="ItemDisplayStyle">
             {item.Planet_name}
