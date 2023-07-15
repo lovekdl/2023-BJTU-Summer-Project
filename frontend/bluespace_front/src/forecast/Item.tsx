@@ -1,4 +1,5 @@
 import * as React from "react";
+import { useEffect } from "react";
 import { useMotionValue, Reorder } from "framer-motion";
 import { useRaisedShadow } from "./use-raised-shadow";
 import "./forecast.style.css"
@@ -84,6 +85,9 @@ export const Item = ({ item }: Props) => {
       </div>
     )
   }
+  useEffect(() => {
+    handleItemClicked(item)
+  }, [])
   const handleItemClicked = (item:any) => {
     PredictionStore.setShowEsi(item.esi)
     PredictionStore.setShowData([item.Semi_major_axis,item.Mass,item.Radius,item.Stellar_luminosity,item.Stellar_radius,item.Stellar_mass])
