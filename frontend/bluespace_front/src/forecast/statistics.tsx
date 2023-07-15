@@ -152,7 +152,7 @@ function Statistics() {
 
   return (
     <div>
-      <p style={{marginLeft:"5vw"}}>{t('All Planets')} <a href="https://exoplanetarchive.ipac.caltech.edu/cgi-bin/TblView/nph-tblView?app=ExoTbls&config=PS"  target="opentype">{t('DataSource: NASA EXOPLANET ARCHIVE')}</a></p>
+      <p style={{marginLeft:"5vw"}}>{t('All Planets')}&nbsp;&nbsp;&nbsp;&nbsp; <a href="https://exoplanetarchive.ipac.caltech.edu/cgi-bin/TblView/nph-tblView?app=ExoTbls&config=PS"  target="opentype">{t('DataSource: NASA EXOPLANET ARCHIVE')}</a></p>
       <Table className="TableDiv" columns={Columns} pagination={{ pageSize: 4 }}  dataSource={StatisticsStore.DataSource}></Table>
       <div>
         <AnalysisPage></AnalysisPage>
