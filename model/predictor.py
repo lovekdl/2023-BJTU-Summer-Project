@@ -42,7 +42,7 @@ class Predictor:
                              "Stellar_luminosity", "Stellar_mass", "Stellar_radius", "ESI"]
         self.imputer = joblib.load('./modelsenior/model/imputer.joblib')
         self.scaler = joblib.load('./modelsenior/model/scaler.joblib')
-        self.dnn_path = os.path.join(os.getcwd(), 'modelDNNLinearRegression\\models\\model.ckpt')
+        self.dnn_path = os.path.join(os.getcwd(), 'modelDNNLinearRegression/models/model.ckpt')
         with open('./modelsenior/model/NumericCols.pkl', 'rb') as f:
             self.NumericCols = pickle.load(f)
     

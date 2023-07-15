@@ -9,7 +9,7 @@ import torch.nn as nn
 from torch.utils.data import Dataset, DataLoader
 
 # ----- Config -----
-device = 'cuda' if torch.cuda.is_available() else 'cpu'
+device = 'cpu'
 config = {
     'seed': 5201314,      # Your seed number, you can pick your lucky number. :)
     'select_all': False,   # Whether to use all features.

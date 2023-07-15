@@ -20,6 +20,7 @@ const AnalysisPage = () => {
     const renderChartComponent = (pageNumber) => {
         switch (pageNumber) {
             case 1:
+
                 let title1 = '宜居度比例';
                 let subtitle1 = '';
                 let dataName1 = '宜居度';
@@ -46,6 +47,7 @@ const AnalysisPage = () => {
                     </Layout>
                 );
             case 2:
+
                 // 第二页的图表组件
                 let title2 = '宜居与不宜居星球的ESI分布';
                 let dataName2 = 'ESI';
@@ -77,13 +79,69 @@ const AnalysisPage = () => {
                     </Layout>
                 );
             case 3:
-                // 第三页的图表组件
+
+                let title3 = "星球的半径分布";
+                let dataName3 = ["0-0.4", "0.4-0.8", "0.8-1.2", "1.2-1.6", "1.6-2.0", "2.0-2.4", "2.4-2.8",'2.8-3.2', '>3.2'];
+                let chartData31 = [0, 1, 17, 9, 15, 15, 7, 2, 0];
+                let chartData32 = [1, 68, 314, 558, 472, 482, 450, 305, 1103];
+                let description3 = (
+                    <div>
+                    <span>
+                    </span>
+                        <br/>
+                        <br/>
+                        <div style={{fontSize: '40px'}}><b>
+                            盲目分析 <br />&nbsp;&nbsp;&nbsp;👁 👁</b></div>
+                    </div>
+                );
+                //不宜居的数据：1, 68, 314, 558, 472, 482, 450, 305
                 return (
                     <Layout>
-                        {<LineChart></LineChart>}
+                        <BarGraph title={title3} dataName={dataName3} chartData1={chartData31} chartData2={chartData32} description={description3}/>
                     </Layout>
                 );
-            // 添加更多页面的图表组件
+
+            case 4:
+                let title4 = "星球的质量分布";
+                let dataName4 = ["0-0.8", "0.8-1.2", "1.2-2.0", "2.0-4.0", "4.0-8.0", ">8.0"];
+                let chartData41 = [2, 8, 8, 15, 25, 8];
+                let chartData42 = [149, 66, 194, 756, 1012, 1557];
+                let description4 = (
+                    <div>
+                    <span>
+                    </span>
+                        <br/>
+                        <br/>
+                        <div style={{fontSize: '40px'}}><b>
+                            胡乱分析 <br />&nbsp;&nbsp;&nbsp;&nbsp; 🧠 </b></div>
+                    </div>
+                );
+                return (
+                    <Layout>
+                        <BarGraph title={title4} dataName={dataName4} chartData1={chartData41} chartData2={chartData42} description={description4}/>
+                    </Layout>
+                );
+            case 5:
+                let title5 = "所在星系恒星温度分布";
+                let dataName5 = ["2500-3000", "3000-3500", "3500-4000", "4000-4500", "4500-5000", "5000-5500", '5500-6000', '>6000'];
+                let chartData51 = [11, 21, 11, 5, 9, 3, 3, 0];
+                let chartData52 = [9, 91, 170, 193, 377, 753, 1347, 812];
+                let description5 = (
+                    <div>
+                    <span>
+                        宜居行星温度偏低({'<5000'})，不宜居的偏高({'>5000'})。
+                    </span>
+                        <br/>
+                        <br/>
+                        <div style={{fontSize: '40px'}}><b>
+                            分析不出来 <br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 💀 </b></div>
+                    </div>
+                );
+                return (
+                    <Layout>
+                        <BarGraph title={title5} dataName={dataName5} chartData1={chartData51} chartData2={chartData52} description={description5}/>
+                    </Layout>
+                );
             default:
                 return null;
         }
