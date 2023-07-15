@@ -18,7 +18,7 @@ export const Item = ({ item }: Props) => {
   const boxShadow = useRaisedShadow(y);
   const navigate = useNavigate();
   const {t,i18n} = useTranslation()
-  const {StarMapStore,PredictionStore} = useStore();
+  const {StarMapStore,PredictionStore,ProfileStore} = useStore();
   const handleSaveClicked = () => {
     let features = {
       
@@ -42,6 +42,7 @@ export const Item = ({ item }: Props) => {
         
         if(ret.data.state == 'success') {
           message.success(t('Success'))
+          ProfileStore.getSource()
         }
         else message.error('unknown error.')
       }

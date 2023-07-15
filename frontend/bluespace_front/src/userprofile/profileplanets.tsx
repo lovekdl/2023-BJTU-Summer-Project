@@ -36,7 +36,7 @@ import { observer } from 'mobx-react-lite';
       })
       if(ret.data.state == 'success') {
         message.success('Success')
-        ProfileStore.getSource()
+        
       }
       else message.error('unknown error.')
     }
@@ -45,6 +45,7 @@ import { observer } from 'mobx-react-lite';
       if(e.response) message.error(e.response.data.error_message)
       else message.error(e.message)
     }
+    ProfileStore.getSource()
   }
   const Columns = [
     {
