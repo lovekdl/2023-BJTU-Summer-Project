@@ -2,11 +2,13 @@ import "./menu.css";
 import { useState, useEffect } from "react";
 import { useAnimate, stagger, motion } from "framer-motion";
 import { useNavigate } from 'react-router-dom';
+import '../index.tsx';
+import {useTranslation} from 'react-i18next'
 const staggerMenuItems = stagger(0.1, { startDelay: 0.15 });
 
 function useMenuAnimation(isOpen: boolean) {
   const [scope, animate] = useAnimate();
-
+  
   useEffect(() => {
     animate(".arrow", { rotate: isOpen ? 180 : 0 }, { duration: 0.2 });
     
@@ -43,6 +45,7 @@ export default function MenuScroll() {
   const [isOpen, setIsOpen] = useState(false);
   const scope = useMenuAnimation(isOpen);
   const navigate = useNavigate()
+  const {t,i18n} = useTranslation()
   const handleOnClicked = (x:number)=> {
     if(x == 1) {
       navigate("/",{replace : false})
@@ -70,14 +73,12 @@ export default function MenuScroll() {
         <ul
           style={{
             pointerEvents: isOpen ? "auto" : "none",
-            clipPath: "inset(10% 50% 90% 50% round 10px)"
+            clipPath: "inset(10% 50% 90% 50% r  ound 10px)"
           }}
           className="ul1"
         >
-          <li className="li1" onClick={() => handleOnClicked(1)}>Star Map</li>
-          <li className="li1" onClick={() => handleOnClicked(2)}>Prediction</li>
-          <li className="li1" onClick={() => handleOnClicked(3)}>Prediction</li>
-          <li className="li1" onClick={() => handleOnClicked(4)}>Prediction</li>
+          <li className="li1" onClick={() => handleOnClicked(1)}>{t('Star Map')}</li>
+          <li className="li1" onClick={() => handleOnClicked(2)}>{t('Prediction Menu')}</li>
         </ul>{" "}
       </div>
     </nav>

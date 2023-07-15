@@ -3,9 +3,9 @@ import {http, setTokenFromLocalStorage, getTokenFromLocalStorage} from '../utils
 class LoginStore {
 	token = getTokenFromLocalStorage()||''
 	waiting:number = -1;
-	interval:number  = 0
+	interval:any = 0
 	constructor() {
-
+		
 		//mobx 设置响应式
 		makeAutoObservable(this)
 		this.interval = setInterval(() => {

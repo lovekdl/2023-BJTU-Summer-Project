@@ -11,6 +11,7 @@ import {useTranslation} from 'react-i18next'
 import { http } from "../utils/http.tsx";
 import {Popover} from'antd'
 import {QuestionCircleTwoTone} from "@ant-design/icons"
+import PredictionChart from './prediction.charts.tsx'
 function InnerPrediction() {
   const [count, setCount] = useState(0);
   const {PredictionStore} = useStore();
@@ -31,7 +32,7 @@ function InnerPrediction() {
       return;
     }
     for(const element of PredictionStore.items) {
-      if(element.name == Planet_name.current?.value) {
+      if(element.Planet_name == Planet_name.current?.value) {
         message.error('Repeated name')
         return;
       }
@@ -57,7 +58,7 @@ function InnerPrediction() {
         console.log(ret);
         if(ret.data.state == 'success') {
           console.log(ret.data)
-          PredictionStore.addItem({Planet_name:Planet_name.current?.value,habitable:(ret.data.predict_result), esi:ret.data.esi,features:features,   Orbit_period:Orbit_period.current?.value,
+          PredictionStore.addItem({Planet_name:Planet_name.current?.value,habitable:(ret.data.predict_hb), esi:ret.data.esi,features:features,   Orbit_period:Orbit_period.current?.value,
             Semi_major_axis:Semi_major_axis.current?.value,
             Mass:Mass.current?.value,
             Radius:Radius.current?.value,
@@ -196,7 +197,7 @@ function InnerPrediction() {
             </div>
           </div>
           <Reorder.Group  axis="y" onReorder={PredictionStore.setItems} values={PredictionStore.items} style={{
-              height: 600,
+              height: '58vh',
               width: 580,
               border: "3px solid rgb(128, 106, 196)",
               borderRadius : "10px",
@@ -205,7 +206,7 @@ function InnerPrediction() {
             }}
             layoutScroll >
             {PredictionStore.items.map((item) => (
-              <Item key={item.name} item={item} />
+              <Item key={item.Planet_name} item={item} />
             ))}
           </Reorder.Group>
 
@@ -219,7 +220,7 @@ function InnerPrediction() {
             </div>
           </div>
           <div style={{
-              height: 600,
+              height: '58vh',
               width: 580,
               border: "3px solid rgb(128, 106, 196)",
               borderRadius : "10px",
@@ -229,7 +230,7 @@ function InnerPrediction() {
               
             >
               <div>
-                tubiao
+                <PredictionChart></PredictionChart>
               </div>
           </div>
           

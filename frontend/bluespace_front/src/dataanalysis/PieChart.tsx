@@ -66,7 +66,7 @@ export default class PieChart extends Component {
                 <div style={{ display: 'flex' }}>
                     <div
                         ref={(ref) => (this.chartRef = ref)}
-                        style={{ width: '600px', height: '400px' }}
+                        style={{ width: '500px', height: '300px' }}
                     ></div>
                     <div style={{ marginLeft: '20px' }}>
                         <h2>{title}</h2>

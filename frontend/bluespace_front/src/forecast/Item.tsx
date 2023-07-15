@@ -8,6 +8,7 @@ import {useTranslation} from 'react-i18next'
 import { http } from "../utils/http.tsx";
 import {message, Popover} from 'antd'
 import { useNavigate } from "react-router";
+import {useStore} from '../store/index'
 interface Props {
   item: any;
 }
@@ -17,6 +18,7 @@ export const Item = ({ item }: Props) => {
   const boxShadow = useRaisedShadow(y);
   const navigate = useNavigate();
   const {t,i18n} = useTranslation()
+  const {StarMapStore} = useStore();
   const handleSaveClicked = () => {
     let features = {
       
@@ -30,13 +32,16 @@ export const Item = ({ item }: Props) => {
     }
     async function Save() {
       try {
-        const ret = await http.post('api/predict',{
+        
+        const ret = await http.post('api/save',{
           features : features,
           Planet_name: item.Planet_name,
-          esi:item.esi,
+          esi:'0.9',
           habitable:item.habitable
         })
+        
         if(ret.data.state == 'success') {
+          message.success(t('Success'))
         }
         else message.error('unknown error.')
       }
@@ -50,13 +55,27 @@ export const Item = ({ item }: Props) => {
 
   }
   const handleNavigateClicked = () => {
+    StarMapStore.setGoPlanet(true);
+    console.log(item.habitable)
+    StarMapStore.setPlanetFeatures({
+      Planet_name:item.Planet_name,
+      habitable:item.habitable,
+      esi:item.esi,
+      Orbit_period:item.Orbit_period,
+      Semi_major_axis:item.Semi_major_axis,
+      Mass:item.Mass,
+      Radius:item.Radius,
+      Stellar_luminosity:item.Stellar_luminosity,
+      Stellar_mass:item.Stellar_mass,
+      Stellar_radius:item.Stellar_radius,
+    })
     navigate('/',{replace:false})
   }
 
   const getContent = (item:any) => {
     return (
       <div>
-        {t('Habitability')}:{item.habitable}
+        {t('Habitability')}:{t(item.habitable)}
         <br></br>
         {t('ESI')}:{item.esi}
         <br></br>
@@ -67,10 +86,10 @@ export const Item = ({ item }: Props) => {
   return (
     <div className = 'ReorderItem'>
       
-      <Reorder.Item value={item} id={item.name} style={{ boxShadow, y }} >
+      <Reorder.Item value={item} id={item.Planet_name} style={{ boxShadow, y }} >
         <Popover content={getContent(item)}>
           <div className="ItemDisplayStyle">
-            {item.name}
+            {item.Planet_name}
             
             <div className="buttons">
               

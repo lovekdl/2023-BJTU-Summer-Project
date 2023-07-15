@@ -1,15 +1,16 @@
 import {makeAutoObservable} from 'mobx'
 import {http, setTokenFromLocalStorage, getTokenFromLocalStorage} from '../utils'
-
+import i18n from '../index.tsx';
 class ProfileStore {
 	token = getTokenFromLocalStorage()||''
   avatar:any = '';
 	username:any = '';
 	email : any = '';
-	likesDataSource = [
+	DataSource = [
 		{
 			key: '1',
 			Planet_name: 'earth',
+			Orbit_period: 365,
 			Semi_major_axis	: 20,
 			Mass: 100,
 			Radius : 100,
@@ -66,6 +67,7 @@ class ProfileStore {
 		makeAutoObservable(this)
 		this.getProfile();
 		this.getAvatar();
+		this.getSource();
 	}
 	
 	setAvatar = (avatar: any) => {
@@ -102,6 +104,36 @@ class ProfileStore {
 			console.log(e);
 		}
 	}
+
+	setDataSource(data:any) {
+    this.DataSource = data;
+  }
+	getSource =async() => {
+      try {
+        const ret = await http.post('api/view/save',{
+          
+        })
+          const newData = [];
+          console.log(ret.data)
+          for (let key in ret.data) {
+            if (typeof ret.data[key] === 'object' && ret.data[key] !== null) {
+              console.log(ret.data)
+							const item = ret.data[key];
+              item.key = item.id
+							item.habitable = i18n.t(item.habitable)
+              newData.push(item);
+              console.log(item);
+            }
+          }
+          this.setDataSource(newData);
+
+      }
+      catch(e:any) {
+        console.log('catch : ',e)
+        if(e.response) console.log(e.response.data.error_message)
+        else console.log(e.message)
+      }
+  }
 }
 
 export default ProfileStore

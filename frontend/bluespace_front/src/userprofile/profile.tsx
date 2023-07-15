@@ -91,7 +91,7 @@ function Profile() {
             (icon, index) => ({
               key: String(index + 1),
               icon: React.createElement(icon),
-              label: <span >{`${getLabel(index+1)}`}</span>,
+              label: <span> {`${getLabel(index+1)}`}</span>,
             }),
           )}
           onSelect={handleLeftMenuClicked}

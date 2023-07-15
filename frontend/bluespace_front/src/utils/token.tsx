@@ -1,7 +1,8 @@
 //封装，localstorage存储token
 
-const key = 'scarletmana-cookie-token'
+const key = 'BlueSpace-cookie-token'
 const langKey = 'BlueSpace-language-key'
+const firtMessageKey = 'BlueSpace-First-Message'
 const setTokenFromLocalStorage = (token:string) => {
   return window.localStorage.setItem(key, token)
 }
@@ -23,6 +24,14 @@ const getLanguageFromLocalStorage = () => {
 }
 
 
+const setFirstMessageKeyFromLocalStorage = (x:string) => {
+  return window.localStorage.setItem(firtMessageKey, x)
+}
+
+const getFirstMessageKeyFromLocalStorage = () => {
+  return window.localStorage.getItem(firtMessageKey);
+}
+
 
 export {
   setTokenFromLocalStorage,
@@ -30,4 +39,7 @@ export {
   removeTokenFromLocalStorage,
   setLanguageFromLocalStorage,
   getLanguageFromLocalStorage,
+  setFirstMessageKeyFromLocalStorage,
+  getFirstMessageKeyFromLocalStorage,
+  
 }

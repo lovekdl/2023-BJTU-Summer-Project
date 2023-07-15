@@ -12,12 +12,14 @@
 }
 .Dropdown {
   z-index: 999;
-  margin-left: 5vw;
+  margin-left: 3vw;
+  width: 3vw;
   color: aliceblue;
 }
 .Dropdown:hover {
   z-index: 999;
-  margin-left: 5vw;
+  margin-left: 3vw;
+  width: 3vw;
   color: aliceblue;
 }
 .ul1 {
