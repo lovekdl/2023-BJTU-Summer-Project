@@ -79,12 +79,12 @@ i18n
           'Introduction message1' : 'This website is an exoplanet habitability analysis system. At present, the page you are on is a star map. In the star map, you can click the middle mouse button to move the Angle of view, or slide the wheel to zoom, and click the planet to take a spaceship to the planet and view its information.',
           'Introduction message2' : 'If you want to view all planet data, please log in and click the statistics bar on the Prediction page in the upper left submenu to view the statistics chart. After recording, click the Prediction page in the upper left submenu to view the statistical chart.',
           'Introduction message3' : 'If you want to experience the Prediction function, please log in and click the prediction bar in the Prediction page in the upper left corner submenu to make the prediction and save the result.',
-          
           'Predicion Menu' : 'Statistics and Prediction',
           'Operation Introduction': 'Operation Introduction',
           'Planet habitability' :'Planet habitability',
           'ESI message' : 'The similarity to Earth between 0 and 1',
           'delete' : 'delete',
+          'DataSource: NASA EXOPLANET ARCHIVE': 'DataSource: NASA EXOPLANET ARCHIVE'
         }
       },
       zh: {
@@ -164,7 +164,7 @@ i18n
           'Predict result message' : '点击预测后预测结果将在下方展示,鼠标悬浮在预测结果上可以查看预测结果,当预测数量较多时,可以拖动预测框任意调换顺序。',
           'Picture' :'图表展示',
           'Picture message' :'点击左侧结果，可以查看图表信息',
-          "All Planets" : '所有的星球',
+          "All Planets" : '所有星球',
           'go' : '前往',
           'explore the universe.' :'欢迎来到系外行星宜居度分析系统',
           'try to find your planet.' :'在这里,你可以探索宇宙,或是创建属于自己的星球',
@@ -190,6 +190,7 @@ i18n
           'Planet habitability': '星球宜居度',
           'ESI message' : '与地球的相似度,取值为0到1之间',
           'delete' : '删除',
+          'DataSource: NASA EXOPLANET ARCHIVE': '数据来源：NASA系外行星档案',
         }
       },
       jp: {
@@ -292,7 +293,8 @@ i18n
           'Planet habitability': 'ハビタブルゾーンです',
           'ESI message' : '0から1の間の値を取ります',
           'delete' : '削除します',
-          'go':'行きます'
+          'go':'行きます',
+          'DataSource: NASA EXOPLANET ARCHIVE':"データ提供元：NASA系外惑星アーカイブ"
         }
       }
     },
