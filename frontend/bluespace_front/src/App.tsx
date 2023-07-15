@@ -20,7 +20,7 @@ export default function App() {
   useEffect(()=> {
     const language = getLanguageFromLocalStorage() || ''
     if(language == '') {
-      setLanguageFromLocalStorage("en")
+      setLanguageFromLocalStorage("zh")
     }
     else (
       i18n.changeLanguage(language)
