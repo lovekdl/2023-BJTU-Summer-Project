@@ -146,7 +146,7 @@ const AnalysisPage = () => {
         }
     };
 
-    const totalPages = 10; // 总页数，根据实际需求设置
+    const totalPages = 5; // 总页数，根据实际需求设置
 
     return (
         <div className='PageContainer'>

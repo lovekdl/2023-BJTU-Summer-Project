@@ -1,19 +1,6 @@
 import React, { Component } from 'react';
 import * as eCharts from 'echarts';
-import {Card} from "antd";
-
-// 测试数据
-const data = [
-    [0, 0],
-    [1, 2],
-    [2, 3],
-    [3, 1],
-    [4, 6],
-    [5, 2],
-    [6, 6]
-];
-
-
+import { Card } from "antd";
 
 export default class LineChart extends Component {
     // 创建echarts实例
@@ -48,35 +35,40 @@ export default class LineChart extends Component {
                 trigger: 'axis'
             },
             xAxis: {
-                type: 'value'
+                type: 'category', // 修改为'category'
+                data: ["Semi_major_axis", "Mass", "Radius", "Stellar_luminosity", "Stellar_Radius", "Stellar_Mass"],
+                axisLabel:{
+                    rotate: -25,
+                }
             },
             yAxis: {
                 type: 'value'
             },
             series: [
                 {
-                    name: 'Value',
+                    name: '地球',
+                    type: 'line',
+                    data: [1, 1, 1, 0, 1, 1]
+                },
+                {
+                    name: '你的星球',
                     type: 'line',
                     data: chartData
-                }
+                },
             ]
         };
     };
 
     render() {
-        const { title, chartData, description } = this.props; // 获取传递的属性
-        return (<Card>
-            <div style={{ display: 'flex' }}>
-                <div
-                    ref={(ref) => (this.chartRef = ref)}
-                    style={{ width: '600px', height: '400px' }}
-                ></div>
-                <div style={{ marginLeft: '20px' }}>
-                    <h2>{title}</h2>
-                    <p>{description}</p> {/* 显示图表的说明 */}
+        return (
+            <Card>
+                <div style={{ display: 'flex' }}>
+                    <div
+                        ref={(ref) => (this.chartRef = ref)}
+                        style={{ width: '600px', height: '400px' }}
+                    ></div>
                 </div>
-            </div>
-        </Card>);
+            </Card>
+        );
     }
 }
-

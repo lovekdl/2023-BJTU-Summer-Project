@@ -37,7 +37,7 @@ export default class BarGraph extends PureComponent {
                 //data: ["Orbit_period", "Semi_major_axis", "Mass", "Radius", "Stellar_luminosity", "Stellar_Radius", "Stellar_Mass"],
                 data: dataName,
                 axisLabel:{
-                    rotate: -20,
+                    rotate: -25,
                 }
 
             },
