@@ -4,6 +4,8 @@ import '../index.tsx';
 import {useTranslation} from 'react-i18next'
 import { motion } from "framer-motion";
 import { useNavigate } from 'react-router-dom';
+import {http} from '../utils'
+import {message} from 'antd'
 export default function ProfilePlanets() {
   const navigate = useNavigate();
   const {ProfileStore,StarMapStore} = useStore()
@@ -25,6 +27,23 @@ export default function ProfilePlanets() {
       Stellar_radius:record.Stellar_radius,
     })
     navigate('/',{replace:false})
+  }
+  async function handleDeleteClicked(id :any) {
+    try {
+      const ret = await http.post('api/deletePlanet',{
+        id:id
+      })
+      if(ret.data.state == 'success') {
+        message.success('Success')
+        ProfileStore.getSource()
+      }
+      else message.error('unknown error.')
+    }
+    catch(e:any) {
+      console.log('catch : ',e)
+      if(e.response) message.error(e.response.data.error_message)
+      else message.error(e.message)
+    }
   }
   const Columns = [
     {
@@ -110,7 +129,7 @@ export default function ProfilePlanets() {
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
         transition={{ type: "spring", stiffness: 400, damping: 20 }}
-        onClick={() => handleGoClicked(record)}
+        onClick={() => handleDeleteClicked(record.id)}
       >
         {t('delete')} 
       </motion.button>,
