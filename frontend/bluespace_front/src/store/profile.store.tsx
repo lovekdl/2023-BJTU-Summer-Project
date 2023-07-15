@@ -10,6 +10,7 @@ class ProfileStore {
 		{
 			key: '1',
 			Planet_name: 'earth',
+			Orbit_period: 365,
 			Semi_major_axis	: 20,
 			Mass: 100,
 			Radius : 100,
@@ -116,8 +117,9 @@ class ProfileStore {
           console.log(ret.data)
           for (let key in ret.data) {
             if (typeof ret.data[key] === 'object' && ret.data[key] !== null) {
-              const item = ret.data[key];
-              item.key = item.UID
+              console.log(ret.data)
+							const item = ret.data[key];
+              item.key = item.id
 							item.habitable = i18n.t(item.habitable)
               newData.push(item);
               console.log(item);

@@ -88,6 +88,11 @@ function StarMap() {
           <p>{t('Introduction message1')}</p>
           <p>{t('Introduction message2')}</p>
           <p>{t('Introduction message3')}</p>
+          <h3>{t('Operation Introduction')}</h3>
+          <p>{t('Introduction message4')}</p>
+          <p>{t('Introduction message5')}</p>
+          <p>{t('Introduction message6')}</p>
+          <p>{t('Introduction message7')}</p>
         </Modal>
         <div className = 'StarMapMessage' style={{ visibility: StarMapStore.show? 'visible' : 'hidden' }}>
           <div className="SolidOpacity" >

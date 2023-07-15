@@ -46,7 +46,7 @@ function ButtonAppBar(props: Props) {
     console.log("clicked")
     navigate('/login', {replace:false})
   }
-  const {ProfileStore,loginStore} = useStore()
+  const {ProfileStore,loginStore, StatisticsStore} = useStore()
 
   const handleAvatarOnClicked = ()=> {
     navigate("/profile", {replace:false});
@@ -84,6 +84,8 @@ function ButtonAppBar(props: Props) {
       i18n.changeLanguage('jp')
       message.success('日本語に切り替えました')
     }
+    StatisticsStore.getSource()
+    ProfileStore.getSource()
   };
   
 

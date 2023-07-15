@@ -27,11 +27,9 @@
 }
 .ReorderContent {
   margin-left: 6vw;
-  margin-top: 5vh;
 }
 .ReorderContent2 {
   margin-left: 8vw;
-  margin-top: 5vh;
 }
 .NormalFont {
   font-weight: 550;
@@ -146,10 +144,16 @@ nav {
 }
 
 .PageContainer {
-  display: block;
   margin-left:10vw;
   white-space: nowrap;
   background-color: white;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  white-space: nowrap;
+  background-color: white;
+  height: 40vh;
 }
 .PageContainer2{
   display: flex;

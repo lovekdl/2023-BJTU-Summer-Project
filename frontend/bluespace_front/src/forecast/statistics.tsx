@@ -12,7 +12,8 @@ import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import IconButton from '@mui/material/IconButton';
 import AnalysisPage from "./analysispage";
 import { useNavigate } from 'react-router-dom';
-
+import {Popover} from'antd'
+import {QuestionCircleTwoTone} from "@ant-design/icons"
 function Statistics() {
   const {StatisticsStore} = useStore()
   const {StarMapStore} = useStore();
@@ -38,54 +39,100 @@ function Statistics() {
   }
   const Columns = [
     {
-      title: t('Planet name'),
+      title:<div style={{width:"7vw"}}>{t('Planet name')}
+                
+            </div>,
       dataIndex: 'Planet_name',
       key: 'Planet_name',
     },
     {
-      title: t('Orbital Period[days]'),
+      title:<div>{t('Orbital Period[days]')}
+        <Popover content = {t('Orbital Period[days] message')}>
+        <QuestionCircleTwoTone />
+        </Popover>
+      </div> ,
       dataIndex: 'Orbit_period',
       key: 'Orbit_period',
     },
     {
-      title: t('Orbit Semi-Major Axis'),
+      title:<div>{t('Orbit Semi-Major Axis')}
+      <Popover content = {t('Orbit Semi-Major Axis message')}>
+      <QuestionCircleTwoTone />
+      </Popover>
+    </div> ,
       dataIndex: 'Semi_major_axis',
       key: 'Semi_major_axis',
     },
     {
-      title: t('Planet Mass'),
+      title: <div>{t('Planet Mass')}
+      <Popover content = {t('Planet Mass message')}>
+      <QuestionCircleTwoTone />
+      </Popover>
+    </div>,
       dataIndex: 'Mass',
       key: 'Mass',
     },
     {
-      title: t('Planet Radius'),
+      title: <div>{t('Planet Radius')}
+      <Popover content = {t('Planet Radius message')}>
+      <QuestionCircleTwoTone />
+      </Popover>
+    </div>,
       dataIndex: 'Radius',
       key: 'Radius',
     },
     {
-      title: t('Stellar Luminosity'),
+      title: <div>{t('Stellar Luminosity')}
+      <Popover content = {t('Stellar Luminosity message')}>
+      <QuestionCircleTwoTone />
+      </Popover>
+    </div>,
       dataIndex: 'Stellar_luminosity',
       key: 'Stellar_luminosity',
     },
     {
-      title: t('Stellar Mass'),
+      title:<div>{t('Stellar Mass')}
+      <Popover content = {t('Stellar Mass message')}>
+      <QuestionCircleTwoTone />
+      </Popover>
+    </div>,
       dataIndex: 'Stellar_mass',
       key: 'Stellar_mass',
     },
     {
-      title: t('Stellar Radius'),
+      title: <div>{t('Stellar Radius')}
+      <Popover content = {t('Stellar Radius message')}>
+      <QuestionCircleTwoTone />
+      </Popover>
+    </div>,
       dataIndex: 'Stellar_radius',
       key: 'Stellar_radius',
     },
     {
-      title: t('ESI'),
+      title: <div>{t('ESI')}
+      <Popover content = {t('ESI message')}>
+      <QuestionCircleTwoTone />
+      </Popover>
+    </div>,
       dataIndex: 'esi',
       key: 'esi',
+      sorter:(a:any,b:any) => a.esi-b.esi,
     },
     {
       title: t('Habitability'),
       dataIndex: 'habitable',
       key: 'habitable',
+      filters: [
+        {
+          text: t('Habitable'),
+          value: t('Habitable'),
+        },
+        {
+          text: t('NOT Habitable'),
+          value: t('NOT Habitable'),
+        },
+      ],
+      onFilter: (value: string, record:any) => record.habitable.indexOf(value) === 0,
     },{
       title: t('go'),
       dataIndex: 'subscribe',
@@ -102,12 +149,12 @@ function Statistics() {
     },
     
     
-  ];
+  ] as any;
 
   return (
     <div>
       <p style={{marginLeft:"5vw"}}>{t('All Planets')}</p>
-      <Table className="TableDiv" columns={Columns} pagination={{ pageSize: 5 }}  dataSource={StatisticsStore.DataSource}></Table>
+      <Table className="TableDiv" columns={Columns} pagination={{ pageSize: 4 }}  dataSource={StatisticsStore.DataSource}></Table>
       <div>
         <AnalysisPage></AnalysisPage>
       </div>

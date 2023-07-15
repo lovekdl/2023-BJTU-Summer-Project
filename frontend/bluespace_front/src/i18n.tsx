@@ -81,6 +81,10 @@ i18n
           'Introduction message3' : 'If you want to experience the Prediction function, please log in and click the prediction bar in the Prediction page in the upper left corner submenu to make the prediction and save the result.',
           
           'Predicion Menu' : 'Statistics and Prediction',
+          'Operation Introduction': 'Operation Introduction',
+          'Planet habitability' :'Planet habitability',
+          'ESI message' : 'The similarity to Earth between 0 and 1',
+          'delete' : 'delete',
         }
       },
       zh: {
@@ -172,11 +176,20 @@ i18n
           'Production team':'制作组',
           'Blue Space team' : '蓝色空间',
           'Introduction' : '说明',
-          'Introduction message1' : '本网站为系外行星宜居度分析系统,目前您所在页面为星图,在星图中,您可以点击鼠标中键移动视角,或滑动滚轮进行缩放,点击星球可以乘坐宇宙飞船前往该星球并查看其信息。',
+          'Introduction message1' : '本网站为系外行星宜居度分析系统,目前您所在页面为星图,点击星球可以乘坐宇宙飞船前往该星球并查看其信息。',
           'Introduction message2' : '若您想查看所有行星数据,请登录后点击左上角子菜单中的统计与预测页面中的统计栏,查看统计图表。',
           'Introduction message3' : '若您想体验预测功能,请登录后点击左上角子菜单中的统计与预测页面中的预测栏,进行预测,并保存结果。',
+          'Introduction message4' : '滚轮点击拖动: 移动视角',
+          'Introduction message5' : '滚轮滑动: 缩放视角',
+          'Introduction message6' : '鼠标点击: 查看星球信息',
+          'Introduction message7' : 'WASD: 翱翔于宇宙空间',
+
+          'Operation Introduction' : '操作说明',
           'Star Map' : '星图',
           'Prediction Menu' : '统计与预测',
+          'Planet habitability': '星球宜居度',
+          'ESI message' : '与地球的相似度,取值为0到1之间',
+          'delete' : '删除',
         }
       },
       jp: {
@@ -267,8 +280,19 @@ i18n
           'Introduction message1' : 'このサイトは系外惑星の居住可能性を分析するためのシステムで、現在のページには星図が表示されています。星図では、中ボタンをクリックして視点を移動したり、ローラーをスライドさせたりすることができます。',
           'Introduction message2' : 'すべての惑星のデータを見たい場合は、ログイン後、左上のサブメニューにあるPredictionページの統計バーをクリックして、統計グラフをご覧ください。',
           'Introduction message3' : '予測機能を体験したい方は、ログインして左上のサブメニューにあるPredictionページの予測欄をクリックして予測を行い、結果を保存します。',
+          
+          'Introduction message4' : 'ローラークリック&ドラッグ:視点を移動します',
+          'Introduction message5' : 'ローラースライド:画角をスケーリングします',
+          'Introduction message6' : 'マウスでクリックします惑星情報を見る',
+          'Introduction message7' : 'WASD:宇宙を飛び回ります',
+          
           'Star Map' : '星図',
-          'Predicion Menu' : '統計と予測です',
+          'Prediction Menu' : '統計と予測です',
+          'Operation Introduction':'操作説明書です',
+          'Planet habitability': 'ハビタブルゾーンです',
+          'ESI message' : '0から1の間の値を取ります',
+          'delete' : '削除します',
+          'go':'行きます'
         }
       }
     },

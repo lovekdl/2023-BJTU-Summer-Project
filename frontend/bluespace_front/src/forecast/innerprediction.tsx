@@ -197,7 +197,7 @@ function InnerPrediction() {
             </div>
           </div>
           <Reorder.Group  axis="y" onReorder={PredictionStore.setItems} values={PredictionStore.items} style={{
-              height: 600,
+              height: '58vh',
               width: 580,
               border: "3px solid rgb(128, 106, 196)",
               borderRadius : "10px",
@@ -220,7 +220,7 @@ function InnerPrediction() {
             </div>
           </div>
           <div style={{
-              height: 600,
+              height: '58vh',
               width: 580,
               border: "3px solid rgb(128, 106, 196)",
               borderRadius : "10px",

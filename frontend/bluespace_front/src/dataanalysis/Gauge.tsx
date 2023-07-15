@@ -3,7 +3,8 @@ import * as eCharts from "echarts";
 import axios from "axios";
 import {http} from "../utils";
 import {message} from "antd";
-
+import i18n from '../index.tsx';
+import {useTranslation} from 'react-i18next'
 export default class Gauge extends PureComponent {
     eChartsRef: any = React.createRef();
 
@@ -76,7 +77,7 @@ export default class Gauge extends PureComponent {
                     data: [
                         {
                             value: data.habitable_rate, // 使用获取到的数据更新图表的值
-                            name: "星球宜居度"
+                            name: i18n.t("Planet habitability")
                         }
                     ]
                 }
