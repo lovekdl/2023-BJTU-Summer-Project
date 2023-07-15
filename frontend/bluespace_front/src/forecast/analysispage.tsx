@@ -65,7 +65,7 @@ const AnalysisPage = () => {
                     </span>
                         <br/>
                         <br/>
-                        <div style={{fontSize: '40px'}}><b>
+                        <div style={{fontSize: '20px'}}><b>
                             但高ESI不代表一定宜居，<br />
                             还存在着液态行星等情况。</b></div>
                     </div>
