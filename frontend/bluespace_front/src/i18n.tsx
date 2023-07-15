@@ -138,6 +138,7 @@ i18n
           'Send' : '发送',
           'verification code' : '验证码',
           'Old name' :'用户名',
+          'email has been sent.':'邮件已发送',
           'New name' : '新用户名',
           'Old password' : '旧密码',
           'New password' : '新密码',
@@ -304,6 +305,7 @@ i18n
           'Habitability':'住みやすさの状況です',
           'Predicted habitability of the planet' : '地球の居住可能性の予測値です',
           "The planet's data are compared to Earth's": "地球と比較することができます",
+          'email has been sent.':'メールを送信しました。',
         }
       }
     },
