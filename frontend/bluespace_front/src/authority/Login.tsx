@@ -139,7 +139,7 @@ function LoginForm  ()  {
                   <img src={qq} alt="QQ" onClick={handleGithubClicked}/>
                 </div>
                 <div className="other-login-item">
-                  <img style = {{width:'60px'}}src={wechat} alt="WeChat" onClick = {handleBilibiliClicked}/>
+                  <img style = {{width:'80px'}}src={wechat} alt="WeChat" onClick = {handleBilibiliClicked}/>
                 </div>
               </div>
                 

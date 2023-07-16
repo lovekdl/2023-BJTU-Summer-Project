@@ -81,7 +81,7 @@ function StarMap() {
       }
       
       <div id="StarMap" style={{ visibility: !LoadingStore.starMapLoading ? 'visible' : 'hidden' }}>
-        <Modal title= {t("Welcome to Exoplanet habitability analysis System")} open={isModalOpen} onOk={handleOk} onCancel={handleCancel} cancelText = {t('No prompt next time')} okText={t('ok')} maskClosable={false} >
+        <Modal title= {t("Welcome to Exoplanet habitability analysis System")} open={isModalOpen} onOk={handleOk} onCancel={handleCancel} cancelText = {t('No prompt next time')} okText={t('ok')} maskClosable={false} width={900} closable={false}>
           <h3>{t('Production team')}</h3>
           <p>{t('Blue Space team')}</p>
           <h3>{t('Introduction')}</h3>

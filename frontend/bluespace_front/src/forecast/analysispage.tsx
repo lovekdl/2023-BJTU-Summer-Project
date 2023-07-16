@@ -67,7 +67,7 @@ const AnalysisPage = () => {
                     </span>
                         <br/>
                         <br/>
-                        <div style={{fontSize: '20px'}}><b>
+                        <div style={{fontSize: '40px'}}><b>
                             但高ESI不代表一定宜居，<br />
                             还存在着液态行星等情况。</b></div>
                     </div>
@@ -86,11 +86,13 @@ const AnalysisPage = () => {
                 let description3 = (
                     <div>
                     <span>
+                    宜居星球的半径与地球相近，<br />
+                    而不宜居星球则以地球三倍以上半径者居多。
                     </span>
                         <br/>
                         <br/>
                         <div style={{fontSize: '40px'}}><b>
-                            盲目分析 <br />&nbsp;&nbsp;&nbsp;👁 👁</b></div>
+                            星球半径过大则大概率不宜居。</b></div>
                     </div>
                 );
                 //不宜居的数据：1, 68, 314, 558, 472, 482, 450, 305
@@ -108,11 +110,13 @@ const AnalysisPage = () => {
                 let description4 = (
                     <div>
                     <span>
+                    宜居星球的质量分布较为均匀，不宜居星球则以较大质量为主。
                     </span>
                         <br/>
                         <br/>
                         <div style={{fontSize: '40px'}}><b>
-                            胡乱分析 <br />&nbsp;&nbsp;&nbsp;&nbsp; 🧠 </b></div>
+                            质量大往往意味着更大的引力，保有大气层能力 <br />
+                            更强的同时，也为生存带来了更大的压力。</b></div>
                     </div>
                 );
                 return (
@@ -128,12 +132,13 @@ const AnalysisPage = () => {
                 let description5 = (
                     <div>
                     <span>
-                        宜居行星温度偏低({'<5000'})，不宜居的偏高({'>5000'})。
+                        宜居行星所在星系温度偏低({'<5000'})，不宜居的偏高({'>5000'})。 <br />
+                        显然温度过高不适宜人类生存。
                     </span>
                         <br/>
                         <br/>
                         <div style={{fontSize: '40px'}}><b>
-                            分析不出来 <br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 💀 </b></div>
+                            地球已经够热了。 </b></div>
                     </div>
                 );
                 return (

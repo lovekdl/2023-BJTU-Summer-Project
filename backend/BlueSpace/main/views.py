@@ -2,49 +2,112 @@ from django.http import HttpResponse
 
 import sys
 import json
-import random
-import string
 import numpy as np
 import pandas as pd
+import random
+import string
 
 from .tools import Tools
 from .models import *
 
-from .store import *
 from django.core import mail
 
-# sys.path.append('D:\\Code\\23-SummerProject\\2023-BJTU-Summer-Project\\model')
-# 这里路径怎么都不是很对，我把model复制了一份到python的基准路径下
-
 from model.predictor import Predictor
-
-
+    
 # === Account === #
 def login(request):
     return sign(request=request, auto_create_account=False)
 
-
 def register(request):
-    # return sign(request=request, auto_create_account=True)
-    # refactor: 注册的逻辑现在和登录区别较大，重构注册函数
     result = {}
-
+    
+    if request.method != 'POST':
+        return Tools.toErrorResponse('Request method is not POST.')
+        
+    data = json.loads(request.body)
+    
+    if 'email' not in data or data['email'] is None:
+        return Tools.toErrorResponse('Emailaddrss is none.')
+        
+    email = data['email']
+    
+    if 'username' not in data or data['username'] is None:
+        return Tools.toErrorResponse('Username is none.')
+        
+    username = data['username']
+    
+    if 'password' not in data or data['password'] is None:
+        return Tools.toErrorResponse('Password is none.')
+    
+    password = data['password']
+    
+    if 'vertification_code' not in data or data['vertification_code'] is None:
+        return Tools.toErrorResponse('VerifyCodes is none.')
+    
+    vrcode = data['vertification_code']
+    
+    users = User.objects.filter(username=username)
+    emails = User.objects.filter(email=email) # 选出所有email字段与请求发送email相同的行
+    user_vrcode = Verifycodes.objects.filter(username=username)
+    
+    if emails.count() > 0:
+        return Tools.toErrorResponse('Emailaddress is already existed.')
+    if users.count() > 0:
+        return Tools.toErrorResponse('Username is already existed.')
+    if user_vrcode.count() == 0:
+        return Tools.toErrorResponse('Please get Vertification Code first.')
+    if vrcode != user_vrcode.first().vrcode:
+        return Tools.toErrorResponse('Vertification Code is incorrect.')
+    user = User(username=username, password=password, email=email)
+    user.save()
+    record = Verifycodes.objects.get(username=username)
+    record.delete()
+    result['state'] = 'success'
+    return Tools.toResponse(result, 200)
 
 def sendVerifyCode(request):
+    result = {}
+    if request.method != 'POST':
+        return Tools.toErrorResponse('Request method is not POST.')
+        
+    data = json.loads(request.body)
+    
+    if 'email' not in data or data['email'] is None:
+        return Tools.toErrorResponse('Emailaddrss is none.')
+        
+    email = data['email']
+    
+    if 'username' not in data or data['username'] is None:
+        return Tools.toErrorResponse('Username is none.')
+        
+    username = data['username']
+    
+    emails = User.objects.filter(email=email) # 选出所有email字段与请求发送email相同的行
+    users = User.objects.filter(username=username)
+    
+    if emails.count() > 0:
+        return Tools.toErrorResponse('Emailaddress is already existed.')
+    if users.count() > 0:
+        return Tools.toErrorResponse('Username is already existed.')
+        
     vrcode = ''.join(random.choices(string.ascii_letters + string.digits, k=6))
     mail.send_mail(
         subject='BLUESPACE 验证码',  # 题目
         message='您的 BLUESPACE 验证码为: ' + vrcode,  # 消息内容
         from_email='zoransy@foxmail.com',  # 发送者[当前配置邮箱]
-        recipient_list=['xxx@qq.com'],  # 接收者邮件列表
+        recipient_list=[data['email']],  # 接收者邮件列表
     )
-
+    user_vrcode = Verifycodes(username=username, vrcode=vrcode)
+    user_vrcode.save()
+    result['state'] = 'success'
+    return Tools.toResponse(result, 200)
+    
 
 def sign(request, auto_create_account: bool):
     result = {}
     if request.method != 'POST':
         return Tools.toErrorResponse('Request method is not POST.')
-
+    
     data = json.loads(request.body)
 
     if 'username' not in data or data['username'] is None:
@@ -75,75 +138,93 @@ def sign(request, auto_create_account: bool):
 
     return Tools.toResponse(result, 200)
 
-
-# === Prediction === #
-def junior_predict(request):
-    '''
-    初级模型预测接口
-    '''
+def uploadAvatar(request):
     result = {}
     if request.method != 'POST':
         return Tools.toErrorResponse('Request method is not POST.')
-
+    #verify token
+    state, someObject = Tools.verifyToken(request=request)
+    if state:
+        user = someObject
+    else:
+        return someObject
+    
     data = json.loads(request.body)
-
-    if 'token' not in data or data['token'] is None:
-        return Tools.toErrorResponse('Token is none.')
-    token = data['token']
-
-    predictor = Predictor()
-
-    result = predictor.predict(2, request.body)
-
-    if result == -1:
-        return Tools.toErrorResponse('Prediction incorrect.')
+    user.avatar = data['avatar']
+    user.save()
+    result['state'] = 'success'
 
     return Tools.toResponse(result, 200)
-
-
-def senior_predict(request):
-    '''
-    高级模型预测接口
-    '''
+   
+def getAvatar(request):
     result = {}
     if request.method != 'POST':
         return Tools.toErrorResponse('Request method is not POST.')
+    #verify token
+    state, someObject = Tools.verifyToken(request=request)
+    if state:
+        user = someObject
+    else:
+        return someObject
 
-    data = json.loads(request.body)
-
-    if 'token' not in data or data['token'] is None:
-        return Tools.toErrorResponse('Token is none.')
-    token = data['token']
-
-    predictor = Predictor()
-
-    result = predictor.predict(1, request.body)
-
-    if result == -1:
-        return Tools.toErrorResponse('Prediction incorrect.')
-
+    result['state'] = 'success'
+    result['avatar'] = user.avatar
     return Tools.toResponse(result, 200)
-
-
-def DNN_predict(request):
-    '''
-    DNN模型预测接口
-    '''
+ 
+def modifyUsername(request):
     result = {}
     if request.method != 'POST':
         return Tools.toErrorResponse('Request method is not POST.')
-
+    #verify token
+    state, someObject = Tools.verifyToken(request=request)
+    if state:
+        user = someObject
+    else:
+        return someObject
+    
     data = json.loads(request.body)
-
-    if 'token' not in data or data['token'] is None:
-        return Tools.toErrorResponse('Token is none.')
-    token = data['token']
-
-    predictor = Predictor()
-
-    result = predictor.predict(3, request.body)
-
-    if result == -1:
-        return Tools.toErrorResponse('Prediction incorrect.')
-
+    
+    users = User.objects.filter(username=data['new_username'])
+    if users.count() > 0:
+        return Tools.toErrorResponse('Username is already existed.')
+    user.username = data['new_username']
+    user.save()
+    result['state'] = 'success'
     return Tools.toResponse(result, 200)
+    
+def getProfile(request):
+    result = {}
+    if request.method != 'POST':
+        return Tools.toErrorResponse('Request method is not POST.')
+    #verify token
+    state, someObject = Tools.verifyToken(request=request)
+    if state:
+        user = someObject
+    else:
+        return someObject
+    
+    result['email'] = user.email
+    result['username'] = user.username
+    result['state'] = 'success'
+    return Tools.toResponse(result, 200)
+    
+def modifyPassword(request):
+    result = {}
+    if request.method != 'POST':
+        return Tools.toErrorResponse('Request method is not POST.')
+    #verify token
+    state, someObject = Tools.verifyToken(request=request)
+    if state:
+        user = someObject
+    else:
+        return someObject
+    
+    data = json.loads(request.body)
+    if user.password == data['new_password']:
+        return Tools.toErrorResponse('Your new Password should be different from your old one.')
+
+    user.password = data['new_password']
+    user.save()
+    result['state'] = 'success'
+    return Tools.toResponse(result, 200)
+    

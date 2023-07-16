@@ -32,6 +32,14 @@ class Tools:
         
         return True, user
 
+    @staticmethod
+    def calcESI(s, r):
+        s_e = 1.361  # kW/h
+        r_e = 6371  # km
+        p1 = ((s - s_e) / (s + s_e)) * ((s - s_e) / (s + s_e))
+        p2 = ((r - r_e) / (r + r_e)) * ((r - r_e) / (r + r_e))
+        esi = 1 - math.sqrt(0.5 * (p1 + p2))
+        return esi
 
     @staticmethod
     def toErrorResponse(message: str):
