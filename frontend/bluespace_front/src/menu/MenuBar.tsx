@@ -16,7 +16,7 @@ import { observer } from 'mobx-react-lite'
 import { Dropdown, message, Space } from 'antd';
 import '../index.tsx';
 import {useTranslation} from 'react-i18next'
-import {setLanguageFromLocalStorage} from "../utils/token"
+import {getLanguageFromLocalStorage, setLanguageFromLocalStorage} from "../utils/token"
 import {
   UserOutlined,DownOutlined 
 } from "@ant-design/icons";
@@ -47,6 +47,8 @@ function ButtonAppBar(props: Props) {
     navigate('/login', {replace:false})
   }
   const {ProfileStore,loginStore, StatisticsStore} = useStore()
+
+  
 
   const handleAvatarOnClicked = ()=> {
     navigate("/profile", {replace:false});

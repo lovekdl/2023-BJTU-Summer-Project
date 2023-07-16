@@ -14,13 +14,14 @@ import InnerPrediction from "./forecast/innerprediction";
 import {setLanguageFromLocalStorage,getLanguageFromLocalStorage} from "./utils/token"
 import './index.tsx';
 import {useTranslation} from 'react-i18next'
-
-export default function App() {
+import { observer } from 'mobx-react-lite';
+function App() {
   const {t,i18n} = useTranslation()
   useEffect(()=> {
     const language = getLanguageFromLocalStorage() || ''
     if(language == '') {
-      setLanguageFromLocalStorage("zh")
+      setLanguageFromLocalStorage('zh')
+      i18n.changeLanguage('zh')
     }
     else (
       i18n.changeLanguage(language)
@@ -70,3 +71,4 @@ export default function App() {
     </Router>
   );
 }
+export default observer(App)
