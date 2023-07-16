@@ -78,10 +78,10 @@ function RegisterForm  (prop:any)  {
           email : emailRef.current?.value,
         })
         if(ret.data.state == 'success') {
-          message.success('email has been sent.')
+          message.success(t('email has been sent.'))
           loginStore.resetWaiting();
         }
-        else message.success('unknown error.')
+        else message.success(t('unknown error.'))
       }
       catch(e:any) {
         console.log('catch : ',e)
