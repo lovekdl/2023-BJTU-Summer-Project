@@ -311,7 +311,7 @@ class BlueSpaceRenderer {
                 vec3.fromValues(this.planets![1].position.x, this.planets![1].position.y, this.planets![1].position.z),
                 Math.PI / 2,
                 1.5,
-                120,
+                120 * 2,
             )
 
             // 5. Shader's argument
@@ -341,7 +341,7 @@ class BlueSpaceRenderer {
                 vec3.fromValues(0, 0, 0),
                 this.CAMERA_THETA,
                 this.CAMERA_RADIUS,
-                120,
+                120 * 2,
             )
            
             // 4. End
